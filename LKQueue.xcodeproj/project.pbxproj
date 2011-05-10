@@ -22,6 +22,12 @@
 		4C1A0A941378DF1D009D78F0 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A921378DF1D009D78F0 /* RootViewController.m */; };
 		4C1A0A961378DF3A009D78F0 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A951378DF3A009D78F0 /* MainWindow.xib */; };
 		4C1A0A9A1378E094009D78F0 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A991378E094009D78F0 /* RootViewController.xib */; };
+		4C6F06801378E35E0046B177 /* LKQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067B1378E35E0046B177 /* LKQueue.m */; };
+		4C6F06811378E35E0046B177 /* LKQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067B1378E35E0046B177 /* LKQueue.m */; };
+		4C6F06821378E35E0046B177 /* LKQueueEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067D1378E35E0046B177 /* LKQueueEntry.m */; };
+		4C6F06831378E35E0046B177 /* LKQueueEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067D1378E35E0046B177 /* LKQueueEntry.m */; };
+		4C6F06841378E35E0046B177 /* LKQueueEntryOperator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */; };
+		4C6F06851378E35E0046B177 /* LKQueueEntryOperator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +63,12 @@
 		4C1A0A921378DF1D009D78F0 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		4C1A0A951378DF3A009D78F0 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		4C1A0A991378E094009D78F0 /* RootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
+		4C6F067A1378E35E0046B177 /* LKQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueue.h; sourceTree = "<group>"; };
+		4C6F067B1378E35E0046B177 /* LKQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueue.m; sourceTree = "<group>"; };
+		4C6F067C1378E35E0046B177 /* LKQueueEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueEntry.h; sourceTree = "<group>"; };
+		4C6F067D1378E35E0046B177 /* LKQueueEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntry.m; sourceTree = "<group>"; };
+		4C6F067E1378E35E0046B177 /* LKQueueEntryOperator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueEntryOperator.h; sourceTree = "<group>"; };
+		4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntryOperator.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,7 +98,8 @@
 		4C1A0A331378DD63009D78F0 = {
 			isa = PBXGroup;
 			children = (
-				4C1A0A481378DD64009D78F0 /* Test Application */,
+				4C6F06781378E33B0046B177 /* Classes */,
+				4C1A0A481378DD64009D78F0 /* TestApplication */,
 				4C1A0A621378DD64009D78F0 /* LKQueueTests */,
 				4C1A0A411378DD64009D78F0 /* Frameworks */,
 				4C1A0A3F1378DD64009D78F0 /* Products */,
@@ -112,7 +125,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4C1A0A481378DD64009D78F0 /* Test Application */ = {
+		4C1A0A481378DD64009D78F0 /* TestApplication */ = {
 			isa = PBXGroup;
 			children = (
 				4C1A0A8F1378DF1D009D78F0 /* LKQueueAppDelegate.h */,
@@ -121,7 +134,6 @@
 				4C1A0A921378DF1D009D78F0 /* RootViewController.m */,
 				4C1A0A491378DD64009D78F0 /* Supporting Files */,
 			);
-			name = "Test Application";
 			path = TestApplication;
 			sourceTree = "<group>";
 		};
@@ -158,6 +170,19 @@
 				4C1A0A681378DD64009D78F0 /* LKQueueTests-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4C6F06781378E33B0046B177 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				4C6F067A1378E35E0046B177 /* LKQueue.h */,
+				4C6F067B1378E35E0046B177 /* LKQueue.m */,
+				4C6F067C1378E35E0046B177 /* LKQueueEntry.h */,
+				4C6F067D1378E35E0046B177 /* LKQueueEntry.m */,
+				4C6F067E1378E35E0046B177 /* LKQueueEntryOperator.h */,
+				4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */,
+			);
+			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -267,6 +292,9 @@
 				4C1A0A501378DD64009D78F0 /* main.m in Sources */,
 				4C1A0A931378DF1D009D78F0 /* LKQueueAppDelegate.m in Sources */,
 				4C1A0A941378DF1D009D78F0 /* RootViewController.m in Sources */,
+				4C6F06801378E35E0046B177 /* LKQueue.m in Sources */,
+				4C6F06821378E35E0046B177 /* LKQueueEntry.m in Sources */,
+				4C6F06841378E35E0046B177 /* LKQueueEntryOperator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,6 +304,9 @@
 			files = (
 				4C1A0A8C1378DE75009D78F0 /* LKQueueEntryOperatorTests.m in Sources */,
 				4C1A0A8E1378DE75009D78F0 /* LKQueueTests.m in Sources */,
+				4C6F06811378E35E0046B177 /* LKQueue.m in Sources */,
+				4C6F06831378E35E0046B177 /* LKQueueEntry.m in Sources */,
+				4C6F06851378E35E0046B177 /* LKQueueEntryOperator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,8 +379,8 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LKQueue/LKQueue-Prefix.pch";
-				INFOPLIST_FILE = "LKQueue/LKQueue-Info.plist";
+				GCC_PREFIX_HEADER = "TestApplication/LKQueue-Prefix.pch";
+				INFOPLIST_FILE = "TestApplication/LKQueue-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -361,8 +392,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "LKQueue/LKQueue-Prefix.pch";
-				INFOPLIST_FILE = "LKQueue/LKQueue-Info.plist";
+				GCC_PREFIX_HEADER = "TestApplication/LKQueue-Prefix.pch";
+				INFOPLIST_FILE = "TestApplication/LKQueue-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
