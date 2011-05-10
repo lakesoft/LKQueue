@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FBQueueAppDelegate : NSObject <UIApplicationDelegate> {
+@interface LKQueueAppDelegate : NSObject <UIApplicationDelegate> {
 
 }
 

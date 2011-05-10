@@ -12,14 +12,22 @@
 		4C1A0A471378DD64009D78F0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1A0A461378DD64009D78F0 /* CoreGraphics.framework */; };
 		4C1A0A4D1378DD64009D78F0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A4B1378DD64009D78F0 /* InfoPlist.strings */; };
 		4C1A0A501378DD64009D78F0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A4F1378DD64009D78F0 /* main.m */; };
-		4C1A0A531378DD64009D78F0 /* LKQueueAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A521378DD64009D78F0 /* LKQueueAppDelegate.m */; };
-		4C1A0A561378DD64009D78F0 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A541378DD64009D78F0 /* MainWindow.xib */; };
 		4C1A0A5D1378DD64009D78F0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1A0A421378DD64009D78F0 /* UIKit.framework */; };
 		4C1A0A5E1378DD64009D78F0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1A0A441378DD64009D78F0 /* Foundation.framework */; };
 		4C1A0A5F1378DD64009D78F0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1A0A461378DD64009D78F0 /* CoreGraphics.framework */; };
 		4C1A0A671378DD64009D78F0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A651378DD64009D78F0 /* InfoPlist.strings */; };
-		4C1A0A6A1378DD64009D78F0 /* LKQueueTests.h in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A691378DD64009D78F0 /* LKQueueTests.h */; };
-		4C1A0A6C1378DD64009D78F0 /* LKQueueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A6B1378DD64009D78F0 /* LKQueueTests.m */; };
+		4C1A0A8C1378DE75009D78F0 /* LKQueueEntryOperatorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A871378DE75009D78F0 /* LKQueueEntryOperatorTests.m */; };
+		4C1A0A8E1378DE75009D78F0 /* LKQueueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A8B1378DE75009D78F0 /* LKQueueTests.m */; };
+		4C1A0A931378DF1D009D78F0 /* LKQueueAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A901378DF1D009D78F0 /* LKQueueAppDelegate.m */; };
+		4C1A0A941378DF1D009D78F0 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A921378DF1D009D78F0 /* RootViewController.m */; };
+		4C1A0A961378DF3A009D78F0 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A951378DF3A009D78F0 /* MainWindow.xib */; };
+		4C1A0A9A1378E094009D78F0 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A991378E094009D78F0 /* RootViewController.xib */; };
+		4C1A0AA11378E181009D78F0 /* LKQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A9C1378E181009D78F0 /* LKQueue.m */; };
+		4C1A0AA21378E181009D78F0 /* LKQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A9C1378E181009D78F0 /* LKQueue.m */; };
+		4C1A0AA31378E181009D78F0 /* LKQueueEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A9E1378E181009D78F0 /* LKQueueEntry.m */; };
+		4C1A0AA41378E181009D78F0 /* LKQueueEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A9E1378E181009D78F0 /* LKQueueEntry.m */; };
+		4C1A0AA51378E181009D78F0 /* LKQueueEntryOperator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0AA01378E181009D78F0 /* LKQueueEntryOperator.m */; };
+		4C1A0AA61378E181009D78F0 /* LKQueueEntryOperator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0AA01378E181009D78F0 /* LKQueueEntryOperator.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,19 +45,30 @@
 		4C1A0A421378DD64009D78F0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4C1A0A441378DD64009D78F0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4C1A0A461378DD64009D78F0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		4C1A0A4A1378DD64009D78F0 /* LKQueue-Info.plist */ = {isa = PBXFileReference; path = "LKQueue-Info.plist"; sourceTree = "<group>"; };
+		4C1A0A4A1378DD64009D78F0 /* LKQueue-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LKQueue-Info.plist"; sourceTree = "<group>"; };
 		4C1A0A4C1378DD64009D78F0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		4C1A0A4E1378DD64009D78F0 /* LKQueue-Prefix.pch */ = {isa = PBXFileReference; path = "LKQueue-Prefix.pch"; sourceTree = "<group>"; };
+		4C1A0A4E1378DD64009D78F0 /* LKQueue-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LKQueue-Prefix.pch"; sourceTree = "<group>"; };
 		4C1A0A4F1378DD64009D78F0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		4C1A0A511378DD64009D78F0 /* LKQueueAppDelegate.h */ = {isa = PBXFileReference; path = LKQueueAppDelegate.h; sourceTree = "<group>"; };
-		4C1A0A521378DD64009D78F0 /* LKQueueAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LKQueueAppDelegate.m; sourceTree = "<group>"; };
-		4C1A0A551378DD64009D78F0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
 		4C1A0A5C1378DD64009D78F0 /* LKQueueTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LKQueueTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		4C1A0A641378DD64009D78F0 /* LKQueueTests-Info.plist */ = {isa = PBXFileReference; path = "LKQueueTests-Info.plist"; sourceTree = "<group>"; };
+		4C1A0A641378DD64009D78F0 /* LKQueueTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LKQueueTests-Info.plist"; sourceTree = "<group>"; };
 		4C1A0A661378DD64009D78F0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		4C1A0A681378DD64009D78F0 /* LKQueueTests-Prefix.pch */ = {isa = PBXFileReference; path = "LKQueueTests-Prefix.pch"; sourceTree = "<group>"; };
-		4C1A0A691378DD64009D78F0 /* LKQueueTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LKQueueTests.h; sourceTree = "<group>"; };
-		4C1A0A6B1378DD64009D78F0 /* LKQueueTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LKQueueTests.m; sourceTree = "<group>"; };
+		4C1A0A681378DD64009D78F0 /* LKQueueTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LKQueueTests-Prefix.pch"; sourceTree = "<group>"; };
+		4C1A0A861378DE75009D78F0 /* LKQueueEntryOperatorTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueEntryOperatorTests.h; sourceTree = "<group>"; };
+		4C1A0A871378DE75009D78F0 /* LKQueueEntryOperatorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntryOperatorTests.m; sourceTree = "<group>"; };
+		4C1A0A8A1378DE75009D78F0 /* LKQueueTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueTests.h; sourceTree = "<group>"; };
+		4C1A0A8B1378DE75009D78F0 /* LKQueueTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueTests.m; sourceTree = "<group>"; };
+		4C1A0A8F1378DF1D009D78F0 /* LKQueueAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueAppDelegate.h; sourceTree = "<group>"; };
+		4C1A0A901378DF1D009D78F0 /* LKQueueAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueAppDelegate.m; sourceTree = "<group>"; };
+		4C1A0A911378DF1D009D78F0 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		4C1A0A921378DF1D009D78F0 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		4C1A0A951378DF3A009D78F0 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		4C1A0A991378E094009D78F0 /* RootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
+		4C1A0A9B1378E181009D78F0 /* LKQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueue.h; sourceTree = "<group>"; };
+		4C1A0A9C1378E181009D78F0 /* LKQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueue.m; sourceTree = "<group>"; };
+		4C1A0A9D1378E181009D78F0 /* LKQueueEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueEntry.h; sourceTree = "<group>"; };
+		4C1A0A9E1378E181009D78F0 /* LKQueueEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntry.m; sourceTree = "<group>"; };
+		4C1A0A9F1378E181009D78F0 /* LKQueueEntryOperator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueEntryOperator.h; sourceTree = "<group>"; };
+		4C1A0AA01378E181009D78F0 /* LKQueueEntryOperator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntryOperator.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,7 +98,8 @@
 		4C1A0A331378DD63009D78F0 = {
 			isa = PBXGroup;
 			children = (
-				4C1A0A481378DD64009D78F0 /* LKQueue */,
+				4C1A0A751378DD83009D78F0 /* Classes */,
+				4C1A0A481378DD64009D78F0 /* Test Application */,
 				4C1A0A621378DD64009D78F0 /* LKQueueTests */,
 				4C1A0A411378DD64009D78F0 /* Frameworks */,
 				4C1A0A3F1378DD64009D78F0 /* Products */,
@@ -105,20 +125,24 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4C1A0A481378DD64009D78F0 /* LKQueue */ = {
+		4C1A0A481378DD64009D78F0 /* Test Application */ = {
 			isa = PBXGroup;
 			children = (
-				4C1A0A511378DD64009D78F0 /* LKQueueAppDelegate.h */,
-				4C1A0A521378DD64009D78F0 /* LKQueueAppDelegate.m */,
-				4C1A0A541378DD64009D78F0 /* MainWindow.xib */,
+				4C1A0A8F1378DF1D009D78F0 /* LKQueueAppDelegate.h */,
+				4C1A0A901378DF1D009D78F0 /* LKQueueAppDelegate.m */,
+				4C1A0A911378DF1D009D78F0 /* RootViewController.h */,
+				4C1A0A921378DF1D009D78F0 /* RootViewController.m */,
 				4C1A0A491378DD64009D78F0 /* Supporting Files */,
 			);
+			name = "Test Application";
 			path = LKQueue;
 			sourceTree = "<group>";
 		};
 		4C1A0A491378DD64009D78F0 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				4C1A0A951378DF3A009D78F0 /* MainWindow.xib */,
+				4C1A0A991378E094009D78F0 /* RootViewController.xib */,
 				4C1A0A4A1378DD64009D78F0 /* LKQueue-Info.plist */,
 				4C1A0A4B1378DD64009D78F0 /* InfoPlist.strings */,
 				4C1A0A4E1378DD64009D78F0 /* LKQueue-Prefix.pch */,
@@ -130,8 +154,10 @@
 		4C1A0A621378DD64009D78F0 /* LKQueueTests */ = {
 			isa = PBXGroup;
 			children = (
-				4C1A0A691378DD64009D78F0 /* LKQueueTests.h */,
-				4C1A0A6B1378DD64009D78F0 /* LKQueueTests.m */,
+				4C1A0A861378DE75009D78F0 /* LKQueueEntryOperatorTests.h */,
+				4C1A0A871378DE75009D78F0 /* LKQueueEntryOperatorTests.m */,
+				4C1A0A8A1378DE75009D78F0 /* LKQueueTests.h */,
+				4C1A0A8B1378DE75009D78F0 /* LKQueueTests.m */,
 				4C1A0A631378DD64009D78F0 /* Supporting Files */,
 			);
 			path = LKQueueTests;
@@ -145,6 +171,19 @@
 				4C1A0A681378DD64009D78F0 /* LKQueueTests-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4C1A0A751378DD83009D78F0 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				4C1A0A9B1378E181009D78F0 /* LKQueue.h */,
+				4C1A0A9C1378E181009D78F0 /* LKQueue.m */,
+				4C1A0A9D1378E181009D78F0 /* LKQueueEntry.h */,
+				4C1A0A9E1378E181009D78F0 /* LKQueueEntry.m */,
+				4C1A0A9F1378E181009D78F0 /* LKQueueEntryOperator.h */,
+				4C1A0AA01378E181009D78F0 /* LKQueueEntryOperator.m */,
+			);
+			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -215,7 +254,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C1A0A4D1378DD64009D78F0 /* InfoPlist.strings in Resources */,
-				4C1A0A561378DD64009D78F0 /* MainWindow.xib in Resources */,
+				4C1A0A961378DF3A009D78F0 /* MainWindow.xib in Resources */,
+				4C1A0A9A1378E094009D78F0 /* RootViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,7 +264,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C1A0A671378DD64009D78F0 /* InfoPlist.strings in Resources */,
-				4C1A0A6A1378DD64009D78F0 /* LKQueueTests.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,7 +291,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C1A0A501378DD64009D78F0 /* main.m in Sources */,
-				4C1A0A531378DD64009D78F0 /* LKQueueAppDelegate.m in Sources */,
+				4C1A0A931378DF1D009D78F0 /* LKQueueAppDelegate.m in Sources */,
+				4C1A0A941378DF1D009D78F0 /* RootViewController.m in Sources */,
+				4C1A0AA11378E181009D78F0 /* LKQueue.m in Sources */,
+				4C1A0AA31378E181009D78F0 /* LKQueueEntry.m in Sources */,
+				4C1A0AA51378E181009D78F0 /* LKQueueEntryOperator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,7 +303,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C1A0A6C1378DD64009D78F0 /* LKQueueTests.m in Sources */,
+				4C1A0A8C1378DE75009D78F0 /* LKQueueEntryOperatorTests.m in Sources */,
+				4C1A0A8E1378DE75009D78F0 /* LKQueueTests.m in Sources */,
+				4C1A0AA21378E181009D78F0 /* LKQueue.m in Sources */,
+				4C1A0AA41378E181009D78F0 /* LKQueueEntry.m in Sources */,
+				4C1A0AA61378E181009D78F0 /* LKQueueEntryOperator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,14 +328,6 @@
 				4C1A0A4C1378DD64009D78F0 /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		4C1A0A541378DD64009D78F0 /* MainWindow.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4C1A0A551378DD64009D78F0 /* en */,
-			);
-			name = MainWindow.xib;
 			sourceTree = "<group>";
 		};
 		4C1A0A651378DD64009D78F0 /* InfoPlist.strings */ = {

@@ -1,13 +1,7 @@
-//
-//  RootViewController.m
-//  FBQueue
-//
-//  Created by Hiroshi Hashiguchi on 11/04/12.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
+// RootViewController
 
 #import "RootViewController.h"
-#import "FBQueue.h"
+#import "LKQueue.h"
 
 @implementation RootViewController
 
@@ -82,27 +76,27 @@
     }
 
     // Configure the cell.
-    //    FBQueueEntry* entry = [[self.queue queueList] objectAtIndex:indexPath.row];
-    FBQueueEntry* entry = [[self.queue queueList] 
+    //    LKQueueEntry* entry = [[self.queue queueList] objectAtIndex:indexPath.row];
+    LKQueueEntry* entry = [[self.queue queueList] 
                            objectAtIndex:[self.queue count] - indexPath.row -1];
     
     cell.textLabel.text = [entry.info objectForKey:@"title"];
 
     switch (entry.state) {
-        case FBQueueStateWating:
+        case LKQueueStateWating:
             cell.detailTextLabel.text = @"Wating";
             break;
-        case FBQueueStateProcessing:
+        case LKQueueStateProcessing:
             cell.detailTextLabel.text = @"Processing";
             break;
-        case FBQueueStateFinished:
-            if (entry.result == FBQueueResultSuccessful) {
+        case LKQueueStateFinished:
+            if (entry.result == LKQueueResultSuccessful) {
                 cell.detailTextLabel.text = @"Finished";
             } else {
                 cell.detailTextLabel.text = @"Failed";
             }
             break;
-        case FBQueueStateInterrupting:
+        case LKQueueStateInterrupting:
             cell.detailTextLabel.text = @"Interrupting";
             break;
     }

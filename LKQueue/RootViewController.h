@@ -8,12 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@class FBQueue;
+@class LKQueue;
 @interface RootViewController : UITableViewController {
 
 }
 
-@property (nonatomic, retain) FBQueue* queue;
+@property (nonatomic, retain) LKQueue* queue;
 
 - (IBAction)addEntry:(id)sender;
 

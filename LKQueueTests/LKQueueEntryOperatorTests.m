@@ -3,13 +3,13 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
-#import "FBQueueEntryOperatorTests.h"
-#import "FBQueueEntryOperator.h"
-#import "FBQueue.h"
+#import "LKQueueEntryOperatorTests.h"
+#import "LKQueueEntryOperator.h"
+#import "LKQueue.h"
 
 #define QUEUE_NAME  @"Test Queue"
 
-@implementation FBQueueEntryOperatorTests
+@implementation LKQueueEntryOperatorTests
 
 @synthesize queue;
 
@@ -82,8 +82,8 @@
     entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:info resources:res];
 
     STAssertEquals(entry.queueId, self.queue.queueId, nil);
-    STAssertEquals(entry.state, FBQueueStateWating, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueStateWating, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
     STAssertEqualObjects([entry.info objectForKey:@"TITLE"], @"TEST", nil);
     STAssertEqualObjects([entry.resources lastObject], @"VALUE", nil);
     STAssertNotNil(entry.timestamp, nil);
@@ -126,36 +126,36 @@
     entry = [self _waitingEntry];
     ret = [entry wait];
     STAssertFalse(ret, @"waiting->waiting[x]");
-    STAssertEquals(entry.state, FBQueueStateWating, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueStateWating, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
 
     // wating -> processing[o]
     entry = [self _waitingEntry];
     ret = [entry process];
     STAssertTrue(ret, @"waiting->processing[o]");
-    STAssertEquals(entry.state, FBQueueStateProcessing, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueStateProcessing, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
 
     // waiting -> finished(successful)[x]
     entry = [self _waitingEntry];
     ret = [entry finish];
     STAssertFalse(ret, @"wating -> finished(successful)[x]");
-    STAssertEquals(entry.state, FBQueueStateWating, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueStateWating, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
     
     // wating -> finished(failed)[x]
     entry = [self _waitingEntry];
     ret = [entry fail];
     STAssertFalse(ret, @"wating -> finished(failed)[x]");
-    STAssertEquals(entry.state, FBQueueStateWating, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueStateWating, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
 
     // waiting -> interrupted[x]
     entry = [self _waitingEntry];
     ret = [entry interrupt];
     STAssertFalse(ret, @"waiting->intterrupted[x]");
-    STAssertEquals(entry.state, FBQueueStateWating, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueStateWating, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
     
 }
 
@@ -168,50 +168,50 @@
     entry = [self _processingEntry];
     ret = [entry wait];
     STAssertTrue(ret, @"processing->waiting[o]");
-    STAssertEquals(entry.state, FBQueueStateWating, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueStateWating, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
     
     // processing -> processing[x]
     entry = [self _processingEntry];
     ret = [entry process];
     STAssertFalse(ret, @"processing->processing[x]");
-    STAssertEquals(entry.state, FBQueueStateProcessing, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueStateProcessing, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
     
     // processing -> finished(successful)[o]
     entry = [self _processingEntry];
     ret = [entry finish];
     STAssertTrue(ret, @"processing->finished(successful)[o]");
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
-    STAssertEquals(entry.result, FBQueueResultSuccessful, nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
     
     // processing -> finished(failed)[o]
     entry = [self _processingEntry];
     ret = [entry fail];
     STAssertTrue(ret, @"processing->finished(failed)[o]");
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
-    STAssertEquals(entry.result, FBQueueResultFailed, nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultFailed, nil);
 
     // processing -> interrupted[o]
     entry = [self _processingEntry];
     ret = [entry interrupt];
     STAssertTrue(ret, @"processing->interrupted[o]");
-    STAssertEquals(entry.state, FBQueueStateInterrupting, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);    
+    STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
 }
 
 - (void)testFinishedState
 {
     LKQueueEntryOperator* entry = nil;
     BOOL ret;
-    FBQueueResult result;
+    LKQueueResult result;
     
     // finshed -> waiting[x]
     entry = [self _finishedEntry];
     result = entry.result;
     ret = [entry wait];
     STAssertFalse(ret, @"finished->wating[x]");
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
 
     // finshed -> processing[x]
@@ -219,7 +219,7 @@
     result = entry.result;
     ret = [entry process];
     STAssertFalse(ret, @"finished->processing[x]");
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
     
     // finshed -> finished(successful)[x]
@@ -227,7 +227,7 @@
     result = entry.result;
     ret = [entry finish];
     STAssertFalse(ret, @"finished->finished(successful)[x]");
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
     
     // finshed -> failed(failed)[x]
@@ -235,7 +235,7 @@
     result = entry.result;
     ret = [entry fail];
     STAssertFalse(ret, @"finished->failed(failed)[x]");
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
     
     // finshed -> interrupted[x]
@@ -243,7 +243,7 @@
     result = entry.result;
     ret = [entry interrupt];
     STAssertFalse(ret, @"finished->interrupted[x]");
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, result, nil);    
 }
 
@@ -257,40 +257,40 @@
     entry = [self _interruptedEntry];
     ret = [entry wait];
     STAssertTrue(ret, @"interrupted->wating[o]");
-    STAssertEquals(entry.state, FBQueueStateWating, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);    
+    STAssertEquals(entry.state, LKQueueStateWating, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
     
     // interrupted -> processing[x]
     entry = [self _interruptedEntry];
     ret = [entry process];
     STAssertFalse(ret, @"interrupted->processing[x]");
-    STAssertEquals(entry.state, FBQueueStateInterrupting, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);    
+    STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
     
     // interrupted -> finished(failed)[o]
     entry = [self _interruptedEntry];
     ret = [entry fail];
     STAssertTrue(ret, @"interrupted->failed[o]");
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
-    STAssertEquals(entry.result, FBQueueResultFailed, nil);    
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultFailed, nil);    
     
     // interrupted -> finished(successful)[o]
     entry = [self _interruptedEntry];
     ret = [entry finish];
     STAssertTrue(ret, @"interrupted->finished(sccessful)[o]");
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
-    STAssertEquals(entry.result, FBQueueResultInterrpted, nil);    
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultInterrpted, nil);    
     
     // interrupted -> interrupted[x]
     entry = [self _interruptedEntry];
     ret = [entry interrupt];
     STAssertFalse(ret, @"interrupted->interrupted[x]");
-    STAssertEquals(entry.state, FBQueueStateInterrupting, nil);
-    STAssertEquals(entry.result, FBQueueResultUnfinished, nil);    
+    STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
     
 }
 
 //
-// NOTE: the persistent test runs in FBQueueTest.
+// NOTE: the persistent test runs in LKQueueTest.
 
 @end

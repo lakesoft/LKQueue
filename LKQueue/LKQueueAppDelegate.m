@@ -1,19 +1,13 @@
-//
-//  FBQueueAppDelegate.m
-//  FBQueue
-//
-//  Created by Hiroshi Hashiguchi on 11/04/12.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
+// LKQueueAppDelegate
 
-#import "FBQueueAppDelegate.h"
+#import "LKQueueAppDelegate.h"
 #import "RootViewController.h"
-#import "FBQueue.h"
+#import "LKQueue.h"
 
 #define QUEUE_NAME  @"Queue"
 
 
-@implementation FBQueueAppDelegate
+@implementation LKQueueAppDelegate
 
 
 @synthesize window=_window;
@@ -27,7 +21,7 @@
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
     
-    FBQueue* queue = [FBQueue queueWithName:QUEUE_NAME];
+    LKQueue* queue = [LKQueue queueWithName:QUEUE_NAME];
     RootViewController* rootViewController = (RootViewController*)self.navigationController.topViewController;
     rootViewController.queue = queue;
 
@@ -38,7 +32,7 @@
         dispatch_group_async(d_group, d_queue, ^{
         
             while (1) {
-                FBQueueEntry* entry = [queue getEntryForProcessing];
+                LKQueueEntry* entry = [queue getEntryForProcessing];
 
                 if (entry) {
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -98,7 +92,7 @@
      Save data if appropriate.
      See also applicationDidEnterBackground:.
      */
-    [[FBQueue queueWithName:QUEUE_NAME] clearFinishedEntry];
+    [[LKQueue queueWithName:QUEUE_NAME] clearFinishedEntry];
 }
 
 - (void)dealloc

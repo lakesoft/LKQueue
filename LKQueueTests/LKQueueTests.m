@@ -1,20 +1,20 @@
 //
-//  FBQueueTests.m
-//  FBQueueTests
+//  LKQueueTests.m
+//  LKQueueTests
 //
 //  Created by Hiroshi Hashiguchi on 11/04/12.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 #import <CommonCrypto/CommonDigest.h>
 
-#import "FBQueueTests.h"
-#import "FBQueue.h"
-#import "FBQueueEntry.h"
+#import "LKQueueTests.h"
+#import "LKQueue.h"
+#import "LKQueueEntry.h"
 
 #define QUEUE_NAME      @"Test Queue"
 #define QUEUE_NAME2     @"Test Queue#2"
 
-@implementation FBQueueTests
+@implementation LKQueueTests
 
 @synthesize queue;
 
@@ -124,7 +124,7 @@
         STAssertNotNil(entry, nil);
         STAssertEqualObjects(([entry.resources lastObject]),
                              ([NSString stringWithFormat:@"VALUE-%d", i]), nil);
-        STAssertEquals(entry.state, FBQueueStateProcessing, nil);
+        STAssertEquals(entry.state, LKQueueStateProcessing, nil);
         STAssertEquals([self.queue countOfWating], (NSUInteger)(TEST_ENTRY_MAX-i-1), nil);
     }
     entry = [self.queue getEntryForProcessing];
@@ -138,7 +138,7 @@
     
     int i = 0;
     while ((entry = [self.queue getEntryForProcessing])) {
-        STAssertEquals(entry.state, FBQueueStateProcessing, nil);
+        STAssertEquals(entry.state, LKQueueStateProcessing, nil);
         i++;
     }
     STAssertEquals((int)i, (int)(TEST_ENTRY_MAX-5), nil);
@@ -152,8 +152,8 @@
     LKQueueEntry* entry = [self.queue getEntryForProcessing];
     [self.queue finishEntry:entry];
     
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
-    STAssertEquals(entry.result, FBQueueResultSuccessful, nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
 }
 
 - (void)testFailEntry
@@ -163,8 +163,8 @@
     LKQueueEntry* entry = [self.queue getEntryForProcessing];
     [self.queue failEntry:entry];
     
-    STAssertEquals(entry.state, FBQueueStateFinished, nil);
-    STAssertEquals(entry.result, FBQueueResultFailed, nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultFailed, nil);
 }
 
 - (void)testWaitEntry
@@ -174,12 +174,12 @@
     
     entry = [self.queue getEntryForProcessing];
     [self.queue waitEntry:entry];
-    STAssertEquals(entry.state, FBQueueStateWating, nil);
+    STAssertEquals(entry.state, LKQueueStateWating, nil);
 
     entry = [self.queue getEntryForProcessing];
     [self.queue interruptEntry:entry];
     [self.queue waitEntry:entry];
-    STAssertEquals(entry.state, FBQueueStateWating, nil);
+    STAssertEquals(entry.state, LKQueueStateWating, nil);
 
 }
 
@@ -190,7 +190,7 @@
     LKQueueEntry* entry = [self.queue getEntryForProcessing];
     [self.queue interruptEntry:entry];
     
-    STAssertEquals(entry.state, FBQueueStateInterrupting, nil);
+    STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
 }
 
 
@@ -274,31 +274,31 @@
         switch (i) {
             case 0:
                 // 0: processing -> wating (when resuming)
-                STAssertEquals(entry.state, FBQueueStateWating, nil);
+                STAssertEquals(entry.state, LKQueueStateWating, nil);
                 break;
             case 1:
                 // 1: interrupted
-                STAssertEquals(entry.state, FBQueueStateInterrupting, nil);
-                STAssertEquals(entry.result, FBQueueResultUnfinished, nil);
+                STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
+                STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
                 break;
             case 2:
                 // 2: finished(successful)
-                STAssertEquals(entry.state, FBQueueStateFinished, nil);
-                STAssertEquals(entry.result, FBQueueResultSuccessful, nil);
+                STAssertEquals(entry.state, LKQueueStateFinished, nil);
+                STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
                 break;
             case 3:
                 // 3: finished(failed)
-                STAssertEquals(entry.state, FBQueueStateFinished, nil);
-                STAssertEquals(entry.result, FBQueueResultFailed, nil);
+                STAssertEquals(entry.state, LKQueueStateFinished, nil);
+                STAssertEquals(entry.result, LKQueueResultFailed, nil);
                 break;
             case 4:
                 // 4: finished(interrupted)
-                STAssertEquals(entry.state, FBQueueStateFinished, nil);
-                STAssertEquals(entry.result, FBQueueResultInterrpted, nil);
+                STAssertEquals(entry.state, LKQueueStateFinished, nil);
+                STAssertEquals(entry.result, LKQueueResultInterrpted, nil);
                 break;
             default:
                 // 5-9: waiting 
-                STAssertEquals(entry.state, FBQueueStateWating, nil);
+                STAssertEquals(entry.state, LKQueueStateWating, nil);
                 break;
         }
         

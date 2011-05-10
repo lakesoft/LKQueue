@@ -7,7 +7,7 @@
 
 
 @class LKQueue;
-@interface FBQueueEntryOperatorTests : SenTestCase {
+@interface LKQueueEntryOperatorTests : SenTestCase {
 @private
     
 }
