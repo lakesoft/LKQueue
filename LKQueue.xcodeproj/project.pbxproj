@@ -98,7 +98,7 @@
 		4C1A0A331378DD63009D78F0 = {
 			isa = PBXGroup;
 			children = (
-				4C6F06781378E33B0046B177 /* Classes */,
+				4C6F06781378E33B0046B177 /* LKQueue */,
 				4C1A0A481378DD64009D78F0 /* TestApplication */,
 				4C1A0A621378DD64009D78F0 /* LKQueueTests */,
 				4C1A0A411378DD64009D78F0 /* Frameworks */,
@@ -172,7 +172,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		4C6F06781378E33B0046B177 /* Classes */ = {
+		4C6F06781378E33B0046B177 /* LKQueue */ = {
 			isa = PBXGroup;
 			children = (
 				4C6F067A1378E35E0046B177 /* LKQueue.h */,
@@ -182,7 +182,7 @@
 				4C6F067E1378E35E0046B177 /* LKQueueEntryOperator.h */,
 				4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */,
 			);
-			path = Classes;
+			path = LKQueue;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
