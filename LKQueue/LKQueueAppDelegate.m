@@ -1,22 +1,63 @@
 //
-//  LKQueueAppDelegate.m
-//  LKQueue
+//  FBQueueAppDelegate.m
+//  FBQueue
 //
-//  Created by Hiroshi Hashiguchi on 11/05/10.
+//  Created by Hiroshi Hashiguchi on 11/04/12.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
-#import "LKQueueAppDelegate.h"
+#import "FBQueueAppDelegate.h"
+#import "RootViewController.h"
+#import "FBQueue.h"
 
-@implementation LKQueueAppDelegate
+#define QUEUE_NAME  @"Queue"
+
+
+@implementation FBQueueAppDelegate
 
 
 @synthesize window=_window;
 
+@synthesize navigationController=_navigationController;
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    // Add the navigation controller's view to the window and display.
+    self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
+    
+    FBQueue* queue = [FBQueue queueWithName:QUEUE_NAME];
+    RootViewController* rootViewController = (RootViewController*)self.navigationController.topViewController;
+    rootViewController.queue = queue;
+
+    dispatch_queue_t d_queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_group_t d_group = dispatch_group_create();
+    
+    for (int i=0; i < 3; i++) {
+        dispatch_group_async(d_group, d_queue, ^{
+        
+            while (1) {
+                FBQueueEntry* entry = [queue getEntryForProcessing];
+
+                if (entry) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [rootViewController.tableView reloadData];
+                    });
+                    
+                    [NSThread sleepForTimeInterval:2.0];
+                    [queue finishEntry:entry];
+
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [rootViewController.tableView reloadData];
+                    });
+                }
+                [NSThread sleepForTimeInterval:1.0];
+            }
+        });
+    }
+    
+    
     return YES;
 }
 
@@ -57,11 +98,13 @@
      Save data if appropriate.
      See also applicationDidEnterBackground:.
      */
+    [[FBQueue queueWithName:QUEUE_NAME] clearFinishedEntry];
 }
 
 - (void)dealloc
 {
     [_window release];
+    [_navigationController release];
     [super dealloc];
 }
 
