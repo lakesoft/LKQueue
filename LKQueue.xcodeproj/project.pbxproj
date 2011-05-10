@@ -1,0 +1,440 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4C1A0A431378DD64009D78F0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1A0A421378DD64009D78F0 /* UIKit.framework */; };
+		4C1A0A451378DD64009D78F0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1A0A441378DD64009D78F0 /* Foundation.framework */; };
+		4C1A0A471378DD64009D78F0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1A0A461378DD64009D78F0 /* CoreGraphics.framework */; };
+		4C1A0A4D1378DD64009D78F0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A4B1378DD64009D78F0 /* InfoPlist.strings */; };
+		4C1A0A501378DD64009D78F0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A4F1378DD64009D78F0 /* main.m */; };
+		4C1A0A531378DD64009D78F0 /* LKQueueAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A521378DD64009D78F0 /* LKQueueAppDelegate.m */; };
+		4C1A0A561378DD64009D78F0 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A541378DD64009D78F0 /* MainWindow.xib */; };
+		4C1A0A5D1378DD64009D78F0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1A0A421378DD64009D78F0 /* UIKit.framework */; };
+		4C1A0A5E1378DD64009D78F0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1A0A441378DD64009D78F0 /* Foundation.framework */; };
+		4C1A0A5F1378DD64009D78F0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C1A0A461378DD64009D78F0 /* CoreGraphics.framework */; };
+		4C1A0A671378DD64009D78F0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A651378DD64009D78F0 /* InfoPlist.strings */; };
+		4C1A0A6A1378DD64009D78F0 /* LKQueueTests.h in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A691378DD64009D78F0 /* LKQueueTests.h */; };
+		4C1A0A6C1378DD64009D78F0 /* LKQueueTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A6B1378DD64009D78F0 /* LKQueueTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4C1A0A601378DD64009D78F0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C1A0A351378DD63009D78F0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C1A0A3D1378DD64009D78F0;
+			remoteInfo = LKQueue;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		4C1A0A3E1378DD64009D78F0 /* LKQueue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LKQueue.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C1A0A421378DD64009D78F0 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		4C1A0A441378DD64009D78F0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		4C1A0A461378DD64009D78F0 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		4C1A0A4A1378DD64009D78F0 /* LKQueue-Info.plist */ = {isa = PBXFileReference; path = "LKQueue-Info.plist"; sourceTree = "<group>"; };
+		4C1A0A4C1378DD64009D78F0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4C1A0A4E1378DD64009D78F0 /* LKQueue-Prefix.pch */ = {isa = PBXFileReference; path = "LKQueue-Prefix.pch"; sourceTree = "<group>"; };
+		4C1A0A4F1378DD64009D78F0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		4C1A0A511378DD64009D78F0 /* LKQueueAppDelegate.h */ = {isa = PBXFileReference; path = LKQueueAppDelegate.h; sourceTree = "<group>"; };
+		4C1A0A521378DD64009D78F0 /* LKQueueAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LKQueueAppDelegate.m; sourceTree = "<group>"; };
+		4C1A0A551378DD64009D78F0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainWindow.xib; sourceTree = "<group>"; };
+		4C1A0A5C1378DD64009D78F0 /* LKQueueTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LKQueueTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C1A0A641378DD64009D78F0 /* LKQueueTests-Info.plist */ = {isa = PBXFileReference; path = "LKQueueTests-Info.plist"; sourceTree = "<group>"; };
+		4C1A0A661378DD64009D78F0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4C1A0A681378DD64009D78F0 /* LKQueueTests-Prefix.pch */ = {isa = PBXFileReference; path = "LKQueueTests-Prefix.pch"; sourceTree = "<group>"; };
+		4C1A0A691378DD64009D78F0 /* LKQueueTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LKQueueTests.h; sourceTree = "<group>"; };
+		4C1A0A6B1378DD64009D78F0 /* LKQueueTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LKQueueTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4C1A0A3B1378DD64009D78F0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C1A0A431378DD64009D78F0 /* UIKit.framework in Frameworks */,
+				4C1A0A451378DD64009D78F0 /* Foundation.framework in Frameworks */,
+				4C1A0A471378DD64009D78F0 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C1A0A581378DD64009D78F0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C1A0A5D1378DD64009D78F0 /* UIKit.framework in Frameworks */,
+				4C1A0A5E1378DD64009D78F0 /* Foundation.framework in Frameworks */,
+				4C1A0A5F1378DD64009D78F0 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4C1A0A331378DD63009D78F0 = {
+			isa = PBXGroup;
+			children = (
+				4C1A0A481378DD64009D78F0 /* LKQueue */,
+				4C1A0A621378DD64009D78F0 /* LKQueueTests */,
+				4C1A0A411378DD64009D78F0 /* Frameworks */,
+				4C1A0A3F1378DD64009D78F0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4C1A0A3F1378DD64009D78F0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4C1A0A3E1378DD64009D78F0 /* LKQueue.app */,
+				4C1A0A5C1378DD64009D78F0 /* LKQueueTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4C1A0A411378DD64009D78F0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4C1A0A421378DD64009D78F0 /* UIKit.framework */,
+				4C1A0A441378DD64009D78F0 /* Foundation.framework */,
+				4C1A0A461378DD64009D78F0 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4C1A0A481378DD64009D78F0 /* LKQueue */ = {
+			isa = PBXGroup;
+			children = (
+				4C1A0A511378DD64009D78F0 /* LKQueueAppDelegate.h */,
+				4C1A0A521378DD64009D78F0 /* LKQueueAppDelegate.m */,
+				4C1A0A541378DD64009D78F0 /* MainWindow.xib */,
+				4C1A0A491378DD64009D78F0 /* Supporting Files */,
+			);
+			path = LKQueue;
+			sourceTree = "<group>";
+		};
+		4C1A0A491378DD64009D78F0 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				4C1A0A4A1378DD64009D78F0 /* LKQueue-Info.plist */,
+				4C1A0A4B1378DD64009D78F0 /* InfoPlist.strings */,
+				4C1A0A4E1378DD64009D78F0 /* LKQueue-Prefix.pch */,
+				4C1A0A4F1378DD64009D78F0 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4C1A0A621378DD64009D78F0 /* LKQueueTests */ = {
+			isa = PBXGroup;
+			children = (
+				4C1A0A691378DD64009D78F0 /* LKQueueTests.h */,
+				4C1A0A6B1378DD64009D78F0 /* LKQueueTests.m */,
+				4C1A0A631378DD64009D78F0 /* Supporting Files */,
+			);
+			path = LKQueueTests;
+			sourceTree = "<group>";
+		};
+		4C1A0A631378DD64009D78F0 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				4C1A0A641378DD64009D78F0 /* LKQueueTests-Info.plist */,
+				4C1A0A651378DD64009D78F0 /* InfoPlist.strings */,
+				4C1A0A681378DD64009D78F0 /* LKQueueTests-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4C1A0A3D1378DD64009D78F0 /* LKQueue */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4C1A0A6F1378DD64009D78F0 /* Build configuration list for PBXNativeTarget "LKQueue" */;
+			buildPhases = (
+				4C1A0A3A1378DD64009D78F0 /* Sources */,
+				4C1A0A3B1378DD64009D78F0 /* Frameworks */,
+				4C1A0A3C1378DD64009D78F0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LKQueue;
+			productName = LKQueue;
+			productReference = 4C1A0A3E1378DD64009D78F0 /* LKQueue.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4C1A0A5B1378DD64009D78F0 /* LKQueueTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4C1A0A721378DD64009D78F0 /* Build configuration list for PBXNativeTarget "LKQueueTests" */;
+			buildPhases = (
+				4C1A0A571378DD64009D78F0 /* Sources */,
+				4C1A0A581378DD64009D78F0 /* Frameworks */,
+				4C1A0A591378DD64009D78F0 /* Resources */,
+				4C1A0A5A1378DD64009D78F0 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4C1A0A611378DD64009D78F0 /* PBXTargetDependency */,
+			);
+			name = LKQueueTests;
+			productName = LKQueueTests;
+			productReference = 4C1A0A5C1378DD64009D78F0 /* LKQueueTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4C1A0A351378DD63009D78F0 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 4C1A0A381378DD63009D78F0 /* Build configuration list for PBXProject "LKQueue" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 4C1A0A331378DD63009D78F0;
+			productRefGroup = 4C1A0A3F1378DD64009D78F0 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4C1A0A3D1378DD64009D78F0 /* LKQueue */,
+				4C1A0A5B1378DD64009D78F0 /* LKQueueTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4C1A0A3C1378DD64009D78F0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C1A0A4D1378DD64009D78F0 /* InfoPlist.strings in Resources */,
+				4C1A0A561378DD64009D78F0 /* MainWindow.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C1A0A591378DD64009D78F0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C1A0A671378DD64009D78F0 /* InfoPlist.strings in Resources */,
+				4C1A0A6A1378DD64009D78F0 /* LKQueueTests.h in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4C1A0A5A1378DD64009D78F0 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4C1A0A3A1378DD64009D78F0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C1A0A501378DD64009D78F0 /* main.m in Sources */,
+				4C1A0A531378DD64009D78F0 /* LKQueueAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C1A0A571378DD64009D78F0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C1A0A6C1378DD64009D78F0 /* LKQueueTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4C1A0A611378DD64009D78F0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4C1A0A3D1378DD64009D78F0 /* LKQueue */;
+			targetProxy = 4C1A0A601378DD64009D78F0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		4C1A0A4B1378DD64009D78F0 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4C1A0A4C1378DD64009D78F0 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		4C1A0A541378DD64009D78F0 /* MainWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4C1A0A551378DD64009D78F0 /* en */,
+			);
+			name = MainWindow.xib;
+			sourceTree = "<group>";
+		};
+		4C1A0A651378DD64009D78F0 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4C1A0A661378DD64009D78F0 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		4C1A0A6D1378DD64009D78F0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		4C1A0A6E1378DD64009D78F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		4C1A0A701378DD64009D78F0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LKQueue/LKQueue-Prefix.pch";
+				INFOPLIST_FILE = "LKQueue/LKQueue-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		4C1A0A711378DD64009D78F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LKQueue/LKQueue-Prefix.pch";
+				INFOPLIST_FILE = "LKQueue/LKQueue-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		4C1A0A731378DD64009D78F0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/LKQueue.app/LKQueue";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LKQueueTests/LKQueueTests-Prefix.pch";
+				INFOPLIST_FILE = "LKQueueTests/LKQueueTests-Info.plist";
+				OTHER_LDFLAGS = (
+					"-framework",
+					SenTestingKit,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		4C1A0A741378DD64009D78F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/LKQueue.app/LKQueue";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "LKQueueTests/LKQueueTests-Prefix.pch";
+				INFOPLIST_FILE = "LKQueueTests/LKQueueTests-Info.plist";
+				OTHER_LDFLAGS = (
+					"-framework",
+					SenTestingKit,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4C1A0A381378DD63009D78F0 /* Build configuration list for PBXProject "LKQueue" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C1A0A6D1378DD64009D78F0 /* Debug */,
+				4C1A0A6E1378DD64009D78F0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4C1A0A6F1378DD64009D78F0 /* Build configuration list for PBXNativeTarget "LKQueue" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C1A0A701378DD64009D78F0 /* Debug */,
+				4C1A0A711378DD64009D78F0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		4C1A0A721378DD64009D78F0 /* Build configuration list for PBXNativeTarget "LKQueueTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C1A0A731378DD64009D78F0 /* Debug */,
+				4C1A0A741378DD64009D78F0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4C1A0A351378DD63009D78F0 /* Project object */;
+}
