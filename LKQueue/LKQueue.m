@@ -24,8 +24,8 @@
 #import "LKQueue.h"
 #import "LKQueueEntryOperator.h"
 
-#define FB_QUEUE_PATH       @"__FBQueue__"
-#define FB_QUEUE_FILENAME   @"queue.dat"
+#define LK_QUEUE_PATH       @"__FBQueue__"
+#define LK_QUEUE_FILENAME   @"queue.dat"
 
 @interface LKQueue()
 @property (nonatomic, retain) NSString* queueId;
@@ -85,7 +85,7 @@ static NSMutableDictionary* queues_;
 
 - (NSString*)_filePath
 {
-    return [self.path stringByAppendingPathComponent:FB_QUEUE_FILENAME];
+    return [self.path stringByAppendingPathComponent:LK_QUEUE_FILENAME];
 }
 
 // not thread safe
@@ -194,6 +194,9 @@ static NSMutableDictionary* queues_;
 #pragma mark API
 //------------------------------------------------------------------------------
 
+#pragma mark -
+#pragma mark API ()
+
 - (LKQueueEntry*)addEntryWithInfo:(NSDictionary*)info resources:(NSArray*)resources
 {
     LKQueueEntryOperator* entry =
@@ -220,6 +223,9 @@ static NSMutableDictionary* queues_;
     }
     return nil;
 }
+
+#pragma mark -
+#pragma mark API (Entry operations)
 
 - (BOOL)waitEntry:(LKQueueEntry*)entry
 {
@@ -273,6 +279,22 @@ static NSMutableDictionary* queues_;
     return NO;
 }
 
+- (BOOL)removeEntry:(LKQueueEntry*)entry
+{
+    @synchronized (self.list) {
+        if ([self.list containsObject:entry]) {
+            if (entry.canRemove) {
+                [self.list removeObject:entry];
+                [self _saveList];
+                return YES;
+            } else {
+                return NO;
+            }
+        }
+    }
+    return NO;    
+}
+
 
 - (void)clearFinishedEntry
 {
@@ -302,6 +324,9 @@ static NSMutableDictionary* queues_;
 }
 
 
+#pragma mark -
+#pragma mark API (Accessing entry list)
+
 - (NSUInteger)count
 {
     return [self.list count];
@@ -323,11 +348,46 @@ static NSMutableDictionary* queues_;
     return self.list;
 }
 
+- (LKQueueEntry*)entryAtIndex:(NSInteger)index
+{
+    if (index < 0 || [self.list count] <= index) {
+        return nil;
+    }
+    
+    @synchronized (self.list) {
+        return [self.list objectAtIndex:index];
+    }
+}
+
+#pragma mark -
+#pragma mark API (Cooperate with other queues)
+
+- (BOOL)addEntry:(LKQueueEntry*)entry
+{
+    if (entry == nil || [self.list containsObject:entry]) {
+        return NO;
+    }
+
+    LKQueueEntryOperator* newEntry =
+        [LKQueueEntryOperator queueEntryWithQueueId:self.queueId
+                                           info:entry.info
+                                      resources:entry.resources];
+
+    @synchronized (self.list) {
+        [self.list addObject:newEntry];
+        [self _saveList];
+    }
+    return YES;
+}
+
+#pragma mark -
+#pragma mark API (etc)
 
 + (NSString*)pathForQueueId:(NSString*)queueId
 {
-    NSString* basePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:FB_QUEUE_PATH];
+    NSString* basePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:LK_QUEUE_PATH];
     return [basePath stringByAppendingPathComponent:queueId];
 }
+
 
 @end

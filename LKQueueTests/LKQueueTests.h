@@ -15,5 +15,6 @@
 }
 
 @property (nonatomic, retain) LKQueue* queue;
+@property (nonatomic, retain) LKQueue* queue2;
 
 @end

@@ -54,25 +54,37 @@
 @property (nonatomic, copy  , readonly) NSString* name;
 @property (nonatomic, retain, readonly) NSString* path;
 
-// API
+
+// API (Factories)
 + (LKQueue*)queueWithName:(NSString*)name;
 + (void)releaseQueueWithName:(NSString*)name;
 
+
+// API (Entry factories)
 - (LKQueueEntry*)addEntryWithInfo:(NSDictionary*)info resources:(NSArray*)resources;
 - (LKQueueEntry*)getEntryForProcessing;
 
+
+// API (Entry operations)
 - (BOOL)finishEntry:(LKQueueEntry*)entry;
 - (BOOL)failEntry:(LKQueueEntry*)entry;
 - (BOOL)waitEntry:(LKQueueEntry*)entry;
 - (BOOL)interruptEntry:(LKQueueEntry*)entry;
+- (BOOL)removeEntry:(LKQueueEntry*)entry;       // can't remove a entry while processing
 
 - (void)clearFinishedEntry; 
 - (void)removeAllEntries;
 
+// API (Accessing entry list)
 - (NSUInteger)count;
 - (NSUInteger)countOfWating;
 - (NSArray*)queueList;
+- (LKQueueEntry*)entryAtIndex:(NSInteger)index;
 
+// API (Cooperate with other queues)
+- (BOOL)addEntry:(LKQueueEntry*)entry;
+
+// API (etc)
 + (NSString*)pathForQueueId:(NSString*)queueId;
 
 @end

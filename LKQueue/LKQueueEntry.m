@@ -28,7 +28,9 @@
 @synthesize resources = resources_;
 @synthesize state = state_;
 @synthesize result = result_;
-@synthesize timestamp = timestamp_;
-@synthesize context = context_;
+@synthesize created = created_;
+@synthesize finished = finished_;
+
+@synthesize canRemove;
 
 @end

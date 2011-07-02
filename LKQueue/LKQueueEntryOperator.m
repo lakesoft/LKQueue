@@ -24,13 +24,14 @@
 #import "LKQueue.h"
 
 // for archive
-#define FB_QUEUE_ENTRY_KEY_QUEUE_ID     @"qid"
-#define FB_QUEUE_ENTRY_KEY_ENTRY_ID     @"eid"
-#define FB_QUEUE_ENTRY_KEY_STATE        @"sta"
-#define FB_QUEUE_ENTRY_KEY_RESULT       @"rlt"
+#define LK_QUEUE_ENTRY_KEY_QUEUE_ID     @"qid"
+#define LK_QUEUE_ENTRY_KEY_ENTRY_ID     @"eid"
+#define LK_QUEUE_ENTRY_KEY_STATE        @"sta"
+#define LK_QUEUE_ENTRY_KEY_RESULT       @"rlt"
 
 // for meta
-#define FB_QUEUE_ENTRY_META_TIMESTAMP   @"__timestamp__"
+#define LK_QUEUE_ENTRY_META_CREATED   @"__created__"
+#define LK_QUEUE_ENTRY_META_FINISHED  @"__finished__"
 
 
 @interface LKQueueEntryOperator()
@@ -90,15 +91,11 @@
         state_ = LKQueueStateWating;      
         result_ = LKQueueResultUnfinished;
 
-        /* not retain for releasing
-        info_ = [info retain];
-        resources_ = [resources retain];
-        */
-        
-        timestamp_ = [[NSDate date] retain];
+        created_ = [[NSDate alloc] init];
         NSMutableDictionary* infoToWrite =
             [NSMutableDictionary dictionaryWithDictionary:info];
-        [infoToWrite setObject:timestamp_ forKey:FB_QUEUE_ENTRY_META_TIMESTAMP];
+        [infoToWrite setObject:created_ forKey:LK_QUEUE_ENTRY_META_CREATED];
+        [infoToWrite removeObjectForKey:LK_QUEUE_ENTRY_META_FINISHED];
 
         // write as XML
         if (![infoToWrite writeToFile:[self _infoFilePath] atomically:YES]) {
@@ -106,6 +103,7 @@
                   __PRETTY_FUNCTION__, [self _infoFilePath]);
             return nil;
         }
+        info_ = nil;
 
         // write as binary
         if (resources && ![NSKeyedArchiver archiveRootObject:resources toFile:[self _resourcesFilePath]]) {
@@ -113,6 +111,7 @@
                   __PRETTY_FUNCTION__, [self _resourcesFilePath]);
             return nil;
         }
+        resources_ = nil;
     }
     return self;
 }
@@ -122,7 +121,8 @@
     self.entryId = nil;
     [info_ release];
     [resources_ release];
-    [timestamp_ release];
+    [created_ release];
+    [finished_ release];
     [super dealloc];
 }
 
@@ -134,6 +134,20 @@
 + (LKQueueEntryOperator*)queueEntryWithQueueId:(NSString*)queueId info:(NSDictionary*)info resources:(NSArray*)resources
 {
     return [[[self alloc] initWithQueueId:queueId info:info resources:resources] autorelease];
+}
+
+- (void)_updateFinished
+{
+    finished_ = [[NSDate alloc] init];
+    NSMutableDictionary* infoToWrite =
+        [NSMutableDictionary dictionaryWithContentsOfFile:[self _infoFilePath]];
+    [infoToWrite setObject:finished_ forKey:LK_QUEUE_ENTRY_META_FINISHED];
+    
+    // write as XML
+    if (![infoToWrite writeToFile:[self _infoFilePath] atomically:YES]) {
+        NSLog(@"%s|[ERROR] Faild to write a meta to file: %@",
+              __PRETTY_FUNCTION__, [self _infoFilePath]);
+    }
 }
 
 - (BOOL)finish
@@ -155,6 +169,9 @@
         default:
             break;
     }
+    if (ret) {
+        [self _updateFinished];
+    }
     return ret;
 }
 
@@ -164,6 +181,8 @@
         state_ == LKQueueStateInterrupting) {
         state_ = LKQueueStateFinished;
         result_ = LKQueueResultFailed;
+
+        [self _updateFinished];
         return YES;
     }
     return NO;    
@@ -233,19 +252,19 @@
 
 - (void)encodeWithCoder:(NSCoder*)coder
 {
-	[coder encodeObject:self.queueId    forKey:FB_QUEUE_ENTRY_KEY_QUEUE_ID];
-	[coder encodeInt:self.state         forKey:FB_QUEUE_ENTRY_KEY_STATE];
-	[coder encodeInt:self.result        forKey:FB_QUEUE_ENTRY_KEY_RESULT];
-	[coder encodeObject:self.entryId    forKey:FB_QUEUE_ENTRY_KEY_ENTRY_ID];
+	[coder encodeObject:self.queueId    forKey:LK_QUEUE_ENTRY_KEY_QUEUE_ID];
+	[coder encodeInt:self.state         forKey:LK_QUEUE_ENTRY_KEY_STATE];
+	[coder encodeInt:self.result        forKey:LK_QUEUE_ENTRY_KEY_RESULT];
+	[coder encodeObject:self.entryId    forKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
 }
 
 - (id)initWithCoder:(NSCoder*)coder {
     self = [super init];
     if (self) {
-        self.queueId    = [coder decodeObjectForKey:FB_QUEUE_ENTRY_KEY_QUEUE_ID];
-        state_          = [coder decodeIntForKey:FB_QUEUE_ENTRY_KEY_STATE];
-        result_         = [coder decodeIntForKey:FB_QUEUE_ENTRY_KEY_RESULT];
-        self.entryId    = [coder decodeObjectForKey:FB_QUEUE_ENTRY_KEY_ENTRY_ID];
+        self.queueId    = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_QUEUE_ID];
+        state_          = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_STATE];
+        result_         = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_RESULT];
+        self.entryId    = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
     }
     return self;
 }
@@ -275,12 +294,25 @@
     return info_;
 }
 
-- (NSDate*)timestamp
+- (NSDate*)created
 {
-    if (timestamp_ == nil) {
-        timestamp_ = [[self.info objectForKey:FB_QUEUE_ENTRY_META_TIMESTAMP] retain];
+    if (created_ == nil) {
+        created_ = [[self.info objectForKey:LK_QUEUE_ENTRY_META_CREATED] retain];
     }
-    return timestamp_;
+    return created_;
+}
+
+- (NSDate*)finished
+{
+    if (finished_ == nil) {
+        finished_ = [[self.info objectForKey:LK_QUEUE_ENTRY_META_FINISHED] retain];
+    }
+    return finished_;
+}
+
+- (BOOL)canRemove
+{
+    return (self.state != LKQueueStateProcessing);
 }
 
 @end

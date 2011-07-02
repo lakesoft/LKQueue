@@ -46,19 +46,21 @@ typedef enum {
     LKQueueState state_;
     LKQueueResult result_;
 
-    NSDate* timestamp_;
+    NSDate* created_;
+    NSDate* finished_;
 
     id context_;
 }
 
 // persistent properties
-@property (nonatomic, retain, readonly) NSDictionary* info;
-@property (nonatomic, retain, readonly) NSArray* resources;
+@property (nonatomic, copy, readonly) NSDictionary* info;
+@property (nonatomic, copy, readonly) NSArray* resources;
 @property (nonatomic, assign, readonly) LKQueueState state;
 @property (nonatomic, assign, readonly) LKQueueResult result;
-@property (nonatomic, retain, readonly) NSDate* timestamp;
+@property (nonatomic, retain, readonly) NSDate* created;
+@property (nonatomic, retain, readonly) NSDate* finished;
 
-// volatile properties
-@property (retain) id context;
+// status
+@property (nonatomic, assign, readonly) BOOL canRemove;
 
 @end

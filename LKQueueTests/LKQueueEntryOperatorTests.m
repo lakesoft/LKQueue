@@ -86,16 +86,15 @@
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
     STAssertEqualObjects([entry.info objectForKey:@"TITLE"], @"TEST", nil);
     STAssertEqualObjects([entry.resources lastObject], @"VALUE", nil);
-    STAssertNotNil(entry.timestamp, nil);
-    STAssertTrue([entry.timestamp compare:date]==NSOrderedDescending, nil);
+    STAssertNotNil(entry.created, nil);
+    STAssertTrue([entry.created compare:date]==NSOrderedDescending, nil);
+    STAssertNil(entry.finished, nil);
     
     NSFileManager* fileMananger = [NSFileManager defaultManager];
     NSString* resPath = [entry performSelector:@selector(_resourcesFilePath)];
     BOOL exisited = [fileMananger fileExistsAtPath:resPath];
     STAssertTrue(exisited, @"%@ does not exists.", resPath);
 
-    entry.context = @"CONTEXT";
-    STAssertEqualObjects(entry.context, @"CONTEXT", nil);
 }
 
 - (void)testClean
@@ -128,6 +127,7 @@
     STAssertFalse(ret, @"waiting->waiting[x]");
     STAssertEquals(entry.state, LKQueueStateWating, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertNil(entry.finished, nil);
 
     // wating -> processing[o]
     entry = [self _waitingEntry];
@@ -135,6 +135,7 @@
     STAssertTrue(ret, @"waiting->processing[o]");
     STAssertEquals(entry.state, LKQueueStateProcessing, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertNil(entry.finished, nil);
 
     // waiting -> finished(successful)[x]
     entry = [self _waitingEntry];
@@ -142,6 +143,7 @@
     STAssertFalse(ret, @"wating -> finished(successful)[x]");
     STAssertEquals(entry.state, LKQueueStateWating, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertNil(entry.finished, nil);
     
     // wating -> finished(failed)[x]
     entry = [self _waitingEntry];
@@ -149,6 +151,7 @@
     STAssertFalse(ret, @"wating -> finished(failed)[x]");
     STAssertEquals(entry.state, LKQueueStateWating, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertNil(entry.finished, nil);
 
     // waiting -> interrupted[x]
     entry = [self _waitingEntry];
@@ -156,6 +159,7 @@
     STAssertFalse(ret, @"waiting->intterrupted[x]");
     STAssertEquals(entry.state, LKQueueStateWating, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertNil(entry.finished, nil);
     
 }
 
@@ -170,6 +174,7 @@
     STAssertTrue(ret, @"processing->waiting[o]");
     STAssertEquals(entry.state, LKQueueStateWating, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertNil(entry.finished, nil);
     
     // processing -> processing[x]
     entry = [self _processingEntry];
@@ -177,6 +182,7 @@
     STAssertFalse(ret, @"processing->processing[x]");
     STAssertEquals(entry.state, LKQueueStateProcessing, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertNil(entry.finished, nil);
     
     // processing -> finished(successful)[o]
     entry = [self _processingEntry];
@@ -184,6 +190,7 @@
     STAssertTrue(ret, @"processing->finished(successful)[o]");
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
+    STAssertNotNil(entry.finished, nil);
     
     // processing -> finished(failed)[o]
     entry = [self _processingEntry];
@@ -191,6 +198,7 @@
     STAssertTrue(ret, @"processing->finished(failed)[o]");
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, LKQueueResultFailed, nil);
+    STAssertNotNil(entry.finished, nil);
 
     // processing -> interrupted[o]
     entry = [self _processingEntry];
@@ -198,6 +206,7 @@
     STAssertTrue(ret, @"processing->interrupted[o]");
     STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
+    STAssertNil(entry.finished, nil);
 }
 
 - (void)testFinishedState
@@ -213,6 +222,7 @@
     STAssertFalse(ret, @"finished->wating[x]");
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
+    STAssertNotNil(entry.finished, nil);
 
     // finshed -> processing[x]
     entry = [self _finishedEntry];
@@ -221,6 +231,7 @@
     STAssertFalse(ret, @"finished->processing[x]");
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
+    STAssertNotNil(entry.finished, nil);
     
     // finshed -> finished(successful)[x]
     entry = [self _finishedEntry];
@@ -229,6 +240,7 @@
     STAssertFalse(ret, @"finished->finished(successful)[x]");
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
+    STAssertNotNil(entry.finished, nil);
     
     // finshed -> failed(failed)[x]
     entry = [self _finishedEntry];
@@ -237,6 +249,7 @@
     STAssertFalse(ret, @"finished->failed(failed)[x]");
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
+    STAssertNotNil(entry.finished, nil);
     
     // finshed -> interrupted[x]
     entry = [self _finishedEntry];
@@ -245,6 +258,7 @@
     STAssertFalse(ret, @"finished->interrupted[x]");
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, result, nil);    
+    STAssertNotNil(entry.finished, nil);
 }
 
 
@@ -259,6 +273,7 @@
     STAssertTrue(ret, @"interrupted->wating[o]");
     STAssertEquals(entry.state, LKQueueStateWating, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
+    STAssertNil(entry.finished, nil);
     
     // interrupted -> processing[x]
     entry = [self _interruptedEntry];
@@ -266,6 +281,7 @@
     STAssertFalse(ret, @"interrupted->processing[x]");
     STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
+    STAssertNil(entry.finished, nil);
     
     // interrupted -> finished(failed)[o]
     entry = [self _interruptedEntry];
@@ -273,6 +289,7 @@
     STAssertTrue(ret, @"interrupted->failed[o]");
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, LKQueueResultFailed, nil);    
+    STAssertNotNil(entry.finished, nil);
     
     // interrupted -> finished(successful)[o]
     entry = [self _interruptedEntry];
@@ -280,6 +297,7 @@
     STAssertTrue(ret, @"interrupted->finished(sccessful)[o]");
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, LKQueueResultInterrpted, nil);    
+    STAssertNotNil(entry.finished, nil);
     
     // interrupted -> interrupted[x]
     entry = [self _interruptedEntry];
@@ -287,10 +305,38 @@
     STAssertFalse(ret, @"interrupted->interrupted[x]");
     STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
     STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
+    STAssertNil(entry.finished, nil);
     
 }
 
 //
 // NOTE: the persistent test runs in LKQueueTest.
+
+
+- (void)testCanRemove
+{
+    LKQueueEntryOperator* entry = nil;
+    BOOL canRemove;
+
+    entry = [self _waitingEntry];
+    canRemove = entry.canRemove;
+    STAssertTrue(canRemove, nil);
+
+    entry = [self _processingEntry];
+    canRemove = entry.canRemove;
+    STAssertFalse(canRemove, nil);
+
+    entry = [self _finishedEntry];
+    canRemove = entry.canRemove;
+    STAssertTrue(canRemove, nil);
+    
+    entry = [self _failedEntry];
+    canRemove = entry.canRemove;
+    STAssertTrue(canRemove, nil);
+    
+    entry = [self _interruptedEntry];
+    canRemove = entry.canRemove;
+    STAssertTrue(canRemove, nil);
+}
 
 @end

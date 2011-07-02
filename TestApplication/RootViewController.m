@@ -76,9 +76,8 @@
     }
 
     // Configure the cell.
-    //    LKQueueEntry* entry = [[self.queue queueList] objectAtIndex:indexPath.row];
-    LKQueueEntry* entry = [[self.queue queueList] 
-                           objectAtIndex:[self.queue count] - indexPath.row -1];
+    LKQueueEntry* entry = [self.queue
+                           entryAtIndex:[self.queue count] - indexPath.row -1];
     
     cell.textLabel.text = [entry.info objectForKey:@"title"];
 

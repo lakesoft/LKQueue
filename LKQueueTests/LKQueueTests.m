@@ -17,12 +17,14 @@
 @implementation LKQueueTests
 
 @synthesize queue;
+@synthesize queue2;
 
 - (void)setUp
 {
     [super setUp];
 
     self.queue = [LKQueue queueWithName:QUEUE_NAME];
+    self.queue2 = [LKQueue queueWithName:QUEUE_NAME2];
     
     // Set-up code here.
 }
@@ -32,8 +34,10 @@
     // Tear-down code here.
 
     [self.queue removeAllEntries];
+    [self.queue2 removeAllEntries];
 
     self.queue = nil;
+    self.queue2 = nil;
 
     [super tearDown];
 }
@@ -150,10 +154,39 @@
     [self _setupTestEntries];
     
     LKQueueEntry* entry = [self.queue getEntryForProcessing];
-    [self.queue finishEntry:entry];
-    
+    STAssertTrue([self.queue finishEntry:entry], nil);    
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
+
+    STAssertFalse([self.queue finishEntry:entry], nil);    
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
+
+    STAssertFalse([self.queue failEntry:entry], nil);    
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
+
+    STAssertFalse([self.queue interruptEntry:entry], nil);    
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
+
+    entry = [self.queue getEntryForProcessing];
+    [self.queue interruptEntry:entry];
+    STAssertTrue([self.queue finishEntry:entry], nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultInterrpted, nil);
+    
+    entry = [self.queue getEntryForProcessing];
+    [self.queue interruptEntry:entry];
+    STAssertTrue([self.queue failEntry:entry], nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultFailed, nil);
+    
+    // at other queue
+    entry = [self.queue getEntryForProcessing];
+    STAssertFalse([self.queue2 finishEntry:entry], nil);
+    STAssertEquals(entry.state, LKQueueStateProcessing, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
 }
 
 - (void)testFailEntry
@@ -161,10 +194,27 @@
     [self _setupTestEntries];
     
     LKQueueEntry* entry = [self.queue getEntryForProcessing];
-    [self.queue failEntry:entry];
-    
+    STAssertTrue([self.queue failEntry:entry], nil);    
     STAssertEquals(entry.state, LKQueueStateFinished, nil);
     STAssertEquals(entry.result, LKQueueResultFailed, nil);
+
+    STAssertFalse([self.queue failEntry:entry], nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultFailed, nil);
+
+    STAssertFalse([self.queue finishEntry:entry], nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultFailed, nil);
+
+    STAssertFalse([self.queue interruptEntry:entry], nil);
+    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueResultFailed, nil);
+
+    // at other queue
+    entry = [self.queue getEntryForProcessing];
+    STAssertFalse([self.queue2 failEntry:entry], nil);
+    STAssertEquals(entry.state, LKQueueStateProcessing, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
 }
 
 - (void)testWaitEntry
@@ -173,14 +223,19 @@
     LKQueueEntry* entry;
     
     entry = [self.queue getEntryForProcessing];
-    [self.queue waitEntry:entry];
+    STAssertTrue([self.queue waitEntry:entry], nil);
     STAssertEquals(entry.state, LKQueueStateWating, nil);
 
     entry = [self.queue getEntryForProcessing];
     [self.queue interruptEntry:entry];
-    [self.queue waitEntry:entry];
+    STAssertTrue([self.queue waitEntry:entry], nil);
     STAssertEquals(entry.state, LKQueueStateWating, nil);
 
+    // at other queue
+    entry = [self.queue getEntryForProcessing];
+    STAssertFalse([self.queue2 waitEntry:entry], nil);
+    STAssertEquals(entry.state, LKQueueStateProcessing, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
 }
 
 - (void)testInterruptEntry
@@ -188,12 +243,53 @@
     [self _setupTestEntries];
 
     LKQueueEntry* entry = [self.queue getEntryForProcessing];
-    [self.queue interruptEntry:entry];
-    
+    STAssertTrue([self.queue interruptEntry:entry], nil);    
     STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+
+    // at other queue
+    entry = [self.queue getEntryForProcessing];
+    STAssertFalse([self.queue2 interruptEntry:entry], nil);
+    STAssertEquals(entry.state, LKQueueStateProcessing, nil);
+    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+
 }
 
+- (void)testRemoveEntry
+{
+    [self _setupTestEntries];    
+    [self _setupMultiState];
 
+    LKQueueEntry* entry;
+    NSUInteger count = TEST_ENTRY_MAX;
+
+    entry = [self.queue entryAtIndex:0];
+    STAssertFalse([self.queue removeEntry:entry], nil);
+    STAssertEquals([self.queue count], count, nil);
+
+    count--;
+    entry = [self.queue entryAtIndex:1];
+    STAssertTrue([self.queue removeEntry:entry], nil);
+    STAssertEquals([self.queue count], count, nil);
+
+    count--;
+    entry = [self.queue entryAtIndex:1];
+    STAssertTrue([self.queue removeEntry:entry], nil);
+    STAssertEquals([self.queue count], count, nil);
+
+    count--;
+    entry = [self.queue entryAtIndex:1];
+    STAssertTrue([self.queue removeEntry:entry], nil);
+    STAssertEquals([self.queue count], count, nil);
+
+    count--;
+    entry = [self.queue entryAtIndex:1];
+    STAssertTrue([self.queue removeEntry:entry], nil);
+    STAssertEquals([self.queue count], count, nil);
+
+    
+    STAssertFalse([self.queue removeEntry:nil], nil);
+}
 
 - (void)testClearFinishedEntry
 {
@@ -244,6 +340,22 @@
     STAssertEqualObjects(queueId, self.queue.queueId, nil);
 }
 
+- (void)testQueueAtIndex
+{
+    [self _setupTestEntries];
+    
+    for (int index=0; index < TEST_ENTRY_MAX; index++) {
+        NSString* key = [NSString stringWithFormat:@"TITLE-%d", index];
+        NSString* value = [NSString stringWithFormat:@"TEST-%d", index];
+        LKQueueEntry* entry = [self.queue entryAtIndex:index];
+        STAssertEqualObjects(([entry.info objectForKey:key]), value, nil);
+    }
+    LKQueueEntry* entry;
+    entry = [self.queue entryAtIndex:-1];
+    STAssertNil(entry, nil);
+    entry = [self.queue entryAtIndex:TEST_ENTRY_MAX];
+    STAssertNil(entry, nil);
+}
 
 //-------------------
 // persistent test
@@ -275,30 +387,36 @@
             case 0:
                 // 0: processing -> wating (when resuming)
                 STAssertEquals(entry.state, LKQueueStateWating, nil);
+                STAssertNil(entry.finished, nil);
                 break;
             case 1:
                 // 1: interrupted
                 STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
                 STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+                STAssertNil(entry.finished, nil);
                 break;
             case 2:
                 // 2: finished(successful)
                 STAssertEquals(entry.state, LKQueueStateFinished, nil);
                 STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
+                STAssertNotNil(entry.finished, nil);
                 break;
             case 3:
                 // 3: finished(failed)
                 STAssertEquals(entry.state, LKQueueStateFinished, nil);
                 STAssertEquals(entry.result, LKQueueResultFailed, nil);
+                STAssertNotNil(entry.finished, nil);
                 break;
             case 4:
                 // 4: finished(interrupted)
                 STAssertEquals(entry.state, LKQueueStateFinished, nil);
                 STAssertEquals(entry.result, LKQueueResultInterrpted, nil);
+                STAssertNotNil(entry.finished, nil);
                 break;
             default:
                 // 5-9: waiting 
                 STAssertEquals(entry.state, LKQueueStateWating, nil);
+                STAssertNil(entry.finished, nil);
                 break;
         }
         
@@ -307,7 +425,7 @@
                              ([NSString stringWithFormat:@"TEST-%d", i]), nil);
         STAssertEqualObjects(([entry.resources lastObject]),
                              ([NSString stringWithFormat:@"VALUE-%d", i]), nil);
-        STAssertNotNil(entry.timestamp, nil);
+        STAssertNotNil(entry.created, nil);
         i++;
     }
     
@@ -319,24 +437,21 @@
 
 - (void)testMultiQueues
 {
-    LKQueue* queue2;
     [self _setupTestEntries];
 
     // [1] same name
-    queue2 = [LKQueue queueWithName:QUEUE_NAME];
-    STAssertEquals(queue2, self.queue, nil);
+    LKQueue* queue1b = [LKQueue queueWithName:QUEUE_NAME];
+    STAssertEquals(queue1b, self.queue, nil);
     
     
     // [2] diferent name    
-    queue2 = [LKQueue queueWithName:QUEUE_NAME2];
-
     for (int i=0; i < TEST_ENTRY_MAX; i++) {
         NSDictionary* info =
-        [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST-%d", i]
-                                    forKey:[NSString stringWithFormat:@"TITLE-%d", i]];
+        [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST2-%d", i]
+                                    forKey:[NSString stringWithFormat:@"TITLE2-%d", i]];
         NSArray* res =
-            [NSArray arrayWithObject:[NSString stringWithFormat:@"VALUE-%d", i]];
-        [queue2 addEntryWithInfo:info resources:res];
+            [NSArray arrayWithObject:[NSString stringWithFormat:@"VALUE2-%d", i]];
+        [self.queue2 addEntryWithInfo:info resources:res];
     }
     
     int i = 0;
@@ -349,14 +464,37 @@
 
 
     int j = 0;
-    STAssertEquals([queue2 count], (NSUInteger)(TEST_ENTRY_MAX), nil);
-    for (LKQueueEntry* entry in [queue2 queueList]) {
+    STAssertEquals([self.queue2 count], (NSUInteger)(TEST_ENTRY_MAX), nil);
+    for (LKQueueEntry* entry in [self.queue2 queueList]) {
         STAssertEqualObjects(([entry.resources lastObject]),
-                             ([NSString stringWithFormat:@"VALUE-%d", j]), nil);
+                             ([NSString stringWithFormat:@"VALUE2-%d", j]), nil);
         j++;
     }
-    [queue2 removeAllEntries];
+    [self.queue2 removeAllEntries];
     [LKQueue releaseQueueWithName:QUEUE_NAME2];
+}
+
+// move queue entries
+- (void)testMultiQueues2
+{
+    [self _setupTestEntries];
+
+    LKQueueEntry* entry = [self.queue getEntryForProcessing];   // [0]
+    [self.queue finishEntry:entry];
+    STAssertFalse([self.queue addEntry:entry], nil);
+
+    STAssertTrue([self.queue2 addEntry:entry], nil);
+    LKQueueEntry* entry2 = [self.queue2 getEntryForProcessing];      // [1]
+    STAssertEquals(entry2.state, LKQueueStateProcessing, nil);
+    STAssertEquals(entry2.result, LKQueueResultUnfinished, nil);
+    STAssertFalse(entry == entry2, nil);
+    STAssertEqualObjects(([entry.resources lastObject]),
+                         ([entry2.resources lastObject]), nil);
+    STAssertTrue(([entry.resources lastObject] != [entry2.resources lastObject]), nil);
+    STAssertTrue(([entry2.created compare:entry.created] == NSOrderedDescending), nil);
+    STAssertNil(entry2.finished, nil);
+    STAssertEqualObjects(([entry2.info objectForKey:@"TITLE-0"]),
+                         @"TEST-0", nil);
 }
 
 //------------------
@@ -434,5 +572,6 @@ static int allCount_;
     
     STAssertEquals(allCount_, (int)(PRODUCER_MAX*ENTRY_MAX), nil);
 }
+
 
 @end
