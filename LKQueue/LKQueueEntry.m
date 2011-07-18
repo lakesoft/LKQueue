@@ -29,7 +29,7 @@
 @synthesize state = state_;
 @synthesize result = result_;
 @synthesize created = created_;
-@synthesize finished = finished_;
+@synthesize modified = modified_;
 
 @synthesize canRemove;
 

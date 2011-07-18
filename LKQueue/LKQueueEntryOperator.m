@@ -31,7 +31,7 @@
 
 // for meta
 #define LK_QUEUE_ENTRY_META_CREATED   @"__created__"
-#define LK_QUEUE_ENTRY_META_FINISHED  @"__finished__"
+#define LK_QUEUE_ENTRY_META_MODIFIED  @"__modified__"
 
 
 @interface LKQueueEntryOperator()
@@ -92,10 +92,12 @@
         result_ = LKQueueResultUnfinished;
 
         created_ = [[NSDate alloc] init];
+        modified_ = [created_ retain];
+
         NSMutableDictionary* infoToWrite =
             [NSMutableDictionary dictionaryWithDictionary:info];
         [infoToWrite setObject:created_ forKey:LK_QUEUE_ENTRY_META_CREATED];
-        [infoToWrite removeObjectForKey:LK_QUEUE_ENTRY_META_FINISHED];
+        [infoToWrite setObject:modified_ forKey:LK_QUEUE_ENTRY_META_MODIFIED];
 
         // write as XML
         if (![infoToWrite writeToFile:[self _infoFilePath] atomically:YES]) {
@@ -122,7 +124,7 @@
     [info_ release];
     [resources_ release];
     [created_ release];
-    [finished_ release];
+    [modified_ release];
     [super dealloc];
 }
 
@@ -136,12 +138,12 @@
     return [[[self alloc] initWithQueueId:queueId info:info resources:resources] autorelease];
 }
 
-- (void)_updateFinished
+- (void)_updateModified
 {
-    finished_ = [[NSDate alloc] init];
+    modified_ = [[NSDate alloc] init];
     NSMutableDictionary* infoToWrite =
         [NSMutableDictionary dictionaryWithContentsOfFile:[self _infoFilePath]];
-    [infoToWrite setObject:finished_ forKey:LK_QUEUE_ENTRY_META_FINISHED];
+    [infoToWrite setObject:modified_ forKey:LK_QUEUE_ENTRY_META_MODIFIED];
     
     // write as XML
     if (![infoToWrite writeToFile:[self _infoFilePath] atomically:YES]) {
@@ -170,7 +172,7 @@
             break;
     }
     if (ret) {
-        [self _updateFinished];
+        [self _updateModified];
     }
     return ret;
 }
@@ -182,7 +184,7 @@
         state_ = LKQueueStateFinished;
         result_ = LKQueueResultFailed;
 
-        [self _updateFinished];
+        [self _updateModified];
         return YES;
     }
     return NO;    
@@ -193,6 +195,7 @@
     if (state_ == LKQueueStateProcessing ||
         state_ == LKQueueStateInterrupting) {
         state_ = LKQueueStateWating;
+        [self _updateModified];
         return YES;
     }
     return NO;
@@ -202,6 +205,7 @@
 {
     if (state_ == LKQueueStateWating) {
         state_ = LKQueueStateProcessing;
+        [self _updateModified];
         return YES;
     }
     return NO;
@@ -211,6 +215,7 @@
 {
     if (state_ == LKQueueStateProcessing) {
         state_ = LKQueueStateInterrupting;
+        [self _updateModified];
         return YES;
     }
     return NO;    
@@ -302,12 +307,12 @@
     return created_;
 }
 
-- (NSDate*)finished
+- (NSDate*)modified
 {
-    if (finished_ == nil) {
-        finished_ = [[self.info objectForKey:LK_QUEUE_ENTRY_META_FINISHED] retain];
+    if (modified_ == nil) {
+        modified_ = [[self.info objectForKey:LK_QUEUE_ENTRY_META_MODIFIED] retain];
     }
-    return finished_;
+    return modified_;
 }
 
 - (BOOL)canRemove

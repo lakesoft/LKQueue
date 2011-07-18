@@ -387,36 +387,30 @@
             case 0:
                 // 0: processing -> wating (when resuming)
                 STAssertEquals(entry.state, LKQueueStateWating, nil);
-                STAssertNil(entry.finished, nil);
                 break;
             case 1:
                 // 1: interrupted
                 STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
                 STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
-                STAssertNil(entry.finished, nil);
                 break;
             case 2:
                 // 2: finished(successful)
                 STAssertEquals(entry.state, LKQueueStateFinished, nil);
                 STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
-                STAssertNotNil(entry.finished, nil);
                 break;
             case 3:
                 // 3: finished(failed)
                 STAssertEquals(entry.state, LKQueueStateFinished, nil);
                 STAssertEquals(entry.result, LKQueueResultFailed, nil);
-                STAssertNotNil(entry.finished, nil);
                 break;
             case 4:
                 // 4: finished(interrupted)
                 STAssertEquals(entry.state, LKQueueStateFinished, nil);
                 STAssertEquals(entry.result, LKQueueResultInterrpted, nil);
-                STAssertNotNil(entry.finished, nil);
                 break;
             default:
                 // 5-9: waiting 
                 STAssertEquals(entry.state, LKQueueStateWating, nil);
-                STAssertNil(entry.finished, nil);
                 break;
         }
         
@@ -426,6 +420,7 @@
         STAssertEqualObjects(([entry.resources lastObject]),
                              ([NSString stringWithFormat:@"VALUE-%d", i]), nil);
         STAssertNotNil(entry.created, nil);
+        STAssertNotNil(entry.modified, nil);
         i++;
     }
     
@@ -492,7 +487,7 @@
                          ([entry2.resources lastObject]), nil);
     STAssertTrue(([entry.resources lastObject] != [entry2.resources lastObject]), nil);
     STAssertTrue(([entry2.created compare:entry.created] == NSOrderedDescending), nil);
-    STAssertNil(entry2.finished, nil);
+    STAssertTrue(([entry2.modified compare:entry.modified] == NSOrderedDescending), nil);
     STAssertEqualObjects(([entry2.info objectForKey:@"TITLE-0"]),
                          @"TEST-0", nil);
 }

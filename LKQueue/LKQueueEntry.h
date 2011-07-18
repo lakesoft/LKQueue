@@ -47,7 +47,7 @@ typedef enum {
     LKQueueResult result_;
 
     NSDate* created_;
-    NSDate* finished_;
+    NSDate* modified_;
 
     id context_;
 }
@@ -58,7 +58,7 @@ typedef enum {
 @property (nonatomic, assign, readonly) LKQueueState state;
 @property (nonatomic, assign, readonly) LKQueueResult result;
 @property (nonatomic, retain, readonly) NSDate* created;
-@property (nonatomic, retain, readonly) NSDate* finished;
+@property (nonatomic, retain, readonly) NSDate* modified;
 
 // status
 @property (nonatomic, assign, readonly) BOOL canRemove;
