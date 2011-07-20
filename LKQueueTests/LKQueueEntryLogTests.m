@@ -25,23 +25,32 @@
 {
     LKQueueEntryLog* log;
     
-    log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation];
+    log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation
+                                           title:nil
+                                          detail:nil];
     STAssertEquals(log.type, LKQueueEntryLogTypeInformation, nil);
 
-    log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeNotice];
+    log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeNotice
+                                           title:nil
+                                          detail:nil];
     STAssertEquals(log.type, LKQueueEntryLogTypeNotice, nil);
 
-    log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeWarning];
+    log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeWarning
+                                           title:nil
+                                          detail:nil];
     STAssertEquals(log.type, LKQueueEntryLogTypeWarning, nil);
 
-    log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeError];
+    log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeError
+                                           title:nil
+                                          detail:nil];
     STAssertEquals(log.type, LKQueueEntryLogTypeError, nil);    
     
-    log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation];
+    log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation
+                                           title:@"TITLE"
+                                          detail:@"DETAIL"];
+
     float delta = fabsf([log.date timeIntervalSinceNow]);
     STAssertTrue(delta < 0.1, nil);
-    log.title = @"TITLE";
-    log.detail = @"DETAIL";
     STAssertTrue([log.title isEqualToString:@"TITLE"], nil);
     STAssertTrue([log.detail isEqualToString:@"DETAIL"], nil);
 }

@@ -375,17 +375,17 @@
     
     LKQueueEntry* entry1 = [self _waitingEntry];
     for (int i=0; i < 3; i++) {
-        log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation];
-        log.title = [NSString stringWithFormat:@"LOG-A-%02", i+1];
-        log.detail = [NSString stringWithFormat:@"DETAIL-A-%02\n", i+1];
+        log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation
+                            title:[NSString stringWithFormat:@"LOG-A-%02", i+1]
+                            detail:[NSString stringWithFormat:@"DETAIL-A-%02\n", i+1]];
         [entry1 addQueueEntryLog:log];
     }
 
     LKQueueEntry*entry2 = [self _waitingEntry];
     for (int i=0; i < 6; i++) {
-        log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation];
-        log.title = [NSString stringWithFormat:@"LOG-B-%02", i+1];
-        log.detail = [NSString stringWithFormat:@"DETAIL-B-%02\n", i+1];
+        log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation
+                               title:[NSString stringWithFormat:@"LOG-B-%02", i+1]
+                              detail:[NSString stringWithFormat:@"DETAIL-B-%02\n", i+1]];
         [entry2 addQueueEntryLog:log];
     }
 
@@ -407,7 +407,6 @@
         STAssertTrue([log.title isEqualToString:title], nil);
         STAssertTrue([log.detail isEqualToString:detail], nil);
     }
-
 }
 
 @end

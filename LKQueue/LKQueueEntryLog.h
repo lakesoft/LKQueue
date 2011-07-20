@@ -36,9 +36,9 @@ typedef enum {
 
 @property (nonatomic, retain, readonly) NSDate* date;
 @property (nonatomic, assign, readonly) LKQueueEntryLogType type;
-@property (nonatomic, copy) NSString* title;
-@property (nonatomic, copy) NSString* detail;
+@property (nonatomic, copy, readonly) NSString* title;
+@property (nonatomic, copy, readonly) NSString* detail;
 
-+ (LKQueueEntryLog*)queueEntryLogWithType:(LKQueueEntryLogType)type;
++ (LKQueueEntryLog*)queueEntryLogWithType:(LKQueueEntryLogType)type title:(NSString*)title detail:(NSString*)detail;
 
 @end

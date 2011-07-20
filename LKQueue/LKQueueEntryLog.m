@@ -25,6 +25,8 @@
 @interface LKQueueEntryLog()
 @property (nonatomic, retain) NSDate* date;
 @property (nonatomic, assign) LKQueueEntryLogType type;
+@property (nonatomic, copy) NSString* title;
+@property (nonatomic, copy) NSString* detail;
 @end
 
 @implementation LKQueueEntryLog
@@ -33,18 +35,20 @@
 @synthesize title = title_;
 @synthesize detail = detail_;
 
-- (id)initWithType:(LKQueueEntryLogType)type {
+- (id)initWithType:(LKQueueEntryLogType)type title:(NSString*)title detail:(NSString*)detail {
     self = [super init];
     if (self) {
         self.date = [NSDate date];
         self.type = type;
+        self.title = title;
+        self.detail = detail;
     }
     return self;
 }
 
-+ (LKQueueEntryLog*)queueEntryLogWithType:(LKQueueEntryLogType)type
++ (LKQueueEntryLog*)queueEntryLogWithType:(LKQueueEntryLogType)type title:(NSString*)title detail:(NSString*)detail;
 {
-    return [[[LKQueueEntryLog alloc] initWithType:type] autorelease];
+    return [[[LKQueueEntryLog alloc] initWithType:type title:title detail:detail] autorelease];
 }
 
 - (NSString*)description

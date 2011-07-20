@@ -436,9 +436,9 @@
     for (LKQueueEntry* entry in [self.queue queueList]) {
         for (int j=0; j < 3; j++) {
             LKQueueEntryLog* log =
-                [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation];
-            log.title = [NSString stringWithFormat:@"LOG-%02-%02", i+1, j+1];
-            log.detail = [NSString stringWithFormat:@"DETAIL-%02-%02\n", i+1, j+1];
+                [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation
+                 title:[NSString stringWithFormat:@"LOG-%02-%02", i+1, j+1]
+                                                detail:[NSString stringWithFormat:@"DETAIL-%02-%02\n", i+1, j+1]];
             [entry addQueueEntryLog:log];
         }
         i++;
