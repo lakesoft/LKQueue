@@ -5,6 +5,7 @@
 
 #import "LKQueueEntryOperatorTests.h"
 #import "LKQueueEntryOperator.h"
+#import "LKQueueEntryLog.h"
 #import "LKQueue.h"
 
 #define QUEUE_NAME  @"Test Queue"
@@ -95,6 +96,7 @@
     BOOL exisited = [fileMananger fileExistsAtPath:resPath];
     STAssertTrue(exisited, @"%@ does not exists.", resPath);
 
+    STAssertEquals((int)[entry.logs count], 0, nil);    
 }
 
 - (void)testClean
@@ -111,9 +113,12 @@
     NSFileManager* fileMananger = [NSFileManager defaultManager];
     NSString* resPath = [entry performSelector:@selector(_resourcesFilePath)];
     BOOL exisited = [fileMananger fileExistsAtPath:resPath];
+    NSString* logPath = [entry performSelector:@selector(_logsFilePath)];
+    BOOL exisited2 = [fileMananger fileExistsAtPath:logPath];
 
     STAssertTrue(result, @"Invalid cleanup result", nil);
     STAssertFalse(exisited, @"%@ does exists.", resPath);
+    STAssertFalse(exisited2, @"%@ does exists.", logPath);
 }
 
 - (void)testWatingState
@@ -361,6 +366,48 @@
     entry = [self _interruptedEntry];
     canRemove = entry.canRemove;
     STAssertTrue(canRemove, nil);
+}
+
+
+- (void)testAddQueueEntryLog
+{
+    LKQueueEntryLog* log;
+    
+    LKQueueEntry* entry1 = [self _waitingEntry];
+    for (int i=0; i < 3; i++) {
+        log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation];
+        log.title = [NSString stringWithFormat:@"LOG-A-%02", i+1];
+        log.detail = [NSString stringWithFormat:@"DETAIL-A-%02\n", i+1];
+        [entry1 addQueueEntryLog:log];
+    }
+
+    LKQueueEntry*entry2 = [self _waitingEntry];
+    for (int i=0; i < 6; i++) {
+        log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation];
+        log.title = [NSString stringWithFormat:@"LOG-B-%02", i+1];
+        log.detail = [NSString stringWithFormat:@"DETAIL-B-%02\n", i+1];
+        [entry2 addQueueEntryLog:log];
+    }
+
+    STAssertEquals((int)[entry1.logs count], 3, nil);
+    STAssertEquals((int)[entry2.logs count], 6, nil);
+    
+    for (int i=0; i < 3; i++) {
+        log = [entry1.logs objectAtIndex:i];
+        NSString* title = [NSString stringWithFormat:@"LOG-A-%02", i+1];
+        NSString* detail = [NSString stringWithFormat:@"DETAIL-A-%02\n", i+1];
+        STAssertTrue([log.title isEqualToString:title], nil);
+        STAssertTrue([log.detail isEqualToString:detail], nil);
+    }
+
+    for (int i=0; i < 6; i++) {
+        log = [entry2.logs objectAtIndex:i];
+        NSString* title = [NSString stringWithFormat:@"LOG-B-%02", i+1];
+        NSString* detail = [NSString stringWithFormat:@"DETAIL-B-%02\n", i+1];
+        STAssertTrue([log.title isEqualToString:title], nil);
+        STAssertTrue([log.detail isEqualToString:detail], nil);
+    }
+
 }
 
 @end

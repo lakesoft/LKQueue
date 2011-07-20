@@ -70,6 +70,11 @@
     return [self _filePathForExtension:@".resources"];
 }
 
+- (NSString*)_logsFilePath
+{
+    return [self _filePathForExtension:@".logs"];
+}
+
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -114,6 +119,7 @@
             return nil;
         }
         resources_ = nil;
+        logs_ = nil;
     }
     return self;
 }
@@ -125,6 +131,7 @@
     [resources_ release];
     [created_ release];
     [modified_ release];
+    [logs_ release];
     [super dealloc];
 }
 
@@ -245,8 +252,36 @@
             return NO;
         }
     }
+    
+    NSString* logsFilePath = [self _logsFilePath];
+    if ([fileManager fileExistsAtPath:resourcesFilePath]) {
+        NSError* error =nil;
+        if (![fileManager removeItemAtPath:logsFilePath error:&error]) {
+            NSLog(@"%s|Failed to remove log file '%@':%@",
+                  __PRETTY_FUNCTION__, logsFilePath, error);
+            return NO;
+        }
+    }
+
     return YES;
 
+}
+
+
+//------------------------------------------------------------------------------
+#pragma mark -
+#pragma mark API (overwritten)
+//------------------------------------------------------------------------------
+- (void)addQueueEntryLog:(LKQueueEntryLog*)queueEntyLog
+{
+    NSArray* array = [self.logs arrayByAddingObject:queueEntyLog];
+    [logs_ release];
+    logs_ = [array retain];
+    
+    if (![NSKeyedArchiver archiveRootObject:logs_ toFile:[self _logsFilePath]]) {
+        NSLog(@"%s|[ERROR] Faild to write a logs to file: %@",
+              __PRETTY_FUNCTION__, [self _logsFilePath]);
+    }
 }
 
 
@@ -313,6 +348,20 @@
         modified_ = [[self.info objectForKey:LK_QUEUE_ENTRY_META_MODIFIED] retain];
     }
     return modified_;
+}
+
+- (NSArray*)logs
+{
+    if (logs_ == nil) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[self _logsFilePath]]) {
+            logs_ = [[NSKeyedUnarchiver
+                           unarchiveObjectWithFile:[self _logsFilePath]] retain];
+        }
+    }
+    if (logs_ == nil) {
+        logs_ = [[NSArray alloc] init];
+    }
+    return logs_;
 }
 
 - (BOOL)canRemove

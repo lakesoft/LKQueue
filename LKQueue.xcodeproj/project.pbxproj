@@ -28,6 +28,9 @@
 		4C6F06831378E35E0046B177 /* LKQueueEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067D1378E35E0046B177 /* LKQueueEntry.m */; };
 		4C6F06841378E35E0046B177 /* LKQueueEntryOperator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */; };
 		4C6F06851378E35E0046B177 /* LKQueueEntryOperator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */; };
+		4CA49CA713D6872B00BA53C3 /* LKQueueEntryLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA49CA613D6872B00BA53C3 /* LKQueueEntryLog.m */; };
+		4CA49CA813D6872B00BA53C3 /* LKQueueEntryLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA49CA613D6872B00BA53C3 /* LKQueueEntryLog.m */; };
+		4CA49CAC13D6890B00BA53C3 /* LKQueueEntryLogTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA49CAB13D6890B00BA53C3 /* LKQueueEntryLogTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +72,10 @@
 		4C6F067D1378E35E0046B177 /* LKQueueEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntry.m; sourceTree = "<group>"; };
 		4C6F067E1378E35E0046B177 /* LKQueueEntryOperator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueEntryOperator.h; sourceTree = "<group>"; };
 		4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntryOperator.m; sourceTree = "<group>"; };
+		4CA49CA513D6872B00BA53C3 /* LKQueueEntryLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueEntryLog.h; sourceTree = "<group>"; };
+		4CA49CA613D6872B00BA53C3 /* LKQueueEntryLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntryLog.m; sourceTree = "<group>"; };
+		4CA49CAA13D6890B00BA53C3 /* LKQueueEntryLogTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueEntryLogTests.h; sourceTree = "<group>"; };
+		4CA49CAB13D6890B00BA53C3 /* LKQueueEntryLogTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntryLogTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +164,8 @@
 				4C1A0A871378DE75009D78F0 /* LKQueueEntryOperatorTests.m */,
 				4C1A0A8A1378DE75009D78F0 /* LKQueueTests.h */,
 				4C1A0A8B1378DE75009D78F0 /* LKQueueTests.m */,
+				4CA49CAA13D6890B00BA53C3 /* LKQueueEntryLogTests.h */,
+				4CA49CAB13D6890B00BA53C3 /* LKQueueEntryLogTests.m */,
 				4C1A0A631378DD64009D78F0 /* Supporting Files */,
 			);
 			path = LKQueueTests;
@@ -181,6 +190,8 @@
 				4C6F067D1378E35E0046B177 /* LKQueueEntry.m */,
 				4C6F067E1378E35E0046B177 /* LKQueueEntryOperator.h */,
 				4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */,
+				4CA49CA513D6872B00BA53C3 /* LKQueueEntryLog.h */,
+				4CA49CA613D6872B00BA53C3 /* LKQueueEntryLog.m */,
 			);
 			path = LKQueue;
 			sourceTree = "<group>";
@@ -295,6 +306,7 @@
 				4C6F06801378E35E0046B177 /* LKQueue.m in Sources */,
 				4C6F06821378E35E0046B177 /* LKQueueEntry.m in Sources */,
 				4C6F06841378E35E0046B177 /* LKQueueEntryOperator.m in Sources */,
+				4CA49CA713D6872B00BA53C3 /* LKQueueEntryLog.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,6 +319,8 @@
 				4C6F06811378E35E0046B177 /* LKQueue.m in Sources */,
 				4C6F06831378E35E0046B177 /* LKQueueEntry.m in Sources */,
 				4C6F06851378E35E0046B177 /* LKQueueEntryOperator.m in Sources */,
+				4CA49CA813D6872B00BA53C3 /* LKQueueEntryLog.m in Sources */,
+				4CA49CAC13D6890B00BA53C3 /* LKQueueEntryLogTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -38,6 +38,9 @@ typedef enum {
     LKQueueResultInterrpted
 } LKQueueResult;
 
+
+@class LKQueueEntryLog;
+
 @interface LKQueueEntry : NSObject {
     
     NSDictionary* info_;
@@ -50,6 +53,8 @@ typedef enum {
     NSDate* modified_;
 
     id context_;
+    
+    NSMutableArray* logs_;
 }
 
 // persistent properties
@@ -59,8 +64,12 @@ typedef enum {
 @property (nonatomic, assign, readonly) LKQueueResult result;
 @property (nonatomic, retain, readonly) NSDate* created;
 @property (nonatomic, retain, readonly) NSDate* modified;
+@property (nonatomic, retain, readonly) NSArray* logs;
 
 // status
 @property (nonatomic, assign, readonly) BOOL canRemove;
+
+// API
+- (void)addQueueEntryLog:(LKQueueEntryLog*)queueEntyLog;
 
 @end

@@ -20,28 +20,25 @@
 // THE SOFTWARE.
 //
 
-#import "LKQueueEntry.h"
-#import "LKQueueEntryLog.h"
 
-@implementation LKQueueEntry
+#import <Foundation/Foundation.h>
 
-@synthesize info = info_;
-@synthesize resources = resources_;
-@synthesize state = state_;
-@synthesize result = result_;
-@synthesize created = created_;
-@synthesize modified = modified_;
-@synthesize logs = logs_;
+typedef enum {
+    LKQueueEntryLogTypeInformation = 0,
+    LKQueueEntryLogTypeNotice,
+    LKQueueEntryLogTypeWarning,
+    LKQueueEntryLogTypeError
+} LKQueueEntryLogType;
 
-@synthesize canRemove;
-
-- (void)dealloc {
-    [super dealloc];
+@interface LKQueueEntryLog : NSObject  <NSCoding> {
+    
 }
 
-- (void)addQueueEntryLog:(LKQueueEntryLog*)queueEntyLog
-{
-    // do nothing (should be overwritten in subclass)
-}
+@property (nonatomic, retain, readonly) NSDate* date;
+@property (nonatomic, assign, readonly) LKQueueEntryLogType type;
+@property (nonatomic, copy) NSString* title;
+@property (nonatomic, copy) NSString* detail;
+
++ (LKQueueEntryLog*)queueEntryLogWithType:(LKQueueEntryLogType)type;
 
 @end

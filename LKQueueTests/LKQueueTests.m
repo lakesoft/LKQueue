@@ -10,6 +10,7 @@
 #import "LKQueueTests.h"
 #import "LKQueue.h"
 #import "LKQueueEntry.h"
+#import "LKQueueEntryLog.h"
 
 #define QUEUE_NAME      @"Test Queue"
 #define QUEUE_NAME2     @"Test Queue#2"
@@ -424,6 +425,44 @@
         i++;
     }
     
+}
+
+- (void)testPersistent2
+{
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    [self _setupTestEntries];
+
+    int i=0;
+    for (LKQueueEntry* entry in [self.queue queueList]) {
+        for (int j=0; j < 3; j++) {
+            LKQueueEntryLog* log =
+                [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation];
+            log.title = [NSString stringWithFormat:@"LOG-%02-%02", i+1, j+1];
+            log.detail = [NSString stringWithFormat:@"DETAIL-%02-%02\n", i+1, j+1];
+            [entry addQueueEntryLog:log];
+        }
+        i++;
+    }
+
+    // discard current queue
+    self.queue = nil;
+    [LKQueue releaseQueueWithName:QUEUE_NAME];
+    
+    [pool drain];
+    
+    // create new queue with same queue name
+    self.queue = [LKQueue queueWithName:QUEUE_NAME];
+
+    for (LKQueueEntry* entry in [self.queue queueList]) {
+        for (int j=0; j < 3; j++) {
+            LKQueueEntryLog* log = [entry.logs objectAtIndex:j];
+            NSString* title = [NSString stringWithFormat:@"LOG-%02-%02", i+1, j+1];
+            NSString* detail = [NSString stringWithFormat:@"DETAIL-%02-%02\n", i+1, j+1];
+            STAssertTrue([log.title isEqualToString:title], nil);
+            STAssertTrue([log.detail isEqualToString:detail], nil);
+        }
+        i++;
+    }
 }
 
 //-------------------
