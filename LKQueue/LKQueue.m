@@ -26,12 +26,14 @@
 
 #define LK_QUEUE_PATH       @"__FBQueue__"
 #define LK_QUEUE_FILENAME   @"queue.dat"
+#define LK_TAG_FILENAME   @"queue.tag"
 
 @interface LKQueue()
 @property (nonatomic, retain) NSString* queueId;
 @property (nonatomic, copy  ) NSString* name;
 @property (nonatomic, retain) NSMutableArray* list;
 @property (nonatomic, retain) NSString* path;
+@property (nonatomic, retain) NSMutableDictionary* tags;
 @end
 
 
@@ -44,13 +46,14 @@ static NSMutableDictionary* queues_;
 @synthesize name = name_;
 @synthesize list = list_;
 @synthesize path = path_;
+@synthesize tags = tags_;
 
 //------------------------------------------------------------------------------
 #pragma mark -
 #pragma mark Private
 //------------------------------------------------------------------------------
 
-- (NSString*)_md5String:(NSString*)string
+NSString* _md5String(NSString* string)
 {
     unsigned char result[16];
     const char* cString = [string UTF8String];
@@ -83,17 +86,36 @@ static NSMutableDictionary* queues_;
     return YES;
 }
 
-- (NSString*)_filePath
+- (NSString*)_queueFilePath
 {
     return [self.path stringByAppendingPathComponent:LK_QUEUE_FILENAME];
+}
+
+- (NSString*)_tagFilePath
+{
+    return [self.path stringByAppendingPathComponent:LK_TAG_FILENAME];
 }
 
 // not thread safe
 // --> must be called in @synchronized(self.list)
 - (BOOL)_saveList
 {
-    NSString* filePath = [self _filePath];
+    NSString* filePath = [self _queueFilePath];
     if ([NSKeyedArchiver archiveRootObject:self.list toFile:filePath]) {
+        return YES;
+    } else {
+        NSLog(@"%s|[ERROR]Failed to save the queue file: %@",
+              __PRETTY_FUNCTION__, filePath);
+        return NO;
+    }
+}
+
+// not thread safe
+// --> must be called in @synchronized(self.tags)
+- (BOOL)_saveTags
+{
+    NSString* filePath = [self _tagFilePath];
+    if ([NSKeyedArchiver archiveRootObject:self.tags toFile:filePath]) {
         return YES;
     } else {
         NSLog(@"%s|[ERROR]Failed to save the queue file: %@",
@@ -115,6 +137,31 @@ static NSMutableDictionary* queues_;
     return YES;
 }
 
+- (NSString*)_tagIdForName:(NSString*)name
+{
+    if (name) {
+        return _md5String(name);
+    } else {
+        return nil;
+    }
+}
+
+// return tagId
+- (NSString*)_addTagName:(NSString*)name
+{
+    if (name) {
+        NSString* tagId = [self _tagIdForName:name];
+        @synchronized (self.tags) {
+            if (![self.tags objectForKey:name]) {
+                [self.tags setObject:name forKey:tagId];
+                [self _saveTags];
+            }
+        }
+        return tagId;
+    } else {
+        return nil;
+    }
+}
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -131,30 +178,50 @@ static NSMutableDictionary* queues_;
 - (id)initWithName:(NSString*)name {
     self = [super init];
     if (self) {
-        self.queueId = [self _md5String:name];
+        self.queueId = [[self class] queueIdForName:name];
         self.name = name;
         
         [self _setupPath];
         
         NSFileManager* fileManager = [NSFileManager defaultManager];
-        NSString* filePath = [self _filePath];
-        if ([fileManager fileExistsAtPath:filePath]) {
-            self.list = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+
+        // [1] queue
+        NSString* queueFilePath = [self _queueFilePath];
+        if ([fileManager fileExistsAtPath:queueFilePath]) {
+            self.list = [NSKeyedUnarchiver unarchiveObjectWithFile:queueFilePath];
             if (self.list == nil) {
                 NSLog(@"%s|[ERROR] Failed to restore the queue file: %@",
-                      __PRETTY_FUNCTION__, filePath);
+                      __PRETTY_FUNCTION__, queueFilePath);
                 return NO;
             }
             for (LKQueueEntryOperator* entry in self.list) {
-                if (entry.state == LKQueueStateProcessing) {
+                if (entry.state == LKQueueEntryStateProcessing) {
                     [entry wait];
                 }
             }
+
         } else {
             // new queue
             self.list = [NSMutableArray array];
             [self _saveList];
         }
+
+        // [2] tag
+        NSString* tagFilePath = [self _tagFilePath];
+        if ([fileManager fileExistsAtPath:tagFilePath]) {
+            self.tags = [NSKeyedUnarchiver unarchiveObjectWithFile:tagFilePath];
+            if (self.tags == nil) {
+                NSLog(@"%s|[ERROR] Failed to restore the tag file: %@",
+                      __PRETTY_FUNCTION__, tagFilePath);
+                return NO;
+            }
+            
+        } else {
+            // new tag
+            self.tags = [NSMutableDictionary dictionary];
+            [self _saveTags];
+        }
+
     }
     return self;
 }
@@ -163,6 +230,7 @@ static NSMutableDictionary* queues_;
     self.name = nil;
     self.list = nil;
     self.path = nil;
+    self.tags = nil;
     [super dealloc];
 }
 
@@ -181,12 +249,48 @@ static NSMutableDictionary* queues_;
     return queue;
 }
 
-
  + (void)releaseQueueWithName:(NSString*)name
 {
     @synchronized (queues_) {
         [queues_ removeObjectForKey:name];
     }
+}
+
++ (BOOL)hasExistedQueueWithName:(NSString*)name
+{
+    BOOL hasExisted = NO;
+    
+    @synchronized (queues_) {
+        if ([queues_ objectForKey:name]) {
+            hasExisted = YES;
+        } else {
+            NSString* path = [self pathForQueueId:[self queueIdForName:name]];
+            NSFileManager* fileManager = [NSFileManager defaultManager];
+            if ([fileManager fileExistsAtPath:path]) {
+                hasExisted = YES;
+            }
+        }
+    }
+    return hasExisted;
+}
+
++ (BOOL)removeQueueWithName:(NSString*)name
+{
+    if ([self hasExistedQueueWithName:name]) {
+        [self releaseQueueWithName:name];
+
+        NSString* path = [self pathForQueueId:[self queueIdForName:name]];
+        NSFileManager* fileManager = [NSFileManager defaultManager];
+        NSError* error = nil;
+        if ([fileManager removeItemAtPath:path error:&error]) {
+            return YES;
+        } else {
+            NSLog(@"%s|[ERROR] Failed to remove the directory|%@",
+                  __PRETTY_FUNCTION__, error);
+            return NO;
+        }
+    }
+    return NO;  // not found
 }
 
 //------------------------------------------------------------------------------
@@ -197,12 +301,14 @@ static NSMutableDictionary* queues_;
 #pragma mark -
 #pragma mark API ()
 
-- (LKQueueEntry*)addEntryWithInfo:(NSDictionary*)info resources:(NSArray*)resources
+- (LKQueueEntry*)addEntryWithInfo:(NSDictionary*)info resources:(NSArray*)resources tagName:(NSString*)tagName
 {
+    NSString* tagId = [self _addTagName:tagName];
     LKQueueEntryOperator* entry =
         [LKQueueEntryOperator queueEntryWithQueueId:self.queueId
                                                info:info
-                                          resources:resources];
+                                          resources:resources
+                                              tagId:tagId];
     @synchronized (self.list) {
         [self.list addObject:entry];
         [self _saveList];
@@ -214,7 +320,7 @@ static NSMutableDictionary* queues_;
 {
     @synchronized (self.list) {
         for (LKQueueEntryOperator* entry in self.list) {
-            if (entry.state == LKQueueStateWating) {
+            if (entry.state == LKQueueEntryStateWating) {
                 [entry process];    // -> processing
                 [self _saveList];
                 return entry;
@@ -301,7 +407,7 @@ static NSMutableDictionary* queues_;
     @synchronized (self.list) {
         BOOL updated = NO;
         for (LKQueueEntryOperator* entry in [[self.list copy] autorelease]) {
-            if (entry.state == LKQueueStateFinished) {
+            if (entry.state == LKQueueEntryStateFinished) {
                 [entry clean];
                 [self.list removeObject:entry];
                 updated = YES;
@@ -332,20 +438,15 @@ static NSMutableDictionary* queues_;
     return [self.list count];
 }
 
-- (NSUInteger)countOfWating
+- (NSUInteger)countOfEntryState:(LKQueueEntryState)state
 {
     NSUInteger count = 0;
     for (LKQueueEntryOperator* entry in self.list) {
-        if (entry.state == LKQueueStateWating) {
+        if (entry.state == state) {
             count++;
         }
     }
     return count;
-}
-
-- (NSArray*)queueList
-{
-    return self.list;
 }
 
 - (LKQueueEntry*)entryAtIndex:(NSInteger)index
@@ -359,6 +460,13 @@ static NSMutableDictionary* queues_;
     }
 }
 
+// API (Tag)
+- (NSArray*)tagList
+{
+    return [self.tags allValues];
+}
+
+
 #pragma mark -
 #pragma mark API (Cooperate with other queues)
 
@@ -371,7 +479,8 @@ static NSMutableDictionary* queues_;
     LKQueueEntryOperator* newEntry =
         [LKQueueEntryOperator queueEntryWithQueueId:self.queueId
                                            info:entry.info
-                                      resources:entry.resources];
+                                      resources:entry.resources
+                                        tagId:((LKQueueEntryOperator*)entry).tagId];
 
     @synchronized (self.list) {
         [self.list addObject:newEntry];
@@ -382,6 +491,12 @@ static NSMutableDictionary* queues_;
 
 #pragma mark -
 #pragma mark API (etc)
+
++ (NSString*)queueIdForName:(NSString*)name
+{
+    NSString* queueId = _md5String(name);
+    return queueId;
+}
 
 + (NSString*)pathForQueueId:(NSString*)queueId
 {

@@ -26,6 +26,7 @@
 // for archive
 #define LK_QUEUE_ENTRY_KEY_QUEUE_ID     @"qid"
 #define LK_QUEUE_ENTRY_KEY_ENTRY_ID     @"eid"
+#define LK_QUEUE_ENTRY_KEY_TAG_ID       @"tid"
 #define LK_QUEUE_ENTRY_KEY_STATE        @"sta"
 #define LK_QUEUE_ENTRY_KEY_RESULT       @"rlt"
 
@@ -37,6 +38,7 @@
 @interface LKQueueEntryOperator()
 @property (nonatomic, retain) NSString* queueId;
 @property (nonatomic, retain) NSString* entryId;
+@property (nonatomic, retain) NSString* tagId;
 
 @end
 
@@ -44,7 +46,7 @@
 
 @synthesize queueId = queueId_;
 @synthesize entryId = entryId_;
-
+@synthesize tagId = tagId_;
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -80,11 +82,12 @@
 #pragma mark -
 #pragma mark Initialization and deallocation
 //------------------------------------------------------------------------------
-- (id)initWithQueueId:(NSString*)queueId info:(NSDictionary*)info resources:(NSArray*)resources
+- (id)initWithQueueId:(NSString*)queueId info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId
 {
     self = [super init];
     if (self) {
         self.queueId = queueId;
+        self.tagId = tagId;
 
         CFUUIDRef uuidObj = CFUUIDCreate(nil);
         self.entryId = (NSString*)CFUUIDCreateString(nil, uuidObj);
@@ -93,8 +96,8 @@
         if (info == nil) {
             info = [NSDictionary dictionary];
         }
-        state_ = LKQueueStateWating;      
-        result_ = LKQueueResultUnfinished;
+        state_ = LKQueueEntryStateWating;      
+        result_ = LKQueueEntryResultUnfinished;
 
         created_ = [[NSDate alloc] init];
         modified_ = [created_ retain];
@@ -140,9 +143,9 @@
 #pragma mark -
 #pragma mark API
 //------------------------------------------------------------------------------
-+ (LKQueueEntryOperator*)queueEntryWithQueueId:(NSString*)queueId info:(NSDictionary*)info resources:(NSArray*)resources
++ (LKQueueEntryOperator*)queueEntryWithQueueId:(NSString*)queueId info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId
 {
-    return [[[self alloc] initWithQueueId:queueId info:info resources:resources] autorelease];
+    return [[[self alloc] initWithQueueId:queueId info:info resources:resources tagId:tagId] autorelease];
 }
 
 - (void)_updateModified
@@ -163,15 +166,15 @@
 {
     BOOL ret = NO;
     switch (state_) {
-        case LKQueueStateInterrupting:
-            state_ = LKQueueStateFinished;
-            result_ = LKQueueResultInterrpted;
+        case LKQueueEntryStateInterrupting:
+            state_ = LKQueueEntryStateFinished;
+            result_ = LKQueueEntryResultInterrpted;
             ret = YES;
             break;
             
-        case LKQueueStateProcessing:
-            state_ = LKQueueStateFinished;
-            result_ = LKQueueResultSuccessful;
+        case LKQueueEntryStateProcessing:
+            state_ = LKQueueEntryStateFinished;
+            result_ = LKQueueEntryResultSuccessful;
             ret = YES;
             break;
             
@@ -186,10 +189,10 @@
 
 - (BOOL)fail
 {
-    if (state_ == LKQueueStateProcessing ||
-        state_ == LKQueueStateInterrupting) {
-        state_ = LKQueueStateFinished;
-        result_ = LKQueueResultFailed;
+    if (state_ == LKQueueEntryStateProcessing ||
+        state_ == LKQueueEntryStateInterrupting) {
+        state_ = LKQueueEntryStateFinished;
+        result_ = LKQueueEntryResultFailed;
 
         [self _updateModified];
         return YES;
@@ -199,9 +202,9 @@
 
 - (BOOL)wait
 {
-    if (state_ == LKQueueStateProcessing ||
-        state_ == LKQueueStateInterrupting) {
-        state_ = LKQueueStateWating;
+    if (state_ == LKQueueEntryStateProcessing ||
+        state_ == LKQueueEntryStateInterrupting) {
+        state_ = LKQueueEntryStateWating;
         [self _updateModified];
         return YES;
     }
@@ -210,8 +213,8 @@
 
 - (BOOL)process
 {
-    if (state_ == LKQueueStateWating) {
-        state_ = LKQueueStateProcessing;
+    if (state_ == LKQueueEntryStateWating) {
+        state_ = LKQueueEntryStateProcessing;
         [self _updateModified];
         return YES;
     }
@@ -220,8 +223,8 @@
 
 - (BOOL)interrupt
 {
-    if (state_ == LKQueueStateProcessing) {
-        state_ = LKQueueStateInterrupting;
+    if (state_ == LKQueueEntryStateProcessing) {
+        state_ = LKQueueEntryStateInterrupting;
         [self _updateModified];
         return YES;
     }
@@ -296,6 +299,7 @@
 	[coder encodeInt:self.state         forKey:LK_QUEUE_ENTRY_KEY_STATE];
 	[coder encodeInt:self.result        forKey:LK_QUEUE_ENTRY_KEY_RESULT];
 	[coder encodeObject:self.entryId    forKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
+	[coder encodeObject:self.tagId      forKey:LK_QUEUE_ENTRY_KEY_TAG_ID];
 }
 
 - (id)initWithCoder:(NSCoder*)coder {
@@ -305,6 +309,7 @@
         state_          = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_STATE];
         result_         = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_RESULT];
         self.entryId    = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
+        self.tagId      = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_TAG_ID];
     }
     return self;
 }
@@ -366,7 +371,7 @@
 
 - (BOOL)canRemove
 {
-    return (self.state != LKQueueStateProcessing);
+    return (self.state != LKQueueEntryStateProcessing);
 }
 
 @end

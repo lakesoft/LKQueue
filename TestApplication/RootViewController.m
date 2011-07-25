@@ -82,20 +82,20 @@
     cell.textLabel.text = [entry.info objectForKey:@"title"];
 
     switch (entry.state) {
-        case LKQueueStateWating:
+        case LKQueueEntryStateWating:
             cell.detailTextLabel.text = @"Wating";
             break;
-        case LKQueueStateProcessing:
+        case LKQueueEntryStateProcessing:
             cell.detailTextLabel.text = @"Processing";
             break;
-        case LKQueueStateFinished:
-            if (entry.result == LKQueueResultSuccessful) {
+        case LKQueueEntryStateFinished:
+            if (entry.result == LKQueueEntryResultSuccessful) {
                 cell.detailTextLabel.text = @"Finished";
             } else {
                 cell.detailTextLabel.text = @"Failed";
             }
             break;
-        case LKQueueStateInterrupting:
+        case LKQueueEntryStateInterrupting:
             cell.detailTextLabel.text = @"Interrupting";
             break;
     }
@@ -186,7 +186,7 @@
 {
     NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
                              [[NSDate date] description], @"title", nil];
-    [self.queue addEntryWithInfo:info resources:nil];
+    [self.queue addEntryWithInfo:info resources:nil tagName:nil];
     [self.tableView reloadData];
 }
 

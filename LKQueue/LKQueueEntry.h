@@ -24,19 +24,19 @@
 
 // ** Do not change order **
 typedef enum {
-    LKQueueStateWating = 0,
-    LKQueueStateProcessing,
-    LKQueueStateInterrupting,
-    LKQueueStateFinished,
-} LKQueueState;
+    LKQueueEntryStateWating = 0,
+    LKQueueEntryStateProcessing,
+    LKQueueEntryStateInterrupting,
+    LKQueueEntryStateFinished,
+} LKQueueEntryState;
 
 // ** Do not change order **
 typedef enum {
-    LKQueueResultUnfinished = 0,
-    LKQueueResultSuccessful,
-    LKQueueResultFailed,
-    LKQueueResultInterrpted
-} LKQueueResult;
+    LKQueueEntryResultUnfinished = 0,
+    LKQueueEntryResultSuccessful,
+    LKQueueEntryResultFailed,
+    LKQueueEntryResultInterrpted
+} LKQueueEntryResult;
 
 
 @class LKQueueEntryLog;
@@ -46,8 +46,8 @@ typedef enum {
     NSDictionary* info_;
     NSArray* resources_;
 
-    LKQueueState state_;
-    LKQueueResult result_;
+    LKQueueEntryState state_;
+    LKQueueEntryResult result_;
 
     NSDate* created_;
     NSDate* modified_;
@@ -60,8 +60,8 @@ typedef enum {
 // persistent properties
 @property (nonatomic, copy, readonly) NSDictionary* info;
 @property (nonatomic, copy, readonly) NSArray* resources;
-@property (nonatomic, assign, readonly) LKQueueState state;
-@property (nonatomic, assign, readonly) LKQueueResult result;
+@property (nonatomic, assign, readonly) LKQueueEntryState state;
+@property (nonatomic, assign, readonly) LKQueueEntryResult result;
 @property (nonatomic, retain, readonly) NSDate* created;
 @property (nonatomic, retain, readonly) NSDate* modified;
 @property (nonatomic, retain, readonly) NSArray* logs;

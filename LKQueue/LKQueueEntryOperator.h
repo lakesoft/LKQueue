@@ -31,14 +31,14 @@
 
     NSString* queueId_;
     NSString* entryId_;
-
+    NSString* tagId_;
 }
 @property (nonatomic, retain, readonly) NSString* queueId;
 @property (nonatomic, retain, readonly) NSString* entryId;
-
+@property (nonatomic, retain, readonly) NSString* tagId;
 
 // API
-+ (LKQueueEntryOperator*)queueEntryWithQueueId:(NSString*)queueId info:(NSDictionary*)info resources:(NSArray*)resources;
++ (LKQueueEntryOperator*)queueEntryWithQueueId:(NSString*)queueId info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId;
 
 - (BOOL)finish;
 - (BOOL)fail;

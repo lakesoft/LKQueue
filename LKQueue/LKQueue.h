@@ -55,15 +55,15 @@
 @property (nonatomic, retain, readonly) NSString* path;
 
 
-// API (Factories)
+// API (Queue management)
 + (LKQueue*)queueWithName:(NSString*)name;
 + (void)releaseQueueWithName:(NSString*)name;
++ (BOOL)hasExistedQueueWithName:(NSString*)name;
++ (BOOL)removeQueueWithName:(NSString*)name;
 
-
-// API (Entry factories)
-- (LKQueueEntry*)addEntryWithInfo:(NSDictionary*)info resources:(NSArray*)resources;
+// API (Basics)
+- (LKQueueEntry*)addEntryWithInfo:(NSDictionary*)info resources:(NSArray*)resources tagName:(NSString*)tagName;
 - (LKQueueEntry*)getEntryForProcessing;
-
 
 // API (Entry operations)
 - (BOOL)finishEntry:(LKQueueEntry*)entry;
@@ -77,14 +77,22 @@
 
 // API (Accessing entry list)
 - (NSUInteger)count;
-- (NSUInteger)countOfWating;
-- (NSArray*)queueList;
+- (NSUInteger)countOfEntryState:(LKQueueEntryState)state;
 - (LKQueueEntry*)entryAtIndex:(NSInteger)index;
+// TODO: test countOfEntryState:
+
+// TODO
+// API (Tag)
+/*- (NSArray*)tagList;
+- (NSUInteger)countForTagName:(NSString*)tagName;
+- (NSArray*)queueListForTagName:(NSString*)tagName;
+*/
 
 // API (Cooperate with other queues)
 - (BOOL)addEntry:(LKQueueEntry*)entry;
 
 // API (etc)
++ (NSString*)queueIdForName:(NSString*)name;
 + (NSString*)pathForQueueId:(NSString*)queueId;
 
 @end

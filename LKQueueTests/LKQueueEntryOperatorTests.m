@@ -36,32 +36,32 @@
 //-----------
 - (LKQueueEntryOperator*)_waitingEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil tagId:nil];
     return entry;
 }
 - (LKQueueEntryOperator*)_processingEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil tagId:nil];
     [entry process];
     return entry;
 }
 - (LKQueueEntryOperator*)_finishedEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil tagId:nil];
     [entry process];
     [entry finish];
     return entry;
 }
 - (LKQueueEntryOperator*)_failedEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil tagId:nil];
     [entry process];
     [entry fail];
     return entry;
 }
 - (LKQueueEntryOperator*)_interruptedEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil tagId:nil];
     [entry process];
     [entry interrupt];
     return entry;
@@ -80,11 +80,11 @@
     res = [NSArray arrayWithObject:@"VALUE"];
 
     NSDate* date = [NSDate date];
-    entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:info resources:res];
+    entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:info resources:res tagId:nil];
 
     STAssertEquals(entry.queueId, self.queue.queueId, nil);
-    STAssertEquals(entry.state, LKQueueStateWating, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
     STAssertEqualObjects([entry.info objectForKey:@"TITLE"], @"TEST", nil);
     STAssertEqualObjects([entry.resources lastObject], @"VALUE", nil);
     STAssertNotNil(entry.created, nil);
@@ -107,7 +107,7 @@
     
     info = [NSDictionary dictionaryWithObject:@"TEST" forKey:@"TITLE"];
     res = [NSArray arrayWithObject:@"VALUE"];
-    entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:info resources:res];
+    entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:info resources:res tagId:nil];
     BOOL result = [entry clean];
 
     NSFileManager* fileMananger = [NSFileManager defaultManager];
@@ -132,8 +132,8 @@
     modified = entry.modified;
     ret = [entry wait];
     STAssertFalse(ret, @"waiting->waiting[x]");
-    STAssertEquals(entry.state, LKQueueStateWating, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
 
     // wating -> processing[o]
@@ -141,8 +141,8 @@
     modified = entry.modified;
     ret = [entry process];
     STAssertTrue(ret, @"waiting->processing[o]");
-    STAssertEquals(entry.state, LKQueueStateProcessing, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateProcessing, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
 
     // waiting -> finished(successful)[x]
@@ -150,8 +150,8 @@
     modified = entry.modified;
     ret = [entry finish];
     STAssertFalse(ret, @"wating -> finished(successful)[x]");
-    STAssertEquals(entry.state, LKQueueStateWating, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
     // wating -> finished(failed)[x]
@@ -159,8 +159,8 @@
     modified = entry.modified;
     ret = [entry fail];
     STAssertFalse(ret, @"wating -> finished(failed)[x]");
-    STAssertEquals(entry.state, LKQueueStateWating, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
 
     // waiting -> interrupted[x]
@@ -168,8 +168,8 @@
     modified = entry.modified;
     ret = [entry interrupt];
     STAssertFalse(ret, @"waiting->intterrupted[x]");
-    STAssertEquals(entry.state, LKQueueStateWating, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
 }
@@ -185,8 +185,8 @@
     modified = entry.modified;
     ret = [entry wait];
     STAssertTrue(ret, @"processing->waiting[o]");
-    STAssertEquals(entry.state, LKQueueStateWating, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
     
     // processing -> processing[x]
@@ -194,8 +194,8 @@
     modified = entry.modified;
     ret = [entry process];
     STAssertFalse(ret, @"processing->processing[x]");
-    STAssertEquals(entry.state, LKQueueStateProcessing, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateProcessing, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
     // processing -> finished(successful)[o]
@@ -203,8 +203,8 @@
     modified = entry.modified;
     ret = [entry finish];
     STAssertTrue(ret, @"processing->finished(successful)[o]");
-    STAssertEquals(entry.state, LKQueueStateFinished, nil);
-    STAssertEquals(entry.result, LKQueueResultSuccessful, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultSuccessful, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
     
     // processing -> finished(failed)[o]
@@ -212,8 +212,8 @@
     modified = entry.modified;
     ret = [entry fail];
     STAssertTrue(ret, @"processing->finished(failed)[o]");
-    STAssertEquals(entry.state, LKQueueStateFinished, nil);
-    STAssertEquals(entry.result, LKQueueResultFailed, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultFailed, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
 
     // processing -> interrupted[o]
@@ -221,8 +221,8 @@
     modified = entry.modified;
     ret = [entry interrupt];
     STAssertTrue(ret, @"processing->interrupted[o]");
-    STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
+    STAssertEquals(entry.state, LKQueueEntryStateInterrupting, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
 }
 
@@ -231,7 +231,7 @@
     LKQueueEntryOperator* entry = nil;
     NSDate* modified;
     BOOL ret;
-    LKQueueResult result;
+    LKQueueEntryResult result;
     
     // finshed -> waiting[x]
     entry = [self _finishedEntry];
@@ -239,7 +239,7 @@
     modified = entry.modified;
     ret = [entry wait];
     STAssertFalse(ret, @"finished->wating[x]");
-    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
 
@@ -249,7 +249,7 @@
     modified = entry.modified;
     ret = [entry process];
     STAssertFalse(ret, @"finished->processing[x]");
-    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
@@ -259,7 +259,7 @@
     modified = entry.modified;
     ret = [entry finish];
     STAssertFalse(ret, @"finished->finished(successful)[x]");
-    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
@@ -269,7 +269,7 @@
     modified = entry.modified;
     ret = [entry fail];
     STAssertFalse(ret, @"finished->failed(failed)[x]");
-    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, result, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
@@ -279,7 +279,7 @@
     modified = entry.modified;
     ret = [entry interrupt];
     STAssertFalse(ret, @"finished->interrupted[x]");
-    STAssertEquals(entry.state, LKQueueStateFinished, nil);
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, result, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
 }
@@ -296,8 +296,8 @@
     modified = entry.modified;
     ret = [entry wait];
     STAssertTrue(ret, @"interrupted->wating[o]");
-    STAssertEquals(entry.state, LKQueueStateWating, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
     
     // interrupted -> processing[x]
@@ -305,8 +305,8 @@
     modified = entry.modified;
     ret = [entry process];
     STAssertFalse(ret, @"interrupted->processing[x]");
-    STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
+    STAssertEquals(entry.state, LKQueueEntryStateInterrupting, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
     // interrupted -> finished(failed)[o]
@@ -314,8 +314,8 @@
     modified = entry.modified;
     ret = [entry fail];
     STAssertTrue(ret, @"interrupted->failed[o]");
-    STAssertEquals(entry.state, LKQueueStateFinished, nil);
-    STAssertEquals(entry.result, LKQueueResultFailed, nil);    
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultFailed, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
     
     // interrupted -> finished(successful)[o]
@@ -323,8 +323,8 @@
     modified = entry.modified;
     ret = [entry finish];
     STAssertTrue(ret, @"interrupted->finished(sccessful)[o]");
-    STAssertEquals(entry.state, LKQueueStateFinished, nil);
-    STAssertEquals(entry.result, LKQueueResultInterrpted, nil);    
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultInterrpted, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
     
     // interrupted -> interrupted[x]
@@ -332,8 +332,8 @@
     modified = entry.modified;
     ret = [entry interrupt];
     STAssertFalse(ret, @"interrupted->interrupted[x]");
-    STAssertEquals(entry.state, LKQueueStateInterrupting, nil);
-    STAssertEquals(entry.result, LKQueueResultUnfinished, nil);    
+    STAssertEquals(entry.state, LKQueueEntryStateInterrupting, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
 }
