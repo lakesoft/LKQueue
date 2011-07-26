@@ -72,21 +72,23 @@
 - (BOOL)interruptEntry:(LKQueueEntry*)entry;
 - (BOOL)removeEntry:(LKQueueEntry*)entry;       // can't remove a entry while processing
 
-- (void)clearFinishedEntry; 
+- (void)removeFinishedEntry; 
 - (void)removeAllEntries;
 
 // API (Accessing entry list)
 - (NSUInteger)count;
 - (NSUInteger)countOfEntryState:(LKQueueEntryState)state;
-- (LKQueueEntry*)entryAtIndex:(NSInteger)index;
-// TODO: test countOfEntryState:
-
-// TODO
-// API (Tag)
-/*- (NSArray*)tagList;
 - (NSUInteger)countForTagName:(NSString*)tagName;
-- (NSArray*)queueListForTagName:(NSString*)tagName;
-*/
+
+- (LKQueueEntry*)entryAtIndex:(NSInteger)index;
+
+// snapshot
+- (NSArray*)entries;
+- (NSArray*)entriesForTagName:(NSString*)tagName;
+
+// API (Tag)
+- (NSArray*)tagNames;
+
 
 // API (Cooperate with other queues)
 - (BOOL)addEntry:(LKQueueEntry*)entry;

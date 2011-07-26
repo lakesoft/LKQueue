@@ -178,7 +178,7 @@
 
 - (IBAction)cleanupEntries:(id)sender
 {
-    [self.queue clearFinishedEntry];
+    [self.queue removeFinishedEntry];
     [self.tableView reloadData];
 }
 

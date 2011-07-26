@@ -80,7 +80,10 @@
     res = [NSArray arrayWithObject:@"VALUE"];
 
     NSDate* date = [NSDate date];
-    entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:info resources:res tagId:nil];
+    entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId
+                                                   info:info
+                                              resources:res
+                                                  tagId:@"TAG"];
 
     STAssertEquals(entry.queueId, self.queue.queueId, nil);
     STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
@@ -90,7 +93,8 @@
     STAssertNotNil(entry.created, nil);
     STAssertTrue([entry.created compare:date]==NSOrderedDescending, nil);
     STAssertTrue([entry.created isEqualToDate:entry.modified], nil);
-    
+    STAssertEquals(entry.tagId, @"TAG", nil);
+
     NSFileManager* fileMananger = [NSFileManager defaultManager];
     NSString* resPath = [entry performSelector:@selector(_resourcesFilePath)];
     BOOL exisited = [fileMananger fileExistsAtPath:resPath];

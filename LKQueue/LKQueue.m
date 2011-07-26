@@ -125,7 +125,7 @@ NSString* _md5String(NSString* string)
 }
 
 
-- (BOOL)_removeQueuePath
+- (BOOL)_removeQueueFolder
 {
     NSFileManager* fileManager = [NSFileManager defaultManager];
     NSError* error = nil;
@@ -160,6 +160,23 @@ NSString* _md5String(NSString* string)
         return tagId;
     } else {
         return nil;
+    }
+}
+
+// must be in @synchronized(self.list)
+- (void)_removeEntry:(LKQueueEntryOperator*)entry
+{
+    // remove entry
+    [entry clean];
+    [self.list removeObject:entry];
+
+    // remove tag
+    NSMutableSet* set = [NSMutableSet set];
+    for (LKQueueEntryOperator* e in self.list) {
+        [set addObject:e.tagId];
+    }
+    if (![set containsObject:entry.tagId]) {
+        [self.tags removeObjectForKey:entry.tagId];
     }
 }
 
@@ -390,7 +407,7 @@ NSString* _md5String(NSString* string)
     @synchronized (self.list) {
         if ([self.list containsObject:entry]) {
             if (entry.canRemove) {
-                [self.list removeObject:entry];
+                [self _removeEntry:(LKQueueEntryOperator*)entry];
                 [self _saveList];
                 return YES;
             } else {
@@ -402,19 +419,19 @@ NSString* _md5String(NSString* string)
 }
 
 
-- (void)clearFinishedEntry
+- (void)removeFinishedEntry
 {
     @synchronized (self.list) {
         BOOL updated = NO;
         for (LKQueueEntryOperator* entry in [[self.list copy] autorelease]) {
             if (entry.state == LKQueueEntryStateFinished) {
-                [entry clean];
-                [self.list removeObject:entry];
+                [self _removeEntry:entry];
                 updated = YES;
             }
         }
         if (updated) {
             [self _saveList];
+            [self _saveTags];
         }
     }
 }
@@ -423,9 +440,11 @@ NSString* _md5String(NSString* string)
 {
     @synchronized (self.list) {
         [self.list removeAllObjects];
-        [self _removeQueuePath];
+        [self.tags removeAllObjects];
+        [self _removeQueueFolder];
         [self _setupPath];
         [self _saveList];
+        [self _saveTags];
     }
 }
 
@@ -449,6 +468,19 @@ NSString* _md5String(NSString* string)
     return count;
 }
 
+- (NSUInteger)countForTagName:(NSString*)tagName
+{
+    NSUInteger count = 0;
+    NSString* tagId = [self _tagIdForName:tagName];
+    for (LKQueueEntryOperator* entry in self.list) {
+        if ([entry.tagId isEqualToString:tagId]) {
+            count++;
+        }
+    }
+    return count;
+}
+
+
 - (LKQueueEntry*)entryAtIndex:(NSInteger)index
 {
     if (index < 0 || [self.list count] <= index) {
@@ -460,11 +492,41 @@ NSString* _md5String(NSString* string)
     }
 }
 
-// API (Tag)
-- (NSArray*)tagList
+- (NSArray*)entries
 {
-    return [self.tags allValues];
+    @synchronized (self.list) {
+        NSArray* entries = [self.list copy];
+        return entries;
+    }
 }
+
+// TODO: testcase
+- (NSArray*)entriesForTagName:(NSString*)tagName
+{
+    if (tagName == nil) {
+        return [NSArray array];
+    }
+
+    NSArray* entries = [self entries];
+    NSString* tagId = [self _tagIdForName:tagName];
+    NSMutableArray* result = [NSMutableArray array];
+    for (LKQueueEntryOperator* entry in entries) {
+        if ([tagId isEqualToString:entry.tagId]) {
+            [result addObject:entry];
+        }
+    }
+    return result;
+}
+
+
+// API (Tag)
+- (NSArray*)tagNames
+{
+    return [[self.tags allValues] sortedArrayUsingComparator:^(id obj1, id obj2) {
+        return [obj1 compare:obj2];
+    }];
+}
+
 
 
 #pragma mark -
@@ -485,6 +547,7 @@ NSString* _md5String(NSString* string)
     @synchronized (self.list) {
         [self.list addObject:newEntry];
         [self _saveList];
+        [self _saveTags];
     }
     return YES;
 }

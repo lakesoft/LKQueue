@@ -56,8 +56,9 @@
                                     forKey:[NSString stringWithFormat:@"TITLE-%d", i]];
         NSArray* res = [NSArray arrayWithObject:
                         [NSString stringWithFormat:@"VALUE-%d", i]];
+        NSString* tagName = [NSString stringWithFormat:@"TAG-%d", i % 3];   // 0,1,2,0,1,2,0,1,2,0
         LKQueueEntry* entry =
-        [self.queue addEntryWithInfo:info resources:res tagName:nil];
+        [self.queue addEntryWithInfo:info resources:res tagName:tagName];
         
         STAssertNotNil(entry, nil);
     }
@@ -297,7 +298,7 @@
     
     [self _setupMultiState];
     
-    [self.queue clearFinishedEntry];
+    [self.queue removeFinishedEntry];
     
     STAssertEquals([self.queue count], (NSUInteger)(TEST_ENTRY_MAX-3), nil);
     STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateWating], (NSUInteger)(TEST_ENTRY_MAX-5), nil);
@@ -315,8 +316,12 @@
 {
     STAssertEquals([self.queue count], (NSUInteger)0, nil);
     [self _setupTestEntries];
+    [self _setupMultiState];
     STAssertEquals([self.queue count], (NSUInteger)TEST_ENTRY_MAX, nil);
-
+    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateWating], (NSUInteger)5, nil);
+    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateProcessing], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateInterrupting], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateFinished], (NSUInteger)3, nil);
 }
 
 - (void)testPathForQueueId
@@ -350,6 +355,71 @@
     STAssertNil(entry, nil);
     entry = [self.queue entryAtIndex:TEST_ENTRY_MAX];
     STAssertNil(entry, nil);
+}
+
+- (void)testEntries
+{
+    [self _setupTestEntries];
+    STAssertEquals([[self.queue entries] count], (NSUInteger)TEST_ENTRY_MAX, nil);
+}
+
+- (void)testTags
+{
+    // tagList
+    NSArray* tagList = [self.queue tagNames];
+    STAssertEquals([tagList count], (NSUInteger)0, nil);
+
+    [self _setupTestEntries];
+    [self _setupMultiState];
+    tagList = [self.queue tagNames];
+    for (int i=0; i < [tagList count]; i++) {
+        NSString* tagName = [tagList objectAtIndex:i];
+        STAssertEqualObjects(tagName, ([NSString stringWithFormat:@"TAG-%d", i%3]), nil);
+    }
+    
+    // countForTagName
+    STAssertEquals([self.queue countForTagName:@"TAG-0"], (NSUInteger)4, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-1"], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
+ 
+    // TAG-0: 0, 3, 6, 9
+    // TAG-1: 1, 4, 7
+    // TAG-2: 2, 5, 8
+    
+    // 0: processing               TAG-0
+    // 1: interrupted              TAG-1
+    // 2: finished(successful)     TAG-2
+    // 3: finished(failed)         TAG-0
+    // 4: finished(interrupted)    TAG-1
+    // 5-9: waiting                TAG-2, TAG-0, TAG-1, TAG-2, TAG-0
+
+    // (clearFinishedEntry) left: 0, 1, 5, 6, 7, 8, 9
+    [self.queue removeFinishedEntry];
+    STAssertEquals([self.queue countForTagName:@"TAG-0"], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-1"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
+
+    // (removeEntry) remove TAG-2
+    LKQueueEntry* entry;
+    entry = [self.queue entryAtIndex:5];
+    [self.queue removeEntry:entry];
+    entry = [self.queue entryAtIndex:2];
+    [self.queue removeEntry:entry];
+    STAssertEquals([self.queue countForTagName:@"TAG-0"], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-1"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
+    
+    // (removeAllEntries)
+    [self.queue removeAllEntries];
+    STAssertEquals([self.queue countForTagName:@"TAG-0"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-1"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
+
+    // TODO: persist
 }
 
 //-------------------

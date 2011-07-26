@@ -240,6 +240,9 @@
 /* Begin PBXProject section */
 		4C1A0A351378DD63009D78F0 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = 4C1A0A381378DD63009D78F0 /* Build configuration list for PBXProject "LKQueue" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
