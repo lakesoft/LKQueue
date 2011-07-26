@@ -59,6 +59,7 @@
         NSString* tagName = [NSString stringWithFormat:@"TAG-%d", i % 3];   // 0,1,2,0,1,2,0,1,2,0
         LKQueueEntry* entry =
         [self.queue addEntryWithInfo:info resources:res tagName:tagName];
+        entry.context = [NSString stringWithFormat:@"CONTEXT-%d", i];
         
         STAssertNotNil(entry, nil);
     }
@@ -371,10 +372,30 @@
 
     [self _setupTestEntries];
     [self _setupMultiState];
+    // TAG-0: 0, 3, 6, 9
+    // TAG-1: 1, 4, 7
+    // TAG-2: 2, 5, 8
+
     tagList = [self.queue tagNames];
     for (int i=0; i < [tagList count]; i++) {
         NSString* tagName = [tagList objectAtIndex:i];
         STAssertEqualObjects(tagName, ([NSString stringWithFormat:@"TAG-%d", i%3]), nil);
+    }
+    
+    // entriesForTagName
+    int cnt[3] = {4, 3, 3};    
+    for (int it=0; it < 3; it++) {
+        NSArray* tags = [self.queue entriesForTagName:[NSString stringWithFormat:@"TAG-%d", it]];
+        STAssertEquals([tags count], (NSUInteger)cnt[it], nil);
+        for (int i=0; i < [tags count]; i++) {
+            int idx = it + i*3;
+            LKQueueEntry* entry = [tags objectAtIndex:i];
+            STAssertEqualObjects(([entry.info objectForKey:
+                                   [NSString stringWithFormat:@"TITLE-%d", idx]]),
+                                 ([NSString stringWithFormat:@"TEST-%d", idx]), nil);
+            STAssertEqualObjects(([entry.resources lastObject]),
+                                 ([NSString stringWithFormat:@"VALUE-%d", idx]), nil);
+        }
     }
     
     // countForTagName
@@ -382,11 +403,7 @@
     STAssertEquals([self.queue countForTagName:@"TAG-1"], (NSUInteger)3, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)3, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
- 
-    // TAG-0: 0, 3, 6, 9
-    // TAG-1: 1, 4, 7
-    // TAG-2: 2, 5, 8
-    
+     
     // 0: processing               TAG-0
     // 1: interrupted              TAG-1
     // 2: finished(successful)     TAG-2
@@ -419,7 +436,6 @@
     STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)0, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
 
-    // TODO: persist
 }
 
 //-------------------
@@ -511,9 +527,20 @@
                              ([NSString stringWithFormat:@"VALUE-%d", i]), nil);
         STAssertNotNil(entry.created, nil);
         STAssertNotNil(entry.modified, nil);
+        STAssertNil(entry.context, nil);
         i++;
     }
     
+    // tag
+    NSArray* tagList = [self.queue tagNames];
+    for (int i=0; i < [tagList count]; i++) {
+        NSString* tagName = [tagList objectAtIndex:i];
+        STAssertEqualObjects(tagName, ([NSString stringWithFormat:@"TAG-%d", i%3]), nil);
+    }
+    STAssertEquals([self.queue countForTagName:@"TAG-0"], (NSUInteger)4, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-1"], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
 }
 
 - (void)testPersistent2

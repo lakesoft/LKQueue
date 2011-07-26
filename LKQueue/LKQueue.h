@@ -61,30 +61,30 @@
 + (BOOL)hasExistedQueueWithName:(NSString*)name;
 + (BOOL)removeQueueWithName:(NSString*)name;
 
+
 // API (Basics)
 - (LKQueueEntry*)addEntryWithInfo:(NSDictionary*)info resources:(NSArray*)resources tagName:(NSString*)tagName;
 - (LKQueueEntry*)getEntryForProcessing;
+
 
 // API (Entry operations)
 - (BOOL)finishEntry:(LKQueueEntry*)entry;
 - (BOOL)failEntry:(LKQueueEntry*)entry;
 - (BOOL)waitEntry:(LKQueueEntry*)entry;
 - (BOOL)interruptEntry:(LKQueueEntry*)entry;
-- (BOOL)removeEntry:(LKQueueEntry*)entry;       // can't remove a entry while processing
-
+- (BOOL)removeEntry:(LKQueueEntry*)entry;           // NOTE: can't remove a entry while processing
 - (void)removeFinishedEntry; 
 - (void)removeAllEntries;
 
-// API (Accessing entry list)
+
+// API (Accessing entryies)
 - (NSUInteger)count;
 - (NSUInteger)countOfEntryState:(LKQueueEntryState)state;
 - (NSUInteger)countForTagName:(NSString*)tagName;
-
 - (LKQueueEntry*)entryAtIndex:(NSInteger)index;
+- (NSArray*)entries;                                // NOTE: the return values are snapshots
+- (NSArray*)entriesForTagName:(NSString*)tagName;   // NOTE: the return values are snapshots
 
-// snapshot
-- (NSArray*)entries;
-- (NSArray*)entriesForTagName:(NSString*)tagName;
 
 // API (Tag)
 - (NSArray*)tagNames;
@@ -92,6 +92,7 @@
 
 // API (Cooperate with other queues)
 - (BOOL)addEntry:(LKQueueEntry*)entry;
+
 
 // API (etc)
 + (NSString*)queueIdForName:(NSString*)name;

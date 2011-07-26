@@ -94,6 +94,9 @@
     STAssertTrue([entry.created compare:date]==NSOrderedDescending, nil);
     STAssertTrue([entry.created isEqualToDate:entry.modified], nil);
     STAssertEquals(entry.tagId, @"TAG", nil);
+    
+    entry.context = @"CONTEXT";
+    STAssertEqualObjects(entry.context, @"CONTEXT", nil);
 
     NSFileManager* fileMananger = [NSFileManager defaultManager];
     NSString* resPath = [entry performSelector:@selector(_resourcesFilePath)];

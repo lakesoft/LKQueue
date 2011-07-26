@@ -52,9 +52,9 @@ typedef enum {
     NSDate* created_;
     NSDate* modified_;
 
-    id context_;
-    
     NSMutableArray* logs_;
+
+    id context_;
 }
 
 // persistent properties
@@ -65,6 +65,8 @@ typedef enum {
 @property (nonatomic, retain, readonly) NSDate* created;
 @property (nonatomic, retain, readonly) NSDate* modified;
 @property (nonatomic, retain, readonly) NSArray* logs;
+
+@property (nonatomic, retain) id context;   // volatile (not persistent)
 
 // status
 @property (nonatomic, assign, readonly) BOOL canRemove;

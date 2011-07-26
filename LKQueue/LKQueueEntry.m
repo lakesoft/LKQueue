@@ -32,6 +32,7 @@
 @synthesize created = created_;
 @synthesize modified = modified_;
 @synthesize logs = logs_;
+@synthesize context = context_;
 
 @synthesize canRemove;
 
