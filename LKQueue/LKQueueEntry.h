@@ -43,18 +43,6 @@ typedef enum {
 
 @interface LKQueueEntry : NSObject {
     
-    NSDictionary* info_;
-    NSArray* resources_;
-
-    LKQueueEntryState state_;
-    LKQueueEntryResult result_;
-
-    NSDate* created_;
-    NSDate* modified_;
-
-    NSMutableArray* logs_;
-
-    id context_;
 }
 
 // persistent properties

@@ -31,9 +31,17 @@
 @interface LKQueueEntryOperator : LKQueueEntry <NSCoding> {
 
 }
+@property (nonatomic, copy) NSDictionary* info;
+@property (nonatomic, copy) NSArray* resources;
+@property (nonatomic, assign) LKQueueEntryState state;
+@property (nonatomic, assign) LKQueueEntryResult result;
+@property (nonatomic, retain) NSDate* created;
+@property (nonatomic, retain) NSDate* modified;
+@property (nonatomic, retain) NSArray* logs;
+
 @property (nonatomic, assign) LKQueue* queue;
-@property (nonatomic, retain, readonly) NSString* entryId;
-@property (nonatomic, retain, readonly) NSString* tagId;
+@property (nonatomic, retain) NSString* entryId;
+@property (nonatomic, retain) NSString* tagId;
 
 // API
 + (LKQueueEntryOperator*)queueEntryWithQueue:(LKQueue*)queue info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId;

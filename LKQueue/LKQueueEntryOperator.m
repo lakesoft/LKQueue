@@ -36,13 +36,14 @@
 #define LK_QUEUE_ENTRY_META_MODIFIED  @"__modified__"
 
 
-@interface LKQueueEntryOperator()
-@property (nonatomic, retain) NSString* entryId;
-@property (nonatomic, retain) NSString* tagId;
-
-@end
-
 @implementation LKQueueEntryOperator
+@synthesize info = info_;
+@synthesize resources = resources_;
+@synthesize state = state_;
+@synthesize result = result_;
+@synthesize created = created_;
+@synthesize modified = modified_;
+@synthesize logs = logs_;
 
 @synthesize queue = queue_;
 @synthesize entryId = entryId_;
