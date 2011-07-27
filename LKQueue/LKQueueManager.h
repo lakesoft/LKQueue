@@ -20,31 +20,24 @@
 // THE SOFTWARE.
 //
 
-//
-// NOTE: Thread *not* safe
-//
-
 #import <Foundation/Foundation.h>
-#import "LKQueueEntry.h"
 
 @class LKQueue;
-@interface LKQueueEntryOperator : LKQueueEntry <NSCoding> {
-
+@interface LKQueueManager : NSObject {
 }
-@property (nonatomic, assign) LKQueue* queue;
-@property (nonatomic, retain, readonly) NSString* entryId;
-@property (nonatomic, retain, readonly) NSString* tagId;
 
 // API
-+ (LKQueueEntryOperator*)queueEntryWithQueue:(LKQueue*)queue info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId;
++ (LKQueueManager*)sharedManager;
 
-- (BOOL)finish;
-- (BOOL)fail;
-- (BOOL)wait;
-- (BOOL)process;
-- (BOOL)interrupt;
 
-- (BOOL)clean;  // remove persistant files
+// API (Queue management)
+- (LKQueue*)queueWithName:(NSString*)queueName; // NOTE: If same queue has existed, return it
+- (BOOL)removeQueue:(LKQueue*)queue;
+- (BOOL)removeAllQueues;
+- (void)releaseCacheWithQueue:(LKQueue*)queue;
 
+// API (Inspector)
+- (NSString*)path;
+- (NSDictionary*)queues;    // <queueId=>queueName>
 
 @end

@@ -24,36 +24,31 @@
 #import "LKQueue.h"
 #import "LKQueueEntryOperator.h"
 
-#define LK_QUEUE_PATH       @"__FBQueue__"
 #define LK_QUEUE_FILENAME   @"queue.dat"
-#define LK_TAG_FILENAME   @"queue.tag"
+#define LK_TAG_FILENAME     @"queue.tag"
 
 @interface LKQueue()
 @property (nonatomic, retain) NSString* queueId;
-@property (nonatomic, copy  ) NSString* name;
-@property (nonatomic, retain) NSMutableArray* list;
 @property (nonatomic, retain) NSString* path;
 @property (nonatomic, retain) NSMutableDictionary* tags;
+@property (nonatomic, retain) NSMutableArray* entryList;      // <LKQueueEntryOperator>
 @end
-
-
-static NSMutableDictionary* queues_;
 
 
 @implementation LKQueue
 
 @synthesize queueId = queueId_;
-@synthesize name = name_;
-@synthesize list = list_;
 @synthesize path = path_;
 @synthesize tags = tags_;
+
+@synthesize entryList = entryList_;
 
 //------------------------------------------------------------------------------
 #pragma mark -
 #pragma mark Private
 //------------------------------------------------------------------------------
 
-NSString* _md5String(NSString* string)
+static NSString* _md5String(NSString* string)
 {
     unsigned char result[16];
     const char* cString = [string UTF8String];
@@ -68,18 +63,16 @@ NSString* _md5String(NSString* string)
             ]; 
 }
 
-- (BOOL)_setupPath
+- (BOOL)_createDirectoryWithPath:(NSString*)path
 {
-    self.path = [[self class] pathForQueueId:self.queueId];
-    
     NSFileManager* fileManager = [NSFileManager defaultManager];
     NSError* error = nil;
-    if (![fileManager fileExistsAtPath:self.path]) {
-        if (![fileManager createDirectoryAtPath:self.path
+    if (![fileManager fileExistsAtPath:path]) {
+        if (![fileManager createDirectoryAtPath:path
                     withIntermediateDirectories:YES
                                      attributes:nil
                                           error:&error]) {
-            NSLog(@"%s|[ERROR] Can not create a directory|%@", __PRETTY_FUNCTION__, self.path);
+            NSLog(@"%s|[ERROR] Can not create a directory|%@", __PRETTY_FUNCTION__, path);
             return NO;
         }
     }
@@ -97,11 +90,11 @@ NSString* _md5String(NSString* string)
 }
 
 // not thread safe
-// --> must be called in @synchronized(self.list)
+// --> must be called in @synchronized(self.entryList)
 - (BOOL)_saveList
 {
     NSString* filePath = [self _queueFilePath];
-    if ([NSKeyedArchiver archiveRootObject:self.list toFile:filePath]) {
+    if ([NSKeyedArchiver archiveRootObject:self.entryList toFile:filePath]) {
         return YES;
     } else {
         NSLog(@"%s|[ERROR]Failed to save the queue file: %@",
@@ -163,16 +156,16 @@ NSString* _md5String(NSString* string)
     }
 }
 
-// must be in @synchronized(self.list)
+// must be in @synchronized(self.entryList)
 - (void)_removeEntry:(LKQueueEntryOperator*)entry
 {
     // remove entry
     [entry clean];
-    [self.list removeObject:entry];
+    [self.entryList removeObject:entry];
 
     // remove tag
     NSMutableSet* set = [NSMutableSet set];
-    for (LKQueueEntryOperator* e in self.list) {
+    for (LKQueueEntryOperator* e in self.entryList) {
         [set addObject:e.tagId];
     }
     if (![set containsObject:entry.tagId]) {
@@ -185,33 +178,28 @@ NSString* _md5String(NSString* string)
 #pragma mark Initialization and deallocation
 //------------------------------------------------------------------------------
 
-+ (void)initialize
+- (id)initWithId:(NSString*)queueId basePath:(NSString*)basePath
 {
-    if (queues_ == nil) {
-        queues_ = [[NSMutableDictionary alloc] init];
-    }
-}
-
-- (id)initWithName:(NSString*)name {
     self = [super init];
     if (self) {
-        self.queueId = [[self class] queueIdForName:name];
-        self.name = name;
+        self.queueId = queueId;
+        self.path = [basePath stringByAppendingPathComponent:queueId];
         
-        [self _setupPath];
+        [self _createDirectoryWithPath:self.path];
         
         NSFileManager* fileManager = [NSFileManager defaultManager];
 
         // [1] queue
         NSString* queueFilePath = [self _queueFilePath];
         if ([fileManager fileExistsAtPath:queueFilePath]) {
-            self.list = [NSKeyedUnarchiver unarchiveObjectWithFile:queueFilePath];
-            if (self.list == nil) {
+            self.entryList = [NSKeyedUnarchiver unarchiveObjectWithFile:queueFilePath];
+            if (self.entryList == nil) {
                 NSLog(@"%s|[ERROR] Failed to restore the queue file: %@",
                       __PRETTY_FUNCTION__, queueFilePath);
                 return NO;
             }
-            for (LKQueueEntryOperator* entry in self.list) {
+            for (LKQueueEntryOperator* entry in self.entryList) {
+                entry.queue = self;
                 if (entry.state == LKQueueEntryStateProcessing) {
                     [entry wait];
                 }
@@ -219,7 +207,7 @@ NSString* _md5String(NSString* string)
 
         } else {
             // new queue
-            self.list = [NSMutableArray array];
+            self.entryList = [NSMutableArray array];
             [self _saveList];
         }
 
@@ -244,90 +232,28 @@ NSString* _md5String(NSString* string)
 }
 
 - (void)dealloc {
-    self.name = nil;
-    self.list = nil;
+    self.entryList = nil;
     self.path = nil;
     self.tags = nil;
     [super dealloc];
 }
 
-+ (LKQueue*)queueWithName:(NSString*)name
-{
-    LKQueue* queue = nil;
-    
-    @synchronized (queues_) {
-        queue = [queues_ objectForKey:name];
-        if (queue == nil) {
-            queue = [[self alloc] initWithName:name];
-            [queues_ setObject:queue forKey:name];
-            [queue release];
-        }
-    }
-    return queue;
-}
-
- + (void)releaseQueueWithName:(NSString*)name
-{
-    @synchronized (queues_) {
-        [queues_ removeObjectForKey:name];
-    }
-}
-
-+ (BOOL)hasExistedQueueWithName:(NSString*)name
-{
-    BOOL hasExisted = NO;
-    
-    @synchronized (queues_) {
-        if ([queues_ objectForKey:name]) {
-            hasExisted = YES;
-        } else {
-            NSString* path = [self pathForQueueId:[self queueIdForName:name]];
-            NSFileManager* fileManager = [NSFileManager defaultManager];
-            if ([fileManager fileExistsAtPath:path]) {
-                hasExisted = YES;
-            }
-        }
-    }
-    return hasExisted;
-}
-
-+ (BOOL)removeQueueWithName:(NSString*)name
-{
-    if ([self hasExistedQueueWithName:name]) {
-        [self releaseQueueWithName:name];
-
-        NSString* path = [self pathForQueueId:[self queueIdForName:name]];
-        NSFileManager* fileManager = [NSFileManager defaultManager];
-        NSError* error = nil;
-        if ([fileManager removeItemAtPath:path error:&error]) {
-            return YES;
-        } else {
-            NSLog(@"%s|[ERROR] Failed to remove the directory|%@",
-                  __PRETTY_FUNCTION__, error);
-            return NO;
-        }
-    }
-    return NO;  // not found
-}
 
 //------------------------------------------------------------------------------
 #pragma mark -
 #pragma mark API
 //------------------------------------------------------------------------------
 
-#pragma mark -
-#pragma mark API ()
-
 - (LKQueueEntry*)addEntryWithInfo:(NSDictionary*)info resources:(NSArray*)resources tagName:(NSString*)tagName
 {
     NSString* tagId = [self _addTagName:tagName];
     LKQueueEntryOperator* entry =
-        [LKQueueEntryOperator queueEntryWithQueueId:self.queueId
-                                               info:info
-                                          resources:resources
-                                              tagId:tagId];
-    @synchronized (self.list) {
-        [self.list addObject:entry];
+        [LKQueueEntryOperator queueEntryWithQueue:self
+                                             info:info
+                                        resources:resources
+                                            tagId:tagId];
+    @synchronized (self.entryList) {
+        [self.entryList addObject:entry];
         [self _saveList];
     }
     return entry;
@@ -335,8 +261,8 @@ NSString* _md5String(NSString* string)
 
 - (LKQueueEntry*)getEntryForProcessing
 {
-    @synchronized (self.list) {
-        for (LKQueueEntryOperator* entry in self.list) {
+    @synchronized (self.entryList) {
+        for (LKQueueEntryOperator* entry in self.entryList) {
             if (entry.state == LKQueueEntryStateWating) {
                 [entry process];    // -> processing
                 [self _saveList];
@@ -352,8 +278,8 @@ NSString* _md5String(NSString* string)
 
 - (BOOL)waitEntry:(LKQueueEntry*)entry
 {
-    @synchronized (self.list) {
-        if ([self.list containsObject:entry]) {
+    @synchronized (self.entryList) {
+        if ([self.entryList containsObject:entry]) {
             if ([(LKQueueEntryOperator*)entry wait]) {
                 [self _saveList];
                 return YES;
@@ -365,8 +291,8 @@ NSString* _md5String(NSString* string)
 
 - (BOOL)finishEntry:(LKQueueEntry*)entry
 {
-    @synchronized (self.list) {
-        if ([self.list containsObject:entry]) {
+    @synchronized (self.entryList) {
+        if ([self.entryList containsObject:entry]) {
             if ([(LKQueueEntryOperator*)entry finish]) {
                 [self _saveList];
                 return YES;
@@ -378,8 +304,8 @@ NSString* _md5String(NSString* string)
 
 - (BOOL)interruptEntry:(LKQueueEntry*)entry
 {
-    @synchronized (self.list) {
-        if ([self.list containsObject:entry]) {
+    @synchronized (self.entryList) {
+        if ([self.entryList containsObject:entry]) {
             if ([(LKQueueEntryOperator*)entry interrupt]) {
                 [self _saveList];
                 return YES;
@@ -391,8 +317,8 @@ NSString* _md5String(NSString* string)
 
 - (BOOL)failEntry:(LKQueueEntry*)entry
 {
-    @synchronized (self.list) {
-        if ([self.list containsObject:entry]) {
+    @synchronized (self.entryList) {
+        if ([self.entryList containsObject:entry]) {
             if ([(LKQueueEntryOperator*)entry fail]) {
                 [self _saveList];
                 return YES;
@@ -404,8 +330,8 @@ NSString* _md5String(NSString* string)
 
 - (BOOL)removeEntry:(LKQueueEntry*)entry
 {
-    @synchronized (self.list) {
-        if ([self.list containsObject:entry]) {
+    @synchronized (self.entryList) {
+        if ([self.entryList containsObject:entry]) {
             if (entry.canRemove) {
                 [self _removeEntry:(LKQueueEntryOperator*)entry];
                 [self _saveList];
@@ -421,9 +347,9 @@ NSString* _md5String(NSString* string)
 
 - (void)removeFinishedEntry
 {
-    @synchronized (self.list) {
+    @synchronized (self.entryList) {
         BOOL updated = NO;
-        for (LKQueueEntryOperator* entry in [[self.list copy] autorelease]) {
+        for (LKQueueEntryOperator* entry in [[self.entryList copy] autorelease]) {
             if (entry.state == LKQueueEntryStateFinished) {
                 [self _removeEntry:entry];
                 updated = YES;
@@ -438,11 +364,11 @@ NSString* _md5String(NSString* string)
 
 - (void)removeAllEntries
 {
-    @synchronized (self.list) {
-        [self.list removeAllObjects];
+    @synchronized (self.entryList) {
+        [self.entryList removeAllObjects];
         [self.tags removeAllObjects];
         [self _removeQueueFolder];
-        [self _setupPath];
+        [self _createDirectoryWithPath:self.path];
         [self _saveList];
         [self _saveTags];
     }
@@ -454,13 +380,13 @@ NSString* _md5String(NSString* string)
 
 - (NSUInteger)count
 {
-    return [self.list count];
+    return [self.entryList count];
 }
 
 - (NSUInteger)countOfEntryState:(LKQueueEntryState)state
 {
     NSUInteger count = 0;
-    for (LKQueueEntryOperator* entry in self.list) {
+    for (LKQueueEntryOperator* entry in self.entryList) {
         if (entry.state == state) {
             count++;
         }
@@ -472,7 +398,7 @@ NSString* _md5String(NSString* string)
 {
     NSUInteger count = 0;
     NSString* tagId = [self _tagIdForName:tagName];
-    for (LKQueueEntryOperator* entry in self.list) {
+    for (LKQueueEntryOperator* entry in self.entryList) {
         if ([entry.tagId isEqualToString:tagId]) {
             count++;
         }
@@ -483,19 +409,19 @@ NSString* _md5String(NSString* string)
 
 - (LKQueueEntry*)entryAtIndex:(NSInteger)index
 {
-    if (index < 0 || [self.list count] <= index) {
+    if (index < 0 || [self.entryList count] <= index) {
         return nil;
     }
     
-    @synchronized (self.list) {
-        return [self.list objectAtIndex:index];
+    @synchronized (self.entryList) {
+        return [self.entryList objectAtIndex:index];
     }
 }
 
 - (NSArray*)entries
 {
-    @synchronized (self.list) {
-        NSArray* entries = [self.list copy];
+    @synchronized (self.entryList) {
+        NSArray* entries = [self.entryList copy];
         return entries;
     }
 }
@@ -534,37 +460,22 @@ NSString* _md5String(NSString* string)
 
 - (BOOL)addEntry:(LKQueueEntry*)entry
 {
-    if (entry == nil || [self.list containsObject:entry]) {
+    if (entry == nil || [self.entryList containsObject:entry]) {
         return NO;
     }
 
     LKQueueEntryOperator* newEntry =
-        [LKQueueEntryOperator queueEntryWithQueueId:self.queueId
-                                           info:entry.info
-                                      resources:entry.resources
-                                        tagId:((LKQueueEntryOperator*)entry).tagId];
+        [LKQueueEntryOperator queueEntryWithQueue:self
+                                             info:entry.info
+                                        resources:entry.resources
+                                            tagId:((LKQueueEntryOperator*)entry).tagId];
 
-    @synchronized (self.list) {
-        [self.list addObject:newEntry];
+    @synchronized (self.entryList) {
+        [self.entryList addObject:newEntry];
         [self _saveList];
         [self _saveTags];
     }
     return YES;
-}
-
-#pragma mark -
-#pragma mark API (etc)
-
-+ (NSString*)queueIdForName:(NSString*)name
-{
-    NSString* queueId = _md5String(name);
-    return queueId;
-}
-
-+ (NSString*)pathForQueueId:(NSString*)queueId
-{
-    NSString* basePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:LK_QUEUE_PATH];
-    return [basePath stringByAppendingPathComponent:queueId];
 }
 
 

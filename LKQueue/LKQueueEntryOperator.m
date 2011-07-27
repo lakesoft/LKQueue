@@ -22,6 +22,7 @@
 
 #import "LKQueueEntryOperator.h"
 #import "LKQueue.h"
+#import "LKQueueManager.h"
 
 // for archive
 #define LK_QUEUE_ENTRY_KEY_QUEUE_ID     @"qid"
@@ -36,7 +37,6 @@
 
 
 @interface LKQueueEntryOperator()
-@property (nonatomic, retain) NSString* queueId;
 @property (nonatomic, retain) NSString* entryId;
 @property (nonatomic, retain) NSString* tagId;
 
@@ -44,7 +44,7 @@
 
 @implementation LKQueueEntryOperator
 
-@synthesize queueId = queueId_;
+@synthesize queue = queue_;
 @synthesize entryId = entryId_;
 @synthesize tagId = tagId_;
 
@@ -55,7 +55,7 @@
 
 - (NSString*)_filePathForExtension:(NSString*)extension
 {
-    return [[[LKQueue pathForQueueId:self.queueId]
+    return [[self.queue.path
              stringByAppendingPathComponent:self.entryId]
             stringByAppendingPathExtension:extension];    
 }
@@ -82,11 +82,11 @@
 #pragma mark -
 #pragma mark Initialization and deallocation
 //------------------------------------------------------------------------------
-- (id)initWithQueueId:(NSString*)queueId info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId
+- (id)initWithQueue:(LKQueue*)queue info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId
 {
     self = [super init];
     if (self) {
-        self.queueId = queueId;
+        self.queue = queue;
         self.tagId = tagId;
 
         CFUUIDRef uuidObj = CFUUIDCreate(nil);
@@ -128,7 +128,7 @@
 }
 
 - (void)dealloc {
-    self.queueId = nil;
+    self.queue = nil;
     self.entryId = nil;
     [info_ release];
     [resources_ release];
@@ -143,9 +143,9 @@
 #pragma mark -
 #pragma mark API
 //------------------------------------------------------------------------------
-+ (LKQueueEntryOperator*)queueEntryWithQueueId:(NSString*)queueId info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId
++ (LKQueueEntryOperator*)queueEntryWithQueue:(LKQueue*)queue info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId
 {
-    return [[[self alloc] initWithQueueId:queueId info:info resources:resources tagId:tagId] autorelease];
+    return [[[self alloc] initWithQueue:queue info:info resources:resources tagId:tagId] autorelease];
 }
 
 - (void)_updateModified
@@ -295,21 +295,22 @@
 
 - (void)encodeWithCoder:(NSCoder*)coder
 {
-	[coder encodeObject:self.queueId    forKey:LK_QUEUE_ENTRY_KEY_QUEUE_ID];
-	[coder encodeInt:self.state         forKey:LK_QUEUE_ENTRY_KEY_STATE];
-	[coder encodeInt:self.result        forKey:LK_QUEUE_ENTRY_KEY_RESULT];
-	[coder encodeObject:self.entryId    forKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
-	[coder encodeObject:self.tagId      forKey:LK_QUEUE_ENTRY_KEY_TAG_ID];
+	[coder encodeObject:self.queue.queueId  forKey:LK_QUEUE_ENTRY_KEY_QUEUE_ID];
+	[coder encodeInt:self.state             forKey:LK_QUEUE_ENTRY_KEY_STATE];
+	[coder encodeInt:self.result            forKey:LK_QUEUE_ENTRY_KEY_RESULT];
+	[coder encodeObject:self.entryId        forKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
+	[coder encodeObject:self.tagId          forKey:LK_QUEUE_ENTRY_KEY_TAG_ID];
 }
 
 - (id)initWithCoder:(NSCoder*)coder {
     self = [super init];
     if (self) {
-        self.queueId    = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_QUEUE_ID];
         state_          = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_STATE];
         result_         = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_RESULT];
         self.entryId    = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
         self.tagId      = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_TAG_ID];
+        
+        // self.queue will be set in LKQueue class
     }
     return self;
 }

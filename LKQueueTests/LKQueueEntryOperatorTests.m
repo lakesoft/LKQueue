@@ -7,6 +7,7 @@
 #import "LKQueueEntryOperator.h"
 #import "LKQueueEntryLog.h"
 #import "LKQueue.h"
+#import "LKQueueManager.h"
 
 #define QUEUE_NAME  @"Test Queue"
 
@@ -19,7 +20,7 @@
     [super setUp];
     
     // Set-up code here.
-    self.queue = [LKQueue queueWithName:QUEUE_NAME];
+    self.queue = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME];
 }
 
 - (void)tearDown
@@ -36,32 +37,32 @@
 //-----------
 - (LKQueueEntryOperator*)_waitingEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil tagId:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
     return entry;
 }
 - (LKQueueEntryOperator*)_processingEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil tagId:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
     [entry process];
     return entry;
 }
 - (LKQueueEntryOperator*)_finishedEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil tagId:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
     [entry process];
     [entry finish];
     return entry;
 }
 - (LKQueueEntryOperator*)_failedEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil tagId:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
     [entry process];
     [entry fail];
     return entry;
 }
 - (LKQueueEntryOperator*)_interruptedEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:nil resources:nil tagId:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
     [entry process];
     [entry interrupt];
     return entry;
@@ -80,12 +81,12 @@
     res = [NSArray arrayWithObject:@"VALUE"];
 
     NSDate* date = [NSDate date];
-    entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId
+    entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue
                                                    info:info
                                               resources:res
                                                   tagId:@"TAG"];
 
-    STAssertEquals(entry.queueId, self.queue.queueId, nil);
+    STAssertEquals(entry.queue, self.queue, nil);
     STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
     STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
     STAssertEqualObjects([entry.info objectForKey:@"TITLE"], @"TEST", nil);
@@ -114,7 +115,7 @@
     
     info = [NSDictionary dictionaryWithObject:@"TEST" forKey:@"TITLE"];
     res = [NSArray arrayWithObject:@"VALUE"];
-    entry = [LKQueueEntryOperator queueEntryWithQueueId:self.queue.queueId info:info resources:res tagId:nil];
+    entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:info resources:res tagId:nil];
     BOOL result = [entry clean];
 
     NSFileManager* fileMananger = [NSFileManager defaultManager];

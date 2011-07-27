@@ -22,6 +22,9 @@
 		4C1A0A941378DF1D009D78F0 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C1A0A921378DF1D009D78F0 /* RootViewController.m */; };
 		4C1A0A961378DF3A009D78F0 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A951378DF3A009D78F0 /* MainWindow.xib */; };
 		4C1A0A9A1378E094009D78F0 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C1A0A991378E094009D78F0 /* RootViewController.xib */; };
+		4C27FD7413DFB06E00192E67 /* LKQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C27FD7313DFB06E00192E67 /* LKQueueManager.m */; };
+		4C27FD7513DFB06E00192E67 /* LKQueueManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C27FD7313DFB06E00192E67 /* LKQueueManager.m */; };
+		4C27FD7D13DFDFB300192E67 /* LKQueueManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C27FD7C13DFDFB300192E67 /* LKQueueManagerTests.m */; };
 		4C6F06801378E35E0046B177 /* LKQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067B1378E35E0046B177 /* LKQueue.m */; };
 		4C6F06811378E35E0046B177 /* LKQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067B1378E35E0046B177 /* LKQueue.m */; };
 		4C6F06821378E35E0046B177 /* LKQueueEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067D1378E35E0046B177 /* LKQueueEntry.m */; };
@@ -66,6 +69,10 @@
 		4C1A0A921378DF1D009D78F0 /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
 		4C1A0A951378DF3A009D78F0 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		4C1A0A991378E094009D78F0 /* RootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
+		4C27FD7213DFB06E00192E67 /* LKQueueManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueManager.h; sourceTree = "<group>"; };
+		4C27FD7313DFB06E00192E67 /* LKQueueManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueManager.m; sourceTree = "<group>"; };
+		4C27FD7B13DFDFB300192E67 /* LKQueueManagerTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueManagerTests.h; sourceTree = "<group>"; };
+		4C27FD7C13DFDFB300192E67 /* LKQueueManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueManagerTests.m; sourceTree = "<group>"; };
 		4C6F067A1378E35E0046B177 /* LKQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueue.h; sourceTree = "<group>"; };
 		4C6F067B1378E35E0046B177 /* LKQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueue.m; sourceTree = "<group>"; };
 		4C6F067C1378E35E0046B177 /* LKQueueEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueEntry.h; sourceTree = "<group>"; };
@@ -166,6 +173,8 @@
 				4C1A0A8B1378DE75009D78F0 /* LKQueueTests.m */,
 				4CA49CAA13D6890B00BA53C3 /* LKQueueEntryLogTests.h */,
 				4CA49CAB13D6890B00BA53C3 /* LKQueueEntryLogTests.m */,
+				4C27FD7B13DFDFB300192E67 /* LKQueueManagerTests.h */,
+				4C27FD7C13DFDFB300192E67 /* LKQueueManagerTests.m */,
 				4C1A0A631378DD64009D78F0 /* Supporting Files */,
 			);
 			path = LKQueueTests;
@@ -184,6 +193,8 @@
 		4C6F06781378E33B0046B177 /* LKQueue */ = {
 			isa = PBXGroup;
 			children = (
+				4C27FD7213DFB06E00192E67 /* LKQueueManager.h */,
+				4C27FD7313DFB06E00192E67 /* LKQueueManager.m */,
 				4C6F067A1378E35E0046B177 /* LKQueue.h */,
 				4C6F067B1378E35E0046B177 /* LKQueue.m */,
 				4C6F067C1378E35E0046B177 /* LKQueueEntry.h */,
@@ -310,6 +321,7 @@
 				4C6F06821378E35E0046B177 /* LKQueueEntry.m in Sources */,
 				4C6F06841378E35E0046B177 /* LKQueueEntryOperator.m in Sources */,
 				4CA49CA713D6872B00BA53C3 /* LKQueueEntryLog.m in Sources */,
+				4C27FD7413DFB06E00192E67 /* LKQueueManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,6 +336,8 @@
 				4C6F06851378E35E0046B177 /* LKQueueEntryOperator.m in Sources */,
 				4CA49CA813D6872B00BA53C3 /* LKQueueEntryLog.m in Sources */,
 				4CA49CAC13D6890B00BA53C3 /* LKQueueEntryLogTests.m in Sources */,
+				4C27FD7513DFB06E00192E67 /* LKQueueManager.m in Sources */,
+				4C27FD7D13DFDFB300192E67 /* LKQueueManagerTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

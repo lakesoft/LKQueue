@@ -3,6 +3,7 @@
 #import "LKQueueAppDelegate.h"
 #import "RootViewController.h"
 #import "LKQueue.h"
+#import "LKQueueManager.h"
 
 #define QUEUE_NAME  @"Queue"
 
@@ -21,7 +22,7 @@
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
     
-    LKQueue* queue = [LKQueue queueWithName:QUEUE_NAME];
+    LKQueue* queue = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME];
     RootViewController* rootViewController = (RootViewController*)self.navigationController.topViewController;
     rootViewController.queue = queue;
 
@@ -92,7 +93,7 @@
      Save data if appropriate.
      See also applicationDidEnterBackground:.
      */
-    [[LKQueue queueWithName:QUEUE_NAME] removeFinishedEntry];
+    [[[LKQueueManager sharedManager] queueWithName:QUEUE_NAME] removeFinishedEntry];
 }
 
 - (void)dealloc

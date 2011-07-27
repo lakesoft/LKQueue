@@ -71,7 +71,7 @@ typedef enum {
 // status
 @property (nonatomic, assign, readonly) BOOL canRemove;
 
-// API
+// API (log)
 - (void)addQueueEntryLog:(LKQueueEntryLog*)queueEntyLog;
 
 @end

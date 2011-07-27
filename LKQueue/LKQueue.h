@@ -44,22 +44,13 @@
 @class LKQueueEntry;
 @interface LKQueue : NSObject {
  
-    NSString* queueId_;
-    NSString* name_;
-    NSMutableArray* list_;      // <LKQueueEntryOperator>
-    
-    NSString* path_;
 }
+- (id)initWithId:(NSString*)queueId basePath:(NSString*)basePath;
+
+
+// API (Properties)
 @property (nonatomic, retain, readonly) NSString* queueId;
-@property (nonatomic, copy  , readonly) NSString* name;
 @property (nonatomic, retain, readonly) NSString* path;
-
-
-// API (Queue management)
-+ (LKQueue*)queueWithName:(NSString*)name;
-+ (void)releaseQueueWithName:(NSString*)name;
-+ (BOOL)hasExistedQueueWithName:(NSString*)name;
-+ (BOOL)removeQueueWithName:(NSString*)name;
 
 
 // API (Basics)
@@ -92,10 +83,5 @@
 
 // API (Cooperate with other queues)
 - (BOOL)addEntry:(LKQueueEntry*)entry;
-
-
-// API (etc)
-+ (NSString*)queueIdForName:(NSString*)name;
-+ (NSString*)pathForQueueId:(NSString*)queueId;
 
 @end
