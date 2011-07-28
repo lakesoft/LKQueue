@@ -20,7 +20,7 @@
     [super setUp];
     
     // Set-up code here.
-    self.queue = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME];
+    self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
 }
 
 - (void)tearDown
@@ -60,11 +60,11 @@
     [entry fail];
     return entry;
 }
-- (LKQueueEntryOperator*)_interruptedEntry
+- (LKQueueEntryOperator*)_suspendedEntry
 {
     LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
     [entry process];
-    [entry interrupt];
+    [entry suspend];
     return entry;
 }
 
@@ -171,10 +171,10 @@
     STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
 
-    // waiting -> interrupted[x]
+    // waiting -> suspended[x]
     entry = [self _waitingEntry];
     modified = entry.modified;
-    ret = [entry interrupt];
+    ret = [entry suspend];
     STAssertFalse(ret, @"waiting->intterrupted[x]");
     STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
     STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
@@ -224,12 +224,12 @@
     STAssertEquals(entry.result, LKQueueEntryResultFailed, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
 
-    // processing -> interrupted[o]
+    // processing -> suspended[o]
     entry = [self _processingEntry];
     modified = entry.modified;
-    ret = [entry interrupt];
-    STAssertTrue(ret, @"processing->interrupted[o]");
-    STAssertEquals(entry.state, LKQueueEntryStateInterrupting, nil);
+    ret = [entry suspend];
+    STAssertTrue(ret, @"processing->suspended[o]");
+    STAssertEquals(entry.state, LKQueueEntryStateSuspending, nil);
     STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
 }
@@ -281,12 +281,12 @@
     STAssertEquals(entry.result, result, nil);
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
-    // finshed -> interrupted[x]
+    // finshed -> suspended[x]
     entry = [self _finishedEntry];
     result = entry.result;
     modified = entry.modified;
-    ret = [entry interrupt];
-    STAssertFalse(ret, @"finished->interrupted[x]");
+    ret = [entry suspend];
+    STAssertFalse(ret, @"finished->suspended[x]");
     STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, result, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
@@ -299,48 +299,48 @@
     NSDate* modified;
     BOOL ret;
     
-    // interrupted -> waiting[o]
-    entry = [self _interruptedEntry];
+    // suspended -> waiting[o]
+    entry = [self _suspendedEntry];
     modified = entry.modified;
     ret = [entry wait];
-    STAssertTrue(ret, @"interrupted->wating[o]");
+    STAssertTrue(ret, @"suspended->wating[o]");
     STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
     STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
     
-    // interrupted -> processing[x]
-    entry = [self _interruptedEntry];
+    // suspended -> processing[x]
+    entry = [self _suspendedEntry];
     modified = entry.modified;
     ret = [entry process];
-    STAssertFalse(ret, @"interrupted->processing[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateInterrupting, nil);
+    STAssertFalse(ret, @"suspended->processing[x]");
+    STAssertEquals(entry.state, LKQueueEntryStateSuspending, nil);
     STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
-    // interrupted -> finished(failed)[o]
-    entry = [self _interruptedEntry];
+    // suspended -> finished(failed)[o]
+    entry = [self _suspendedEntry];
     modified = entry.modified;
     ret = [entry fail];
-    STAssertTrue(ret, @"interrupted->failed[o]");
+    STAssertTrue(ret, @"suspended->failed[o]");
     STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, LKQueueEntryResultFailed, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
     
-    // interrupted -> finished(successful)[o]
-    entry = [self _interruptedEntry];
+    // suspended -> finished(successful)[o]
+    entry = [self _suspendedEntry];
     modified = entry.modified;
     ret = [entry finish];
-    STAssertTrue(ret, @"interrupted->finished(sccessful)[o]");
+    STAssertTrue(ret, @"suspended->finished(sccessful)[o]");
     STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
-    STAssertEquals(entry.result, LKQueueEntryResultInterrpted, nil);    
+    STAssertEquals(entry.result, LKQueueEntryResultSuspended, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
     
-    // interrupted -> interrupted[x]
-    entry = [self _interruptedEntry];
+    // suspended -> suspended[x]
+    entry = [self _suspendedEntry];
     modified = entry.modified;
-    ret = [entry interrupt];
-    STAssertFalse(ret, @"interrupted->interrupted[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateInterrupting, nil);
+    ret = [entry suspend];
+    STAssertFalse(ret, @"suspended->suspended[x]");
+    STAssertEquals(entry.state, LKQueueEntryStateSuspending, nil);
     STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);    
     STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
     
@@ -371,7 +371,7 @@
     canRemove = entry.canRemove;
     STAssertTrue(canRemove, nil);
     
-    entry = [self _interruptedEntry];
+    entry = [self _suspendedEntry];
     canRemove = entry.canRemove;
     STAssertTrue(canRemove, nil);
 }

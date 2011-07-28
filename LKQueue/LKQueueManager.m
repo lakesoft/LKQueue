@@ -19,14 +19,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
+
+// Directory
+//
+// (basePath) ...default: ~/Caches/_LKQueue_/
+//   |
+//   |-- "queue name1"/
+//   |-- "queue name2"/
+//   |-- "queue name3"/
+//
+
 #import <CommonCrypto/CommonDigest.h>
 #import "LKQueueManager.h"
 #import "LKQueue.h"
 
-#define LK_QUEUE_PATH               @"__LKQueue__"
+#define LK_QUEUE_DEFAULT_PATH       @"_LKQueue_"
 #define LK_QUEUE_LIST_FILENAME      @"QueueList.plist"
 
 @interface LKQueueManager()
+@property (nonatomic, copy  ) NSString* path;
 @property (nonatomic, retain) NSMutableDictionary* queueList;   // queueId  => queueName (persistent)
 @property (nonatomic, retain) NSMutableDictionary* queueCache;  // queueId  => LKQueue   (volatile)
 @end
@@ -34,6 +45,7 @@
 
 @implementation LKQueueManager
 
+@synthesize path = path_;
 @synthesize queueList = queueList_;
 @synthesize queueCache = queueCache_;
 
@@ -59,7 +71,7 @@ static NSString* _md5String(NSString* string)
 
 - (NSString*)_queueListFilePath
 {
-    return [[self path] stringByAppendingPathComponent:LK_QUEUE_LIST_FILENAME];
+    return [self.path stringByAppendingPathComponent:LK_QUEUE_LIST_FILENAME];
 }
 
 - (BOOL)_restoreQueueList
@@ -100,13 +112,12 @@ static NSString* _md5String(NSString* string)
 {
     NSFileManager* fileManager = [NSFileManager defaultManager];
     NSError* error = nil;
-    NSString* path = [self path];
-    if (![fileManager fileExistsAtPath:path]) {
-        if (![fileManager createDirectoryAtPath:path
+    if (![fileManager fileExistsAtPath:self.path]) {
+        if (![fileManager createDirectoryAtPath:self.path
                     withIntermediateDirectories:YES
                                      attributes:nil
                                           error:&error]) {
-            NSLog(@"%s|[ERROR] Can not create a directory|%@", __PRETTY_FUNCTION__, path);
+            NSLog(@"%s|[ERROR] Can not create a directory|%@", __PRETTY_FUNCTION__, self.path);
             return NO;
         }
     }
@@ -117,11 +128,16 @@ static NSString* _md5String(NSString* string)
 #pragma mark -
 #pragma mark Basics
 //------------------------------------------------------------------------------
-
-- (id)init
+- (id)initWithPath:(NSString*)path
 {
+    if (path == nil) {
+        NSLog(@"[ERROR] path must be not-nil");
+        return nil;
+    }
+
     self = [super init];
     if (self) {
+        self.path = path;
         [self _createLKQueueDirectory];
         if (![self _restoreQueueList]) {
             // new
@@ -130,28 +146,26 @@ static NSString* _md5String(NSString* string)
         }
         self.queueCache = [NSMutableDictionary dictionary];
     }
-    
     return self;
 }
 
 - (void)dealloc {
+    self.path = nil;
     self.queueList = nil;
     self.queueCache = nil;
     [super dealloc];
 }
 
-+ (LKQueueManager*)sharedManager
++ (LKQueueManager*)defaultManager
 {
     static LKQueueManager* sharedManager_ = nil;
     static dispatch_once_t onceToken;
-
+    
     dispatch_once(&onceToken, ^{
-        sharedManager_ = [[LKQueueManager alloc] init];
-        NSLog(@"%@", [sharedManager_ path]);
+        sharedManager_ = [[LKQueueManager alloc] initWithPath:[self defaultPath]];
     });
     return sharedManager_;
 }
-
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -172,7 +186,7 @@ static NSString* _md5String(NSString* string)
         LKQueue* queue = [self.queueCache objectForKey:queueId];
         if (queue == nil) {
             queue = [[[LKQueue alloc] initWithId:queueId
-                                        basePath:[self path]] autorelease];
+                                        basePath:self.path] autorelease];
             [self.queueCache setObject:queue forKey:queueId];
         }
         return queue;
@@ -214,7 +228,7 @@ static NSString* _md5String(NSString* string)
         
         NSFileManager* fileManager = [NSFileManager defaultManager];
         NSError* error = nil;
-        if ([fileManager removeItemAtPath:[self path] error:&error]) {
+        if ([fileManager removeItemAtPath:self.path error:&error]) {
             [self _createLKQueueDirectory];
             [self _saveQueueList];
             return YES;
@@ -238,11 +252,11 @@ static NSString* _md5String(NSString* string)
     }
 }
 
-- (NSString*)path
++ (NSString*)defaultPath
 {
     return [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                  NSUserDomainMask, YES) lastObject]
-            stringByAppendingPathComponent:LK_QUEUE_PATH];
+            stringByAppendingPathComponent:LK_QUEUE_DEFAULT_PATH];
 }
 
 

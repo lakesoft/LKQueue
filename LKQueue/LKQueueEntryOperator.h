@@ -50,7 +50,7 @@
 - (BOOL)fail;
 - (BOOL)wait;
 - (BOOL)process;
-- (BOOL)interrupt;
+- (BOOL)suspend;
 
 - (BOOL)clean;  // remove persistant files
 

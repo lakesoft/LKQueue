@@ -30,9 +30,9 @@
 //           |           |<--------|            |   +--->|           |
 //           +-----------+ wait    +------------+   |    +-----------+
 //              |                         |         |
-//              |                         |interrupt|
+//              |                         |suspend  |
 //              | wait +------------+     |         |
-//              +<-----|interrupting|<----+         |
+//              +<-----|suspending  |<----+         |
 //                     |            |---------------+
 //                     +------------+     finish/fail
 //
@@ -62,7 +62,7 @@
 - (BOOL)finishEntry:(LKQueueEntry*)entry;
 - (BOOL)failEntry:(LKQueueEntry*)entry;
 - (BOOL)waitEntry:(LKQueueEntry*)entry;
-- (BOOL)interruptEntry:(LKQueueEntry*)entry;
+- (BOOL)suspendEntry:(LKQueueEntry*)entry;
 - (BOOL)removeEntry:(LKQueueEntry*)entry;           // NOTE: can't remove a entry while processing
 - (void)removeFinishedEntry; 
 - (void)removeAllEntries;

@@ -95,8 +95,8 @@
                 cell.detailTextLabel.text = @"Failed";
             }
             break;
-        case LKQueueEntryStateInterrupting:
-            cell.detailTextLabel.text = @"Interrupting";
+        case LKQueueEntryStateSuspending:
+            cell.detailTextLabel.text = @"Suspending";
             break;
     }
     

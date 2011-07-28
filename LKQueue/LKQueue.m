@@ -306,11 +306,11 @@ static NSString* _md5String(NSString* string)
     return NO;
 }
 
-- (BOOL)interruptEntry:(LKQueueEntry*)entry
+- (BOOL)suspendEntry:(LKQueueEntry*)entry
 {
     @synchronized (self.entryList) {
         if ([self.entryList containsObject:entry]) {
-            if ([(LKQueueEntryOperator*)entry interrupt]) {
+            if ([(LKQueueEntryOperator*)entry suspend]) {
                 [self _saveList];
                 return YES;
             }
@@ -442,7 +442,6 @@ static NSString* _md5String(NSString* string)
     }
 }
 
-// TODO: testcase
 - (NSArray*)entriesForTagName:(NSString*)tagName
 {
     if (tagName == nil) {

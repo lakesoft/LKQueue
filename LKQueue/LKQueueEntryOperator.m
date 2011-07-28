@@ -64,18 +64,18 @@
 // <queueId>/<entryId>.meta
 - (NSString*)_infoFilePath
 {
-    return [self _filePathForExtension:@".info"];
+    return [self _filePathForExtension:@"info"];
 }
 
 // <queueId>/<entryId>.data
 - (NSString*)_resourcesFilePath
 {
-    return [self _filePathForExtension:@".resources"];
+    return [self _filePathForExtension:@"resources"];
 }
 
 - (NSString*)_logsFilePath
 {
-    return [self _filePathForExtension:@".logs"];
+    return [self _filePathForExtension:@"logs"];
 }
 
 - (BOOL)_setProtectionKeyWithFilePath:(NSString*)filePath
@@ -187,9 +187,9 @@
 {
     BOOL ret = NO;
     switch (state_) {
-        case LKQueueEntryStateInterrupting:
+        case LKQueueEntryStateSuspending:
             state_ = LKQueueEntryStateFinished;
-            result_ = LKQueueEntryResultInterrpted;
+            result_ = LKQueueEntryResultSuspended;
             ret = YES;
             break;
             
@@ -211,7 +211,7 @@
 - (BOOL)fail
 {
     if (state_ == LKQueueEntryStateProcessing ||
-        state_ == LKQueueEntryStateInterrupting) {
+        state_ == LKQueueEntryStateSuspending) {
         state_ = LKQueueEntryStateFinished;
         result_ = LKQueueEntryResultFailed;
 
@@ -224,7 +224,7 @@
 - (BOOL)wait
 {
     if (state_ == LKQueueEntryStateProcessing ||
-        state_ == LKQueueEntryStateInterrupting) {
+        state_ == LKQueueEntryStateSuspending) {
         state_ = LKQueueEntryStateWating;
         [self _updateModified];
         return YES;
@@ -242,10 +242,10 @@
     return NO;
 }
 
-- (BOOL)interrupt
+- (BOOL)suspend
 {
     if (state_ == LKQueueEntryStateProcessing) {
-        state_ = LKQueueEntryStateInterrupting;
+        state_ = LKQueueEntryStateSuspending;
         [self _updateModified];
         return YES;
     }

@@ -26,7 +26,7 @@
 typedef enum {
     LKQueueEntryStateWating = 0,
     LKQueueEntryStateProcessing,
-    LKQueueEntryStateInterrupting,
+    LKQueueEntryStateSuspending,
     LKQueueEntryStateFinished,
 } LKQueueEntryState;
 
@@ -35,7 +35,7 @@ typedef enum {
     LKQueueEntryResultUnfinished = 0,
     LKQueueEntryResultSuccessful,
     LKQueueEntryResultFailed,
-    LKQueueEntryResultInterrpted
+    LKQueueEntryResultSuspended
 } LKQueueEntryResult;
 
 

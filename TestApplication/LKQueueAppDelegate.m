@@ -22,7 +22,7 @@
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
     
-    LKQueue* queue = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME];
+    LKQueue* queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
     RootViewController* rootViewController = (RootViewController*)self.navigationController.topViewController;
     rootViewController.queue = queue;
 
@@ -93,7 +93,7 @@
      Save data if appropriate.
      See also applicationDidEnterBackground:.
      */
-    [[[LKQueueManager sharedManager] queueWithName:QUEUE_NAME] removeFinishedEntry];
+    [[[LKQueueManager defaultManager] queueWithName:QUEUE_NAME] removeFinishedEntry];
 }
 
 - (void)dealloc

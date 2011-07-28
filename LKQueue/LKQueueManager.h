@@ -26,9 +26,12 @@
 @interface LKQueueManager : NSObject {
 }
 
-// API
-+ (LKQueueManager*)sharedManager;
+// Properties
+@property (nonatomic, copy, readonly) NSString* path;
 
+// Initialization
+- (id)initWithPath:(NSString*)path;
++ (LKQueueManager*)defaultManager;
 
 // API (Queue management)
 - (LKQueue*)queueWithName:(NSString*)queueName; // NOTE: If same queue has existed, return it
@@ -37,7 +40,7 @@
 - (void)releaseCacheWithQueue:(LKQueue*)queue;
 
 // API (Inspector)
-- (NSString*)path;
 - (NSDictionary*)queues;    // <queueId=>queueName>
++ (NSString*)defaultPath;
 
 @end

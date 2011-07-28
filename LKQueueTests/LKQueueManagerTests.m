@@ -28,7 +28,7 @@
 {
     [super tearDown];
 
-    [[LKQueueManager sharedManager] removeAllQueues];
+    [[LKQueueManager defaultManager] removeAllQueues];
     self.queue1 = nil;
     self.queue2 = nil;
     self.queue3 = nil;
@@ -36,7 +36,7 @@
 
 - (void)_createQueues
 {
-    LKQueueManager* queueManager = [LKQueueManager sharedManager];
+    LKQueueManager* queueManager = [LKQueueManager defaultManager];
     self.queue1 = [queueManager queueWithName:QUEUE_NAME1];
     self.queue2 = [queueManager queueWithName:QUEUE_NAME2];
     self.queue3 = [queueManager queueWithName:QUEUE_NAME3];    
@@ -72,7 +72,7 @@
 
 - (void)testQueues
 {
-    LKQueueManager* queueManager = [LKQueueManager sharedManager];
+    LKQueueManager* queueManager = [LKQueueManager defaultManager];
     NSDictionary* queues = [queueManager queues];
     STAssertEquals([queues count], (NSUInteger)0, nil);
 
@@ -113,7 +113,7 @@
 {
     [self _createQueues];
 
-    LKQueueManager* queueManager = [LKQueueManager sharedManager];
+    LKQueueManager* queueManager = [LKQueueManager defaultManager];
     [queueManager removeQueue:self.queue2];
     
     NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -136,7 +136,7 @@
 {
     [self _createQueues];
 
-    LKQueueManager* queueManager = [LKQueueManager sharedManager];
+    LKQueueManager* queueManager = [LKQueueManager defaultManager];
     BOOL result = [queueManager removeAllQueues];
     STAssertTrue(result, nil);
     NSDictionary* queues = [queueManager queues];
@@ -146,7 +146,6 @@
     NSError* error = nil;
     NSArray* files = [fileManager contentsOfDirectoryAtPath:[queueManager path]
                                                       error:&error];
-    NSLog(@"files: %@", files); //TODO
     STAssertEquals([files count], (NSUInteger)1, nil);  // only *.plist
 }
 
@@ -156,7 +155,7 @@
     
     SEL sel = @selector(queueCache);
 
-    LKQueueManager* queueManager = [LKQueueManager sharedManager];
+    LKQueueManager* queueManager = [LKQueueManager defaultManager];
     NSDictionary* caches1 = [queueManager performSelector:sel];
     STAssertEquals([caches1 count], (NSUInteger)3, nil);
 
@@ -171,7 +170,40 @@
 
 - (void)testPersistent
 {
-    // try to confirm queueList persistent
+    // TODO:try to confirm queueList persistent
+}
+
+- (void)testDefaultPath
+{
+    LKQueueManager* queueManager = [LKQueueManager defaultManager];
+    NSString* queuePath = [LKQueueManager defaultPath];
+    STAssertEqualObjects(queueManager.path, queuePath, nil);
+}
+
+- (void)testCustomPath
+{
+    [self _createQueues];
+    
+    NSString* queuePath =  [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                                 NSUserDomainMask, YES) lastObject]
+                            stringByAppendingPathComponent:@"CustomPath"];
+    LKQueueManager* queueManager = [[LKQueueManager alloc] initWithPath:queuePath];
+    STAssertEqualObjects(queueManager.path, queuePath, nil);
+
+    LKQueueManager* defaultQueueManager = [LKQueueManager defaultManager];
+    STAssertTrue((queueManager!=defaultQueueManager), nil);
+    
+    LKQueue* queue21 = [queueManager queueWithName:QUEUE_NAME1];
+    LKQueue* queue22 = [queueManager queueWithName:QUEUE_NAME2];
+    LKQueue* queue23 = [queueManager queueWithName:QUEUE_NAME3];    
+    
+    STAssertTrue((queue21.queueId!=self.queue1.queueId), nil);
+    STAssertTrue((queue22.queueId!=self.queue2.queueId), nil);
+    STAssertTrue((queue23.queueId!=self.queue3.queueId), nil);
+    
+    
+    [queueManager removeAllQueues];
+    [queueManager release];
 }
 
 @end

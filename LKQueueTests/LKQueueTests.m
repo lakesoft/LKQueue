@@ -26,8 +26,8 @@
 {
     [super setUp];
 
-    self.queue = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME];
-    self.queue2 = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME2];
+    self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
+    self.queue2 = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME2];
     
     // Set-up code here.
 }
@@ -36,7 +36,7 @@
 {
     // Tear-down code here.
 
-    [[LKQueueManager sharedManager] removeAllQueues];
+    [[LKQueueManager defaultManager] removeAllQueues];
 
     self.queue = nil;
     self.queue2 = nil;
@@ -68,10 +68,10 @@
 
 // *NOTE* must call this method after _setupTestEntries
 // 0: processing
-// 1: interrupted
+// 1: suspended
 // 2: finished(successful)
 // 3: finished(failed)
-// 4: finished(interrupted)
+// 4: finished(suspended)
 // 5-9: waiting 
 - (void)_setupMultiState
 {
@@ -80,9 +80,9 @@
     // 0: processing
     entry = [self.queue getEntryForProcessing];
 
-    // 1: interrupted
+    // 1: suspended
     entry = [self.queue getEntryForProcessing];
-    [self.queue interruptEntry:entry];
+    [self.queue suspendEntry:entry];
 
     // 2: finished(successful)
     entry = [self.queue getEntryForProcessing];
@@ -92,9 +92,9 @@
     entry = [self.queue getEntryForProcessing];
     [self.queue failEntry:entry];
     
-    // 4: finished(interrupted)
+    // 4: finished(suspended)
     entry = [self.queue getEntryForProcessing];
-    [self.queue interruptEntry:entry];
+    [self.queue suspendEntry:entry];
     [self.queue finishEntry:entry];
 }
 
@@ -104,13 +104,13 @@
 
 - (void)testInitialization
 {
-    NSString* path = [[LKQueueManager sharedManager] path];
+    NSString* path = [[LKQueueManager defaultManager] path];
     NSString* queueId = @"QUEUE-ID-0";
     LKQueue* queueCreated = [[LKQueue alloc] initWithId:queueId basePath:path];
     STAssertEqualObjects(queueCreated.queueId, queueId, nil);
     NSString* queuePath = [path stringByAppendingPathComponent:queueId];
     STAssertEqualObjects(queueCreated.path, queuePath, nil);
-    [[LKQueueManager sharedManager] removeQueue:queueCreated];
+    [[LKQueueManager defaultManager] removeQueue:queueCreated];
 }
 
 - (void)testAddEntryWithData
@@ -174,18 +174,18 @@
     STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, LKQueueEntryResultSuccessful, nil);
 
-    STAssertFalse([self.queue interruptEntry:entry], nil);    
+    STAssertFalse([self.queue suspendEntry:entry], nil);    
     STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, LKQueueEntryResultSuccessful, nil);
 
     entry = [self.queue getEntryForProcessing];
-    [self.queue interruptEntry:entry];
+    [self.queue suspendEntry:entry];
     STAssertTrue([self.queue finishEntry:entry], nil);
     STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
-    STAssertEquals(entry.result, LKQueueEntryResultInterrpted, nil);
+    STAssertEquals(entry.result, LKQueueEntryResultSuspended, nil);
     
     entry = [self.queue getEntryForProcessing];
-    [self.queue interruptEntry:entry];
+    [self.queue suspendEntry:entry];
     STAssertTrue([self.queue failEntry:entry], nil);
     STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, LKQueueEntryResultFailed, nil);
@@ -214,7 +214,7 @@
     STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, LKQueueEntryResultFailed, nil);
 
-    STAssertFalse([self.queue interruptEntry:entry], nil);
+    STAssertFalse([self.queue suspendEntry:entry], nil);
     STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
     STAssertEquals(entry.result, LKQueueEntryResultFailed, nil);
 
@@ -235,7 +235,7 @@
     STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
 
     entry = [self.queue getEntryForProcessing];
-    [self.queue interruptEntry:entry];
+    [self.queue suspendEntry:entry];
     STAssertTrue([self.queue waitEntry:entry], nil);
     STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
 
@@ -251,13 +251,13 @@
     [self _setupTestEntries];
 
     LKQueueEntry* entry = [self.queue getEntryForProcessing];
-    STAssertTrue([self.queue interruptEntry:entry], nil);    
-    STAssertEquals(entry.state, LKQueueEntryStateInterrupting, nil);
+    STAssertTrue([self.queue suspendEntry:entry], nil);    
+    STAssertEquals(entry.state, LKQueueEntryStateSuspending, nil);
     STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
 
     // at other queue
     entry = [self.queue getEntryForProcessing];
-    STAssertFalse([self.queue2 interruptEntry:entry], nil);
+    STAssertFalse([self.queue2 suspendEntry:entry], nil);
     STAssertEquals(entry.state, LKQueueEntryStateProcessing, nil);
     STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
 
@@ -327,7 +327,7 @@
     STAssertEquals([self.queue count], (NSUInteger)TEST_ENTRY_MAX, nil);
     STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateWating], (NSUInteger)5, nil);
     STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateProcessing], (NSUInteger)1, nil);
-    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateInterrupting], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateSuspending], (NSUInteger)1, nil);
     STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateFinished], (NSUInteger)3, nil);
 }
 
@@ -395,10 +395,10 @@
     STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
      
     // 0: processing               TAG-0
-    // 1: interrupted              TAG-1
+    // 1: suspended              TAG-1
     // 2: finished(successful)     TAG-2
     // 3: finished(failed)         TAG-0
-    // 4: finished(interrupted)    TAG-1
+    // 4: finished(suspended)    TAG-1
     // 5-9: waiting                TAG-2, TAG-0, TAG-1, TAG-2, TAG-0
 
     // (clearFinishedEntry) left: 0, 1, 5, 6, 7, 8, 9
@@ -459,12 +459,12 @@
     // discard current queue
     LKQueue* previous = self.queue;
     self.queue = nil;
-    [[LKQueueManager sharedManager] releaseCacheWithQueue:previous];
+    [[LKQueueManager defaultManager] releaseCacheWithQueue:previous];
     
     [pool drain];
 
     // create new queue with same queue name
-    self.queue = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME];
+    self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
     
     STAssertTrue((previous != self.queue), nil);
     STAssertEquals([self.queue count], (NSUInteger)(TEST_ENTRY_MAX), nil);
@@ -478,8 +478,8 @@
                 STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
                 break;
             case 1:
-                // 1: interrupted
-                STAssertEquals(entry.state, LKQueueEntryStateInterrupting, nil);
+                // 1: suspended
+                STAssertEquals(entry.state, LKQueueEntryStateSuspending, nil);
                 STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
                 break;
             case 2:
@@ -493,9 +493,9 @@
                 STAssertEquals(entry.result, LKQueueEntryResultFailed, nil);
                 break;
             case 4:
-                // 4: finished(interrupted)
+                // 4: finished(suspended)
                 STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
-                STAssertEquals(entry.result, LKQueueEntryResultInterrpted, nil);
+                STAssertEquals(entry.result, LKQueueEntryResultSuspended, nil);
                 break;
             default:
                 // 5-9: waiting 
@@ -546,12 +546,12 @@
     // discard current queue
     LKQueue* preivous = self.queue;
     self.queue = nil;
-    [[LKQueueManager sharedManager] releaseCacheWithQueue:preivous];
+    [[LKQueueManager defaultManager] releaseCacheWithQueue:preivous];
     
     [pool drain];
     
     // create new queue with same queue name
-    self.queue = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME];
+    self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
 
     for (int i=0; i < [self.queue count]; i++) {
         LKQueueEntry* entry = [self.queue entryAtIndex:i];
@@ -581,12 +581,12 @@
         [entryIds addObject:entry.entryId];
     }
     
-    [[LKQueueManager sharedManager] releaseCacheWithQueue:self.queue];
+    [[LKQueueManager defaultManager] releaseCacheWithQueue:self.queue];
     self.queue = nil;
     [pool drain];
     
     // create new queue with same queue name
-    self.queue = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME];
+    self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
     
     int i=0;
     for (NSString* entryId in entryIds) {
@@ -607,7 +607,7 @@
     [self _setupTestEntries];
 
     // [1] same name
-    LKQueue* queue1b = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME];
+    LKQueue* queue1b = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
     STAssertEquals(queue1b, self.queue, nil);
     
     
@@ -638,7 +638,7 @@
         j++;
     }
     [self.queue2 removeAllEntries];
-    [[LKQueueManager sharedManager] releaseCacheWithQueue:self.queue2];
+    [[LKQueueManager defaultManager] releaseCacheWithQueue:self.queue2];
 }
 
 // move queue entries
