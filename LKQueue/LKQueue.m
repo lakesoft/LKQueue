@@ -164,12 +164,16 @@ static NSString* _md5String(NSString* string)
     [self.entryList removeObject:entry];
 
     // remove tag
-    NSMutableSet* set = [NSMutableSet set];
-    for (LKQueueEntryOperator* e in self.entryList) {
-        [set addObject:e.tagId];
-    }
-    if (![set containsObject:entry.tagId]) {
-        [self.tags removeObjectForKey:entry.tagId];
+    if (entry.tagId) {
+        NSMutableSet* set = [NSMutableSet set];
+        for (LKQueueEntryOperator* e in self.entryList) {
+            if (e.tagId) {
+                [set addObject:e.tagId];
+            }
+        }
+        if (![set containsObject:entry.tagId]) {
+            [self.tags removeObjectForKey:entry.tagId];
+        }
     }
 }
 

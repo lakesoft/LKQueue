@@ -147,6 +147,7 @@ static NSString* _md5String(NSString* string)
 
     dispatch_once(&onceToken, ^{
         sharedManager_ = [[LKQueueManager alloc] init];
+        NSLog(@"%@", [sharedManager_ path]);
     });
     return sharedManager_;
 }
