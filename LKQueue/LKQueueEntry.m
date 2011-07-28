@@ -25,6 +25,7 @@
 
 @implementation LKQueueEntry
 
+@synthesize entryId = entryId_;
 @synthesize info = info_;
 @synthesize resources = resources_;
 @synthesize state = state_;

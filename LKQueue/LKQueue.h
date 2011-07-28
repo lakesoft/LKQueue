@@ -73,6 +73,7 @@
 - (NSUInteger)countOfEntryState:(LKQueueEntryState)state;
 - (NSUInteger)countForTagName:(NSString*)tagName;
 - (LKQueueEntry*)entryAtIndex:(NSInteger)index;
+- (LKQueueEntry*)entryForId:(NSString*)entryId;
 - (NSArray*)entries;                                // NOTE: the return values are snapshots
 - (NSArray*)entriesForTagName:(NSString*)tagName;   // NOTE: the return values are snapshots
 

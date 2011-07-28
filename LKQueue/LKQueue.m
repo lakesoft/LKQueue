@@ -418,6 +418,18 @@ static NSString* _md5String(NSString* string)
     }
 }
 
+- (LKQueueEntry*)entryForId:(NSString*)entryId
+{
+    @synchronized (self.entryList) {
+        for (LKQueueEntryOperator* entry in self.entryList) {
+            if ([entry.entryId isEqualToString:entryId]) {
+                return entry;
+            }
+        }
+        return nil;
+    }
+}
+
 - (NSArray*)entries
 {
     @synchronized (self.entryList) {

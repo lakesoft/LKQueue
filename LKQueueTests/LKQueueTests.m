@@ -428,6 +428,24 @@
 
 }
 
+- (void)testEntryForId
+{
+    // (1) on memory
+    NSMutableArray* array = [NSMutableArray arrayWithCapacity:TEST_ENTRY_MAX];
+    for (int i=0; i < TEST_ENTRY_MAX; i++) {
+        NSDictionary* info =
+        [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST-ID-%d", i]
+                                    forKey:[NSString stringWithFormat:@"TITLE-ID-%d", i]];
+        LKQueueEntry* entry = [self.queue addEntryWithInfo:info resources:nil tagName:nil];
+        [array addObject:entry];
+    }
+    for (LKQueueEntry* entry in array) {
+        LKQueueEntry* fetchedEntry = [self.queue entryForId:entry.entryId];
+        STAssertEquals(fetchedEntry, entry, nil);
+    }
+    // (2) persistent => see testPersistent3
+}
+
 //-------------------
 // persistent test
 //-------------------
@@ -544,6 +562,38 @@
             STAssertTrue([log.title isEqualToString:title], nil);
             STAssertTrue([log.detail isEqualToString:detail], nil);
         }
+        i++;
+    }
+}
+
+- (void)testPersistent3
+{
+    // testEntryForId (2) persistent
+    NSMutableArray* entryIds = [NSMutableArray arrayWithCapacity:TEST_ENTRY_MAX];
+    
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+
+    for (int i=0; i < TEST_ENTRY_MAX; i++) {
+        NSDictionary* info =
+        [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST-ID-%d", i]
+                                    forKey:[NSString stringWithFormat:@"TITLE-ID-%d", i]];
+        LKQueueEntry* entry = [self.queue addEntryWithInfo:info resources:nil tagName:nil];
+        [entryIds addObject:entry.entryId];
+    }
+    
+    [[LKQueueManager sharedManager] releaseCacheWithQueue:self.queue];
+    self.queue = nil;
+    [pool drain];
+    
+    // create new queue with same queue name
+    self.queue = [[LKQueueManager sharedManager] queueWithName:QUEUE_NAME];
+    
+    int i=0;
+    for (NSString* entryId in entryIds) {
+        LKQueueEntry* entry = [self.queue entryForId:entryId];
+        STAssertEqualObjects(([entry.info objectForKey:
+                               [NSString stringWithFormat:@"TITLE-ID-%d", i]]),
+                             ([NSString stringWithFormat:@"TEST-ID-%d", i]), nil);
         i++;
     }
 }

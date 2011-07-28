@@ -31,6 +31,7 @@
 @interface LKQueueEntryOperator : LKQueueEntry <NSCoding> {
 
 }
+@property (nonatomic, retain) NSString* entryId;
 @property (nonatomic, copy) NSDictionary* info;
 @property (nonatomic, copy) NSArray* resources;
 @property (nonatomic, assign) LKQueueEntryState state;
@@ -40,7 +41,6 @@
 @property (nonatomic, retain) NSArray* logs;
 
 @property (nonatomic, assign) LKQueue* queue;
-@property (nonatomic, retain) NSString* entryId;
 @property (nonatomic, retain) NSString* tagId;
 
 // API

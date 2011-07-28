@@ -46,8 +46,9 @@ typedef enum {
 }
 
 // persistent properties
-@property (nonatomic, copy, readonly) NSDictionary* info;
-@property (nonatomic, copy, readonly) NSArray* resources;
+@property (nonatomic, retain, readonly) NSString* entryId;
+@property (nonatomic, copy  , readonly) NSDictionary* info;
+@property (nonatomic, copy  , readonly) NSArray* resources;
 @property (nonatomic, assign, readonly) LKQueueEntryState state;
 @property (nonatomic, assign, readonly) LKQueueEntryResult result;
 @property (nonatomic, retain, readonly) NSDate* created;
