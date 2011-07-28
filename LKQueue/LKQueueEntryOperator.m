@@ -78,6 +78,18 @@
     return [self _filePathForExtension:@".logs"];
 }
 
+- (BOOL)_setProtectionKeyWithFilePath:(NSString*)filePath
+{
+    NSDictionary* attributes =
+    [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
+    NSError* error = nil;
+    if (![[NSFileManager defaultManager] setAttributes:attributes ofItemAtPath:filePath error:&error]) {
+        NSLog(@"%s|[ERROR] Faild to set NSFileProtectionKey: %@",
+              __PRETTY_FUNCTION__, error);
+        return NO;
+    }
+    return YES;
+}
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -109,7 +121,9 @@
         [infoToWrite setObject:modified_ forKey:LK_QUEUE_ENTRY_META_MODIFIED];
 
         // write as XML
-        if (![infoToWrite writeToFile:[self _infoFilePath] atomically:YES]) {
+        if ([infoToWrite writeToFile:[self _infoFilePath] atomically:YES]) {
+            [self _setProtectionKeyWithFilePath:[self _infoFilePath]];
+        } else {
             NSLog(@"%s|[ERROR] Faild to write a meta to file: %@",
                   __PRETTY_FUNCTION__, [self _infoFilePath]);
             return nil;
@@ -117,10 +131,14 @@
         info_ = nil;
 
         // write as binary
-        if (resources && ![NSKeyedArchiver archiveRootObject:resources toFile:[self _resourcesFilePath]]) {
-            NSLog(@"%s|[ERROR] Faild to write a resources to file: %@",
-                  __PRETTY_FUNCTION__, [self _resourcesFilePath]);
-            return nil;
+        if (resources) {
+            if ([NSKeyedArchiver archiveRootObject:resources toFile:[self _resourcesFilePath]]) {
+                [self _setProtectionKeyWithFilePath:[self _logsFilePath]];
+            } else {
+                NSLog(@"%s|[ERROR] Faild to write a resources to file: %@",
+                      __PRETTY_FUNCTION__, [self _resourcesFilePath]);
+                return nil;
+            }
         }
         resources_ = nil;
         logs_ = nil;
@@ -157,7 +175,9 @@
     [infoToWrite setObject:modified_ forKey:LK_QUEUE_ENTRY_META_MODIFIED];
     
     // write as XML
-    if (![infoToWrite writeToFile:[self _infoFilePath] atomically:YES]) {
+    if ([infoToWrite writeToFile:[self _infoFilePath] atomically:YES]) {
+        [self _setProtectionKeyWithFilePath:[self _infoFilePath]];
+    } else {
         NSLog(@"%s|[ERROR] Faild to write a meta to file: %@",
               __PRETTY_FUNCTION__, [self _infoFilePath]);
     }
@@ -282,7 +302,9 @@
     [logs_ release];
     logs_ = [array retain];
     
-    if (![NSKeyedArchiver archiveRootObject:logs_ toFile:[self _logsFilePath]]) {
+    if ([NSKeyedArchiver archiveRootObject:logs_ toFile:[self _logsFilePath]]) {
+        [self _setProtectionKeyWithFilePath:[self _logsFilePath]];
+    } else {
         NSLog(@"%s|[ERROR] Faild to write a logs to file: %@",
               __PRETTY_FUNCTION__, [self _logsFilePath]);
     }

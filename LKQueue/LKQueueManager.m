@@ -76,7 +76,13 @@ static NSString* _md5String(NSString* string)
 - (BOOL)_saveQueueList
 {
     NSString* filePath = [self _queueListFilePath];
-    if (![self.queueList writeToFile:filePath atomically:YES]) {
+    if ([self.queueList writeToFile:filePath atomically:YES]) {
+        NSFileManager* fileManager = [NSFileManager defaultManager];
+        NSError* error = nil;
+        NSDictionary* attributes =
+        [NSDictionary dictionaryWithObject:NSFileProtectionComplete forKey:NSFileProtectionKey];
+        [fileManager setAttributes:attributes ofItemAtPath:filePath error:&error];
+    } else {
         NSLog(@"%s|[ERROR]Failed to save the queue file: %@",
               __PRETTY_FUNCTION__, filePath);
         return NO;
