@@ -54,5 +54,4 @@
 
 - (BOOL)clean;  // remove persistant files
 
-
 @end

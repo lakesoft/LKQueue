@@ -36,6 +36,7 @@
 @synthesize context = context_;
 
 @synthesize canRemove;
+@synthesize hasFinished;
 
 - (void)dealloc {
     [super dealloc];
@@ -45,5 +46,6 @@
 {
     // do nothing (should be overwritten in subclass)
 }
+
 
 @end

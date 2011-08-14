@@ -329,6 +329,7 @@
     STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateProcessing], (NSUInteger)1, nil);
     STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateSuspending], (NSUInteger)1, nil);
     STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateFinished], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countOfNotFinished], (NSUInteger)7, nil);
 }
 
 - (void)testQueueAtIndex

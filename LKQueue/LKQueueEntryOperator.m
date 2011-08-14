@@ -103,7 +103,9 @@
         self.tagId = tagId;
 
         CFUUIDRef uuidObj = CFUUIDCreate(nil);
-        self.entryId = (NSString*)CFUUIDCreateString(nil, uuidObj);
+        NSString* str = (NSString*)CFUUIDCreateString(nil, uuidObj);
+        self.entryId = str;
+        [str release];
         CFRelease(uuidObj);
 
         if (info == nil) {
@@ -396,6 +398,11 @@
 - (BOOL)canRemove
 {
     return (self.state != LKQueueEntryStateProcessing);
+}
+
+- (BOOL)hasFinished
+{
+    return (self.state == LKQueueEntryStateFinished);
 }
 
 @end

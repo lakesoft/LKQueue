@@ -387,6 +387,17 @@ static NSString* _md5String(NSString* string)
     return [self.entryList count];
 }
 
+- (NSUInteger)countOfNotFinished
+{
+    NSUInteger count = 0;
+    for (LKQueueEntryOperator* entry in self.entryList) {
+        if (!entry.hasFinished) {
+            count++;
+        }
+    }
+    return count;    
+}
+
 - (NSUInteger)countOfEntryState:(LKQueueEntryState)state
 {
     NSUInteger count = 0;
@@ -402,9 +413,11 @@ static NSString* _md5String(NSString* string)
 {
     NSUInteger count = 0;
     NSString* tagId = [self _tagIdForName:tagName];
-    for (LKQueueEntryOperator* entry in self.entryList) {
-        if ([entry.tagId isEqualToString:tagId]) {
-            count++;
+    if ([self.tags objectForKey:tagId]) {
+        for (LKQueueEntryOperator* entry in self.entryList) {
+            if ([entry.tagId isEqualToString:tagId]) {
+                count++;
+            }
         }
     }
     return count;
@@ -444,13 +457,17 @@ static NSString* _md5String(NSString* string)
 
 - (NSArray*)entriesForTagName:(NSString*)tagName
 {
+    NSMutableArray* result = [NSMutableArray array];
     if (tagName == nil) {
-        return [NSArray array];
+        return result;
+    }
+
+    NSString* tagId = [self _tagIdForName:tagName];
+    if (![self.tags objectForKey:tagId]) {
+        return result;
     }
 
     NSArray* entries = [self entries];
-    NSString* tagId = [self _tagIdForName:tagName];
-    NSMutableArray* result = [NSMutableArray array];
     for (LKQueueEntryOperator* entry in entries) {
         if ([tagId isEqualToString:entry.tagId]) {
             [result addObject:entry];
@@ -461,6 +478,12 @@ static NSString* _md5String(NSString* string)
 
 
 // API (Tag)
+- (BOOL)hasExistTagName:(NSString*)tagName
+{
+    NSString* tagId = [self _tagIdForName:tagName];
+    return ([self.tags objectForKey:tagId] != nil);
+}
+
 - (NSArray*)tagNames
 {
     return [[self.tags allValues] sortedArrayUsingComparator:^(id obj1, id obj2) {

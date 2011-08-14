@@ -70,6 +70,7 @@
 
 // API (Accessing entryies)
 - (NSUInteger)count;
+- (NSUInteger)countOfNotFinished;
 - (NSUInteger)countOfEntryState:(LKQueueEntryState)state;
 - (NSUInteger)countForTagName:(NSString*)tagName;
 - (LKQueueEntry*)entryAtIndex:(NSInteger)index;
@@ -79,6 +80,7 @@
 
 
 // API (Tag)
+- (BOOL)hasExistTagName:(NSString*)tagName; // TODO: create test case
 - (NSArray*)tagNames;
 
 

@@ -376,6 +376,34 @@
     STAssertTrue(canRemove, nil);
 }
 
+- (void)testHasFinished
+{
+    LKQueueEntryOperator* entry = nil;
+    BOOL hasFinished;
+    
+    entry = [self _waitingEntry];
+    hasFinished = entry.hasFinished;
+    STAssertFalse(hasFinished, nil);
+    
+    entry = [self _processingEntry];
+    hasFinished = entry.hasFinished;
+    STAssertFalse(hasFinished, nil);
+    
+    entry = [self _finishedEntry];
+    hasFinished = entry.hasFinished;
+    NSLog(@">>>>>>>>> %d", entry.state);
+
+    STAssertTrue(hasFinished, nil);
+    
+    entry = [self _failedEntry];
+    hasFinished = entry.hasFinished;
+    STAssertTrue(hasFinished, nil);
+    
+    entry = [self _suspendedEntry];
+    hasFinished = entry.hasFinished;
+    STAssertFalse(hasFinished, nil);
+}
+
 
 - (void)testAddQueueEntryLog
 {
