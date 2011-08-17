@@ -21,30 +21,31 @@
 //
 
 //
-// NOTE: Thread *not* safe
+// NOTE:
+//  - Do not use this class directory. Should use LKQueueEntry class.
+//  - Thread *not* safe
 //
 
 #import <Foundation/Foundation.h>
 #import "LKQueueEntry.h"
 
 @class LKQueue;
-@interface LKQueueEntryOperator : LKQueueEntry <NSCoding> {
+@interface LKQueueEntryOperator : LKQueueEntry <NSCoding>
 
-}
 @property (nonatomic, retain) NSString* entryId;
-@property (nonatomic, copy) NSDictionary* info;
-@property (nonatomic, copy) NSArray* resources;
+@property (nonatomic, retain) id <NSCoding> info;
 @property (nonatomic, assign) LKQueueEntryState state;
 @property (nonatomic, assign) LKQueueEntryResult result;
 @property (nonatomic, retain) NSDate* created;
 @property (nonatomic, retain) NSDate* modified;
 @property (nonatomic, retain) NSArray* logs;
 
+@property (nonatomic, retain) NSDictionary* persistentDictionary;
 @property (nonatomic, assign) LKQueue* queue;
-@property (nonatomic, retain) NSString* tagId;
+@property (nonatomic, copy  ) NSString* tagId;
 
 // API
-+ (LKQueueEntryOperator*)queueEntryWithQueue:(LKQueue*)queue info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId;
++ (LKQueueEntryOperator*)queueEntryWithQueue:(LKQueue*)queue info:(id <NSCoding>)info tagId:(NSString*)tagId;
 
 - (BOOL)finish;
 - (BOOL)fail;

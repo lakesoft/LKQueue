@@ -79,7 +79,7 @@
     LKQueueEntry* entry = [self.queue
                            entryAtIndex:[self.queue count] - indexPath.row -1];
     
-    cell.textLabel.text = [entry.info objectForKey:@"title"];
+    cell.textLabel.text = [(NSDictionary*)entry.info objectForKey:@"title"];
 
     switch (entry.state) {
         case LKQueueEntryStateWating:
@@ -178,7 +178,7 @@
 
 - (IBAction)cleanupEntries:(id)sender
 {
-    [self.queue removeFinishedEntry];
+    [self.queue removeFinishedEntries];
     [self.tableView reloadData];
 }
 
@@ -186,7 +186,7 @@
 {
     NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
                              [[NSDate date] description], @"title", nil];
-    [self.queue addEntryWithInfo:info resources:nil tagName:nil];
+    [self.queue addEntryWithInfo:info tagName:nil];
     [self.tableView reloadData];
 }
 

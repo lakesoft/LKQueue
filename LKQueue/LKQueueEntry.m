@@ -27,7 +27,6 @@
 
 @synthesize entryId = entryId_;
 @synthesize info = info_;
-@synthesize resources = resources_;
 @synthesize state = state_;
 @synthesize result = result_;
 @synthesize created = created_;

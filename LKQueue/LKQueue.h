@@ -54,7 +54,7 @@
 
 
 // API (Basics)
-- (LKQueueEntry*)addEntryWithInfo:(NSDictionary*)info resources:(NSArray*)resources tagName:(NSString*)tagName;
+- (LKQueueEntry*)addEntryWithInfo:(id <NSCoding>)info tagName:(NSString*)tagName;
 - (LKQueueEntry*)getEntryForProcessing;
 
 
@@ -64,17 +64,18 @@
 - (BOOL)waitEntry:(LKQueueEntry*)entry;
 - (BOOL)suspendEntry:(LKQueueEntry*)entry;
 - (BOOL)removeEntry:(LKQueueEntry*)entry;           // NOTE: can't remove a entry while processing
-- (void)removeFinishedEntry; 
 - (void)removeAllEntries;
+- (void)removeFinishedEntries; 
 
 
 // API (Accessing entryies)
+- (LKQueueEntry*)entryAtIndex:(NSInteger)index;
+- (LKQueueEntry*)entryForId:(NSString*)entryId;
 - (NSUInteger)count;
 - (NSUInteger)countOfNotFinished;
 - (NSUInteger)countOfState:(LKQueueEntryState)state;
-- (LKQueueEntry*)entryAtIndex:(NSInteger)index;
-- (LKQueueEntry*)entryForId:(NSString*)entryId;
 - (NSArray*)entries;                                // NOTE: the return values are snapshots
+
 
 // API (Accessing entryies with tag)
 - (NSUInteger)countForTagName:(NSString*)tagName;
@@ -90,5 +91,6 @@
 
 // API (Cooperate with other queues)
 - (BOOL)addEntry:(LKQueueEntry*)entry;
+
 
 @end

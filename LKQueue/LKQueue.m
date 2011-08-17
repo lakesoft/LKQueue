@@ -248,13 +248,12 @@ static NSString* _md5String(NSString* string)
 #pragma mark API
 //------------------------------------------------------------------------------
 
-- (LKQueueEntry*)addEntryWithInfo:(NSDictionary*)info resources:(NSArray*)resources tagName:(NSString*)tagName
+- (LKQueueEntry*)addEntryWithInfo:(id <NSCoding>)info tagName:(NSString*)tagName
 {
     NSString* tagId = [self _addTagName:tagName];
     LKQueueEntryOperator* entry =
         [LKQueueEntryOperator queueEntryWithQueue:self
                                              info:info
-                                        resources:resources
                                             tagId:tagId];
     @synchronized (self.entryList) {
         [self.entryList addObject:entry];
@@ -350,7 +349,7 @@ static NSString* _md5String(NSString* string)
 }
 
 
-- (void)removeFinishedEntry
+- (void)removeFinishedEntries
 {
     @synchronized (self.entryList) {
         BOOL updated = NO;
@@ -546,7 +545,6 @@ static NSString* _md5String(NSString* string)
     LKQueueEntryOperator* newEntry =
         [LKQueueEntryOperator queueEntryWithQueue:self
                                              info:entry.info
-                                        resources:entry.resources
                                             tagId:((LKQueueEntryOperator*)entry).tagId];
 
     @synchronized (self.entryList) {

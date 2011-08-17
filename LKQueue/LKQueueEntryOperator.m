@@ -32,13 +32,13 @@
 #define LK_QUEUE_ENTRY_KEY_RESULT       @"rlt"
 
 // for meta
+#define LK_QUEUE_ENTRY_META_INFO      @"__info__"
 #define LK_QUEUE_ENTRY_META_CREATED   @"__created__"
 #define LK_QUEUE_ENTRY_META_MODIFIED  @"__modified__"
 
 
 @implementation LKQueueEntryOperator
 @synthesize info = info_;
-@synthesize resources = resources_;
 @synthesize state = state_;
 @synthesize result = result_;
 @synthesize created = created_;
@@ -48,6 +48,8 @@
 @synthesize queue = queue_;
 @synthesize entryId = entryId_;
 @synthesize tagId = tagId_;
+
+@synthesize persistentDictionary = persistentDictionary_;
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -91,11 +93,30 @@
     return YES;
 }
 
+- (BOOL)_writeInfo
+{
+    NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+    [dictionary setObject:self.created  forKey:LK_QUEUE_ENTRY_META_CREATED];
+    [dictionary setObject:self.modified forKey:LK_QUEUE_ENTRY_META_MODIFIED];
+    [dictionary setObject:self.info     forKey:LK_QUEUE_ENTRY_META_INFO];
+    self.persistentDictionary = dictionary;
+
+    if ([NSKeyedArchiver archiveRootObject:self.persistentDictionary
+                                    toFile:[self _infoFilePath]]) {        
+        [self _setProtectionKeyWithFilePath:[self _infoFilePath]];
+        return YES;
+    } else {
+        NSLog(@"%s|[ERROR] Faild to write a meta to file: %@",
+              __PRETTY_FUNCTION__, [self _infoFilePath]);
+        return NO;
+    }
+}
+
 //------------------------------------------------------------------------------
 #pragma mark -
 #pragma mark Initialization and deallocation
 //------------------------------------------------------------------------------
-- (id)initWithQueue:(LKQueue*)queue info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId
+- (id)initWithQueue:(LKQueue*)queue info:(id <NSCoding>)info tagId:(NSString*)tagId
 {
     self = [super init];
     if (self) {
@@ -108,54 +129,35 @@
         [str release];
         CFRelease(uuidObj);
 
-        if (info == nil) {
-            info = [NSDictionary dictionary];
-        }
-        state_ = LKQueueEntryStateWating;      
-        result_ = LKQueueEntryResultUnfinished;
+        self.state = LKQueueEntryStateWating;      
+        self.result = LKQueueEntryResultUnfinished;
 
-        created_ = [[NSDate alloc] init];
-        modified_ = [created_ retain];
-
-        NSMutableDictionary* infoToWrite =
-            [NSMutableDictionary dictionaryWithDictionary:info];
-        [infoToWrite setObject:created_ forKey:LK_QUEUE_ENTRY_META_CREATED];
-        [infoToWrite setObject:modified_ forKey:LK_QUEUE_ENTRY_META_MODIFIED];
-
-        // write as XML
-        if ([infoToWrite writeToFile:[self _infoFilePath] atomically:YES]) {
-            [self _setProtectionKeyWithFilePath:[self _infoFilePath]];
-        } else {
-            NSLog(@"%s|[ERROR] Faild to write a meta to file: %@",
-                  __PRETTY_FUNCTION__, [self _infoFilePath]);
+        // write info
+        self.created = [NSDate date];
+        self.modified = self.created;
+        self.info = info;
+        if (![self _writeInfo]) {
             return nil;
         }
-        info_ = nil;
 
-        // write as binary
-        if (resources) {
-            if ([NSKeyedArchiver archiveRootObject:resources toFile:[self _resourcesFilePath]]) {
-                [self _setProtectionKeyWithFilePath:[self _logsFilePath]];
-            } else {
-                NSLog(@"%s|[ERROR] Faild to write a resources to file: %@",
-                      __PRETTY_FUNCTION__, [self _resourcesFilePath]);
-                return nil;
-            }
-        }
-        resources_ = nil;
-        logs_ = nil;
+        // init (clear)
+        self.created = nil;
+        self.modified = nil;
+        self.info = nil;
+        self.persistentDictionary = nil;
+        self.logs = nil;
     }
     return self;
 }
 
 - (void)dealloc {
-    self.queue = nil;
     self.entryId = nil;
-    [info_ release];
-    [resources_ release];
-    [created_ release];
-    [modified_ release];
-    [logs_ release];
+    self.info = nil;
+    self.created = nil;
+    self.modified = nil;
+    self.logs = nil;
+
+    self.tagId = nil;
     [super dealloc];
 }
 
@@ -164,25 +166,15 @@
 #pragma mark -
 #pragma mark API
 //------------------------------------------------------------------------------
-+ (LKQueueEntryOperator*)queueEntryWithQueue:(LKQueue*)queue info:(NSDictionary*)info resources:(NSArray*)resources tagId:(NSString*)tagId
++ (LKQueueEntryOperator*)queueEntryWithQueue:(LKQueue*)queue info:(id <NSCoding>)info tagId:(NSString*)tagId
 {
-    return [[[self alloc] initWithQueue:queue info:info resources:resources tagId:tagId] autorelease];
+    return [[[self alloc] initWithQueue:queue info:info tagId:tagId] autorelease];
 }
 
 - (void)_updateModified
 {
-    modified_ = [[NSDate alloc] init];
-    NSMutableDictionary* infoToWrite =
-        [NSMutableDictionary dictionaryWithContentsOfFile:[self _infoFilePath]];
-    [infoToWrite setObject:modified_ forKey:LK_QUEUE_ENTRY_META_MODIFIED];
-    
-    // write as XML
-    if ([infoToWrite writeToFile:[self _infoFilePath] atomically:YES]) {
-        [self _setProtectionKeyWithFilePath:[self _infoFilePath]];
-    } else {
-        NSLog(@"%s|[ERROR] Faild to write a meta to file: %@",
-              __PRETTY_FUNCTION__, [self _infoFilePath]);
-    }
+    self.modified = [NSDate date];
+    [self _writeInfo];
 }
 
 - (BOOL)finish
@@ -344,23 +336,19 @@
 #pragma mark -
 #pragma mark Properties
 //------------------------------------------------------------------------------
-
-- (NSArray*)resources
+- (NSDictionary*)persistentDictionary
 {
-    if (resources_ == nil) {
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[self _resourcesFilePath]]) {
-            resources_ = [[NSKeyedUnarchiver
-                  unarchiveObjectWithFile:[self _resourcesFilePath]] retain];
-        }
+    if (persistentDictionary_ == nil) {
+        self.persistentDictionary = [NSKeyedUnarchiver
+                                 unarchiveObjectWithFile:[self _infoFilePath]];
     }
-    return resources_;
+    return persistentDictionary_;
 }
 
-
-- (NSDictionary*)info
+- (id <NSCoding>)info
 {
     if (info_ == nil) {
-        info_ = [[NSDictionary alloc] initWithContentsOfFile:[self _infoFilePath]];
+        info_ = [[self.persistentDictionary objectForKey:LK_QUEUE_ENTRY_META_INFO] retain];
     }
     return info_;
 }
@@ -368,7 +356,7 @@
 - (NSDate*)created
 {
     if (created_ == nil) {
-        created_ = [[self.info objectForKey:LK_QUEUE_ENTRY_META_CREATED] retain];
+        created_ = [[self.persistentDictionary objectForKey:LK_QUEUE_ENTRY_META_CREATED] retain];
     }
     return created_;
 }
@@ -376,7 +364,7 @@
 - (NSDate*)modified
 {
     if (modified_ == nil) {
-        modified_ = [[self.info objectForKey:LK_QUEUE_ENTRY_META_MODIFIED] retain];
+        modified_ = [[self.persistentDictionary objectForKey:LK_QUEUE_ENTRY_META_MODIFIED] retain];
     }
     return modified_;
 }
@@ -385,8 +373,8 @@
 {
     if (logs_ == nil) {
         if ([[NSFileManager defaultManager] fileExistsAtPath:[self _logsFilePath]]) {
-            logs_ = [[NSKeyedUnarchiver
-                           unarchiveObjectWithFile:[self _logsFilePath]] retain];
+            self.logs = [NSKeyedUnarchiver
+                          unarchiveObjectWithFile:[self _logsFilePath]];
         }
     }
     if (logs_ == nil) {

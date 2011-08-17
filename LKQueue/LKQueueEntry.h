@@ -41,14 +41,11 @@ typedef enum {
 
 @class LKQueueEntryLog;
 
-@interface LKQueueEntry : NSObject {
-    
-}
+@interface LKQueueEntry : NSObject
 
 // persistent properties
 @property (nonatomic, retain, readonly) NSString* entryId;
-@property (nonatomic, copy  , readonly) NSDictionary* info;
-@property (nonatomic, copy  , readonly) NSArray* resources;
+@property (nonatomic, retain, readonly) id <NSCoding> info;
 @property (nonatomic, assign, readonly) LKQueueEntryState state;
 @property (nonatomic, assign, readonly) LKQueueEntryResult result;
 @property (nonatomic, retain, readonly) NSDate* created;

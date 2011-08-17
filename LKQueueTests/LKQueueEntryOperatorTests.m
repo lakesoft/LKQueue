@@ -37,32 +37,32 @@
 //-----------
 - (LKQueueEntryOperator*)_waitingEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:@"INFO" tagId:nil];
     return entry;
 }
 - (LKQueueEntryOperator*)_processingEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:@"INFO" tagId:nil];
     [entry process];
     return entry;
 }
 - (LKQueueEntryOperator*)_finishedEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:@"INFO"  tagId:nil];
     [entry process];
     [entry finish];
     return entry;
 }
 - (LKQueueEntryOperator*)_failedEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:@"INFO" tagId:nil];
     [entry process];
     [entry fail];
     return entry;
 }
 - (LKQueueEntryOperator*)_suspendedEntry
 {
-    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:nil resources:nil tagId:nil];
+    LKQueueEntryOperator* entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:@"INFO" tagId:nil];
     [entry process];
     [entry suspend];
     return entry;
@@ -83,14 +83,12 @@
     NSDate* date = [NSDate date];
     entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue
                                                    info:info
-                                              resources:res
                                                   tagId:@"TAG"];
 
     STAssertEquals(entry.queue, self.queue, nil);
     STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
     STAssertEquals(entry.result, LKQueueEntryResultUnfinished, nil);
-    STAssertEqualObjects([entry.info objectForKey:@"TITLE"], @"TEST", nil);
-    STAssertEqualObjects([entry.resources lastObject], @"VALUE", nil);
+    STAssertEqualObjects([(NSDictionary*)entry.info objectForKey:@"TITLE"], @"TEST", nil);
     STAssertNotNil(entry.created, nil);
     STAssertTrue([entry.created compare:date]==NSOrderedDescending, nil);
     STAssertTrue([entry.created isEqualToDate:entry.modified], nil);
@@ -99,33 +97,23 @@
     entry.context = @"CONTEXT";
     STAssertEqualObjects(entry.context, @"CONTEXT", nil);
 
-    NSFileManager* fileMananger = [NSFileManager defaultManager];
-    NSString* resPath = [entry performSelector:@selector(_resourcesFilePath)];
-    BOOL exisited = [fileMananger fileExistsAtPath:resPath];
-    STAssertTrue(exisited, @"%@ does not exists.", resPath);
-
     STAssertEquals((int)[entry.logs count], 0, nil);    
 }
 
 - (void)testClean
 {
     NSDictionary* info = nil;
-    NSArray* res = nil;
     LKQueueEntryOperator* entry = nil;
     
     info = [NSDictionary dictionaryWithObject:@"TEST" forKey:@"TITLE"];
-    res = [NSArray arrayWithObject:@"VALUE"];
-    entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:info resources:res tagId:nil];
+    entry = [LKQueueEntryOperator queueEntryWithQueue:self.queue info:info tagId:nil];
     BOOL result = [entry clean];
 
     NSFileManager* fileMananger = [NSFileManager defaultManager];
-    NSString* resPath = [entry performSelector:@selector(_resourcesFilePath)];
-    BOOL exisited = [fileMananger fileExistsAtPath:resPath];
     NSString* logPath = [entry performSelector:@selector(_logsFilePath)];
     BOOL exisited2 = [fileMananger fileExistsAtPath:logPath];
 
     STAssertTrue(result, @"Invalid cleanup result", nil);
-    STAssertFalse(exisited, @"%@ does exists.", resPath);
     STAssertFalse(exisited2, @"%@ does exists.", logPath);
 }
 

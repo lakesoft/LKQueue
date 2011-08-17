@@ -93,7 +93,7 @@
      Save data if appropriate.
      See also applicationDidEnterBackground:.
      */
-    [[[LKQueueManager defaultManager] queueWithName:QUEUE_NAME] removeFinishedEntry];
+    [[[LKQueueManager defaultManager] queueWithName:QUEUE_NAME] removeFinishedEntries];
 }
 
 - (void)dealloc

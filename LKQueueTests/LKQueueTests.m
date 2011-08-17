@@ -54,11 +54,9 @@
         NSDictionary* info =
         [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST-%d", i]
                                     forKey:[NSString stringWithFormat:@"TITLE-%d", i]];
-        NSArray* res = [NSArray arrayWithObject:
-                        [NSString stringWithFormat:@"VALUE-%d", i]];
         NSString* tagName = [NSString stringWithFormat:@"TAG-%d", i % 3];   // 0,1,2,0,1,2,0,1,2,0
         LKQueueEntry* entry =
-        [self.queue addEntryWithInfo:info resources:res tagName:tagName];
+        [self.queue addEntryWithInfo:info tagName:tagName];
         entry.context = [NSString stringWithFormat:@"CONTEXT-%d", i];
         
         STAssertNotNil(entry, nil);
@@ -134,8 +132,6 @@
     for (int i=0; i < TEST_ENTRY_MAX; i++) {
         entry = [self.queue getEntryForProcessing];
         STAssertNotNil(entry, nil);
-        STAssertEqualObjects(([entry.resources lastObject]),
-                             ([NSString stringWithFormat:@"VALUE-%d", i]), nil);
         STAssertEquals(entry.state, LKQueueEntryStateProcessing, nil);
         STAssertEquals([self.queue countOfState:LKQueueEntryStateWating], (NSUInteger)(TEST_ENTRY_MAX-i-1), nil);
     }
@@ -305,7 +301,7 @@
     
     [self _setupMultiState];
     
-    [self.queue removeFinishedEntry];
+    [self.queue removeFinishedEntries];
     
     STAssertEquals([self.queue count], (NSUInteger)(TEST_ENTRY_MAX-3), nil);
     STAssertEquals([self.queue countOfState:LKQueueEntryStateWating], (NSUInteger)(TEST_ENTRY_MAX-5), nil);
@@ -340,7 +336,7 @@
         NSString* key = [NSString stringWithFormat:@"TITLE-%d", index];
         NSString* value = [NSString stringWithFormat:@"TEST-%d", index];
         LKQueueEntry* entry = [self.queue entryAtIndex:index];
-        STAssertEqualObjects(([entry.info objectForKey:key]), value, nil);
+        STAssertEqualObjects(([(NSDictionary*)entry.info objectForKey:key]), value, nil);
     }
     LKQueueEntry* entry;
     entry = [self.queue entryAtIndex:-1];
@@ -381,11 +377,9 @@
         for (int i=0; i < [tags count]; i++) {
             int idx = it + i*3;
             LKQueueEntry* entry = [tags objectAtIndex:i];
-            STAssertEqualObjects(([entry.info objectForKey:
+            STAssertEqualObjects(([(NSDictionary*)entry.info objectForKey:
                                    [NSString stringWithFormat:@"TITLE-%d", idx]]),
                                  ([NSString stringWithFormat:@"TEST-%d", idx]), nil);
-            STAssertEqualObjects(([entry.resources lastObject]),
-                                 ([NSString stringWithFormat:@"VALUE-%d", idx]), nil);
         }
     }
     
@@ -438,7 +432,7 @@
     //-----------------------------
     // (clearFinishedEntry) left: 0, 1, 5, 6, 7, 8, 9
     //-----------------------------
-    [self.queue removeFinishedEntry];
+    [self.queue removeFinishedEntries];
     
     // countForTagName:
     STAssertEquals([self.queue countForTagName:@"TAG-0"], (NSUInteger)3, nil);
@@ -584,7 +578,7 @@
         NSDictionary* info =
         [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST-ID-%d", i]
                                     forKey:[NSString stringWithFormat:@"TITLE-ID-%d", i]];
-        LKQueueEntry* entry = [self.queue addEntryWithInfo:info resources:nil tagName:nil];
+        LKQueueEntry* entry = [self.queue addEntryWithInfo:info tagName:nil];
         [array addObject:entry];
     }
     for (LKQueueEntry* entry in array) {
@@ -651,11 +645,9 @@
                 break;
         }
         
-        STAssertEqualObjects(([entry.info objectForKey:
+        STAssertEqualObjects(([(NSDictionary*)entry.info objectForKey:
                                [NSString stringWithFormat:@"TITLE-%d", i]]),
                              ([NSString stringWithFormat:@"TEST-%d", i]), nil);
-        STAssertEqualObjects(([entry.resources lastObject]),
-                             ([NSString stringWithFormat:@"VALUE-%d", i]), nil);
         STAssertNotNil(entry.created, nil);
         STAssertNotNil(entry.modified, nil);
         STAssertNil(entry.context, nil);
@@ -725,7 +717,7 @@
         NSDictionary* info =
         [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST-ID-%d", i]
                                     forKey:[NSString stringWithFormat:@"TITLE-ID-%d", i]];
-        LKQueueEntry* entry = [self.queue addEntryWithInfo:info resources:nil tagName:nil];
+        LKQueueEntry* entry = [self.queue addEntryWithInfo:info tagName:nil];
         [entryIds addObject:entry.entryId];
     }
     
@@ -739,7 +731,7 @@
     int i=0;
     for (NSString* entryId in entryIds) {
         LKQueueEntry* entry = [self.queue entryForId:entryId];
-        STAssertEqualObjects(([entry.info objectForKey:
+        STAssertEqualObjects(([(NSDictionary*)entry.info objectForKey:
                                [NSString stringWithFormat:@"TITLE-ID-%d", i]]),
                              ([NSString stringWithFormat:@"TEST-ID-%d", i]), nil);
         i++;
@@ -764,27 +756,11 @@
         NSDictionary* info =
         [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST2-%d", i]
                                     forKey:[NSString stringWithFormat:@"TITLE2-%d", i]];
-        NSArray* res =
-            [NSArray arrayWithObject:[NSString stringWithFormat:@"VALUE2-%d", i]];
-        [self.queue2 addEntryWithInfo:info resources:res tagName:nil];
+        [self.queue2 addEntryWithInfo:info tagName:nil];
     }
     
     STAssertEquals([self.queue count], (NSUInteger)(TEST_ENTRY_MAX), nil);
-    for (int i=0; i < [self.queue count]; i++) {
-        LKQueueEntry* entry = [self.queue entryAtIndex:i];
-        STAssertEqualObjects(([entry.resources lastObject]),
-                             ([NSString stringWithFormat:@"VALUE-%d", i]), nil);
-        i++;
-    }
-
-
     STAssertEquals([self.queue2 count], (NSUInteger)(TEST_ENTRY_MAX), nil);
-    for (int j=0; j < [self.queue2 count]; j++) {
-        LKQueueEntry* entry = [self.queue2 entryAtIndex:j];
-        STAssertEqualObjects(([entry.resources lastObject]),
-                             ([NSString stringWithFormat:@"VALUE2-%d", j]), nil);
-        j++;
-    }
     [self.queue2 removeAllEntries];
     [[LKQueueManager defaultManager] releaseCacheWithQueue:self.queue2];
 }
@@ -803,12 +779,9 @@
     STAssertEquals(entry2.state, LKQueueEntryStateProcessing, nil);
     STAssertEquals(entry2.result, LKQueueEntryResultUnfinished, nil);
     STAssertFalse(entry == entry2, nil);
-    STAssertEqualObjects(([entry.resources lastObject]),
-                         ([entry2.resources lastObject]), nil);
-    STAssertTrue(([entry.resources lastObject] != [entry2.resources lastObject]), nil);
     STAssertTrue(([entry2.created compare:entry.created] == NSOrderedDescending), nil);
     STAssertTrue(([entry2.modified compare:entry.modified] == NSOrderedDescending), nil);
-    STAssertEqualObjects(([entry2.info objectForKey:@"TITLE-0"]),
+    STAssertEqualObjects(([(NSDictionary*)entry2.info objectForKey:@"TITLE-0"]),
                          @"TEST-0", nil);
 }
 
@@ -844,10 +817,7 @@ static int allCount_;
                     [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST-%d-%02d", i, j]
                                             forKey:[NSString stringWithFormat:@"TITLE-%d-%02d", i, j]];
 
-                NSArray* res = [NSArray arrayWithObject:
-                                [NSString stringWithFormat:@"VALUE-%d-%02d", i, j]];
-
-                [self.queue addEntryWithInfo:info resources:res tagName:nil];
+                [self.queue addEntryWithInfo:info tagName:nil];
             }
         });
     }
