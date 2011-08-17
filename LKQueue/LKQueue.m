@@ -339,6 +339,7 @@ static NSString* _md5String(NSString* string)
             if (entry.canRemove) {
                 [self _removeEntry:(LKQueueEntryOperator*)entry];
                 [self _saveList];
+                [self _saveTags];
                 return YES;
             } else {
                 return NO;
@@ -380,12 +381,13 @@ static NSString* _md5String(NSString* string)
 
 
 #pragma mark -
-#pragma mark API (Accessing entry list)
+#pragma mark API (Accessing entryies)
 
 - (NSUInteger)count
 {
     return [self.entryList count];
 }
+
 
 - (NSUInteger)countOfNotFinished
 {
@@ -398,7 +400,7 @@ static NSString* _md5String(NSString* string)
     return count;    
 }
 
-- (NSUInteger)countOfEntryState:(LKQueueEntryState)state
+- (NSUInteger)countOfState:(LKQueueEntryState)state
 {
     NSUInteger count = 0;
     for (LKQueueEntryOperator* entry in self.entryList) {
@@ -408,21 +410,6 @@ static NSString* _md5String(NSString* string)
     }
     return count;
 }
-
-- (NSUInteger)countForTagName:(NSString*)tagName
-{
-    NSUInteger count = 0;
-    NSString* tagId = [self _tagIdForName:tagName];
-    if ([self.tags objectForKey:tagId]) {
-        for (LKQueueEntryOperator* entry in self.entryList) {
-            if ([entry.tagId isEqualToString:tagId]) {
-                count++;
-            }
-        }
-    }
-    return count;
-}
-
 
 - (LKQueueEntry*)entryAtIndex:(NSInteger)index
 {
@@ -450,25 +437,76 @@ static NSString* _md5String(NSString* string)
 - (NSArray*)entries
 {
     @synchronized (self.entryList) {
-        NSArray* entries = [self.entryList copy];
+        NSArray* entries = [[self.entryList copy] autorelease];
         return entries;
     }
+}
+
+
+#pragma mark -
+#pragma mark API (Accessing entryies with tag)
+
+- (NSUInteger)countForTagName:(NSString*)tagName
+{
+    if (![self hasExistTagName:tagName]) {
+        return 0;
+    }
+
+    NSUInteger count = 0;
+    NSString* tagId = [self _tagIdForName:tagName];
+
+    for (LKQueueEntryOperator* entry in self.entryList) {
+        if ([entry.tagId isEqualToString:tagId]) {
+            count++;
+        }
+    }
+    return count;
+}
+
+- (NSUInteger)countOfNotFinishedForTagName:(NSString*)tagName
+{
+    if (![self hasExistTagName:tagName]) {
+        return 0;
+    }
+    
+    NSUInteger count = 0;
+    NSString* tagId = [self _tagIdForName:tagName];
+
+    for (LKQueueEntryOperator* entry in self.entryList) {
+        if ([entry.tagId isEqualToString:tagId] && !entry.hasFinished) {
+            count++;
+        }
+    }
+    return count;
+}
+
+- (NSUInteger)countOfState:(LKQueueEntryState)state forTagName:(NSString*)tagName
+{
+    if (![self hasExistTagName:tagName]) {
+        return 0;
+    }
+    
+    NSUInteger count = 0;
+    NSString* tagId = [self _tagIdForName:tagName];
+    
+    for (LKQueueEntryOperator* entry in self.entryList) {
+        if ([entry.tagId isEqualToString:tagId] && entry.state == state) {
+            count++;
+        }
+    }
+    return count;    
 }
 
 - (NSArray*)entriesForTagName:(NSString*)tagName
 {
     NSMutableArray* result = [NSMutableArray array];
-    if (tagName == nil) {
+    if (![self hasExistTagName:tagName]) {
         return result;
     }
-
+    
     NSString* tagId = [self _tagIdForName:tagName];
-    if (![self.tags objectForKey:tagId]) {
-        return result;
-    }
-
-    NSArray* entries = [self entries];
-    for (LKQueueEntryOperator* entry in entries) {
+    
+    for (LKQueueEntryOperator* entry in self.entryList) {
         if ([tagId isEqualToString:entry.tagId]) {
             [result addObject:entry];
         }
@@ -477,7 +515,10 @@ static NSString* _md5String(NSString* string)
 }
 
 
-// API (Tag)
+
+#pragma mark -
+#pragma mark API (Tag management)
+
 - (BOOL)hasExistTagName:(NSString*)tagName
 {
     NSString* tagId = [self _tagIdForName:tagName];

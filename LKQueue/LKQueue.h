@@ -71,16 +71,20 @@
 // API (Accessing entryies)
 - (NSUInteger)count;
 - (NSUInteger)countOfNotFinished;
-- (NSUInteger)countOfEntryState:(LKQueueEntryState)state;
-- (NSUInteger)countForTagName:(NSString*)tagName;
+- (NSUInteger)countOfState:(LKQueueEntryState)state;
 - (LKQueueEntry*)entryAtIndex:(NSInteger)index;
 - (LKQueueEntry*)entryForId:(NSString*)entryId;
 - (NSArray*)entries;                                // NOTE: the return values are snapshots
+
+// API (Accessing entryies with tag)
+- (NSUInteger)countForTagName:(NSString*)tagName;
+- (NSUInteger)countOfNotFinishedForTagName:(NSString*)tagName;
+- (NSUInteger)countOfState:(LKQueueEntryState)state forTagName:(NSString*)tagName;
 - (NSArray*)entriesForTagName:(NSString*)tagName;   // NOTE: the return values are snapshots
 
 
-// API (Tag)
-- (BOOL)hasExistTagName:(NSString*)tagName; // TODO: create test case
+// API (Tag management)
+- (BOOL)hasExistTagName:(NSString*)tagName;
 - (NSArray*)tagNames;
 
 

@@ -137,7 +137,7 @@
         STAssertEqualObjects(([entry.resources lastObject]),
                              ([NSString stringWithFormat:@"VALUE-%d", i]), nil);
         STAssertEquals(entry.state, LKQueueEntryStateProcessing, nil);
-        STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateWating], (NSUInteger)(TEST_ENTRY_MAX-i-1), nil);
+        STAssertEquals([self.queue countOfState:LKQueueEntryStateWating], (NSUInteger)(TEST_ENTRY_MAX-i-1), nil);
     }
     entry = [self.queue getEntryForProcessing];
     STAssertNil(entry, nil);
@@ -308,7 +308,7 @@
     [self.queue removeFinishedEntry];
     
     STAssertEquals([self.queue count], (NSUInteger)(TEST_ENTRY_MAX-3), nil);
-    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateWating], (NSUInteger)(TEST_ENTRY_MAX-5), nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating], (NSUInteger)(TEST_ENTRY_MAX-5), nil);
 }
 
 - (void)testRemoveAllEntries
@@ -325,10 +325,10 @@
     [self _setupTestEntries];
     [self _setupMultiState];
     STAssertEquals([self.queue count], (NSUInteger)TEST_ENTRY_MAX, nil);
-    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateWating], (NSUInteger)5, nil);
-    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateProcessing], (NSUInteger)1, nil);
-    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateSuspending], (NSUInteger)1, nil);
-    STAssertEquals([self.queue countOfEntryState:LKQueueEntryStateFinished], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating], (NSUInteger)5, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished], (NSUInteger)3, nil);
     STAssertEquals([self.queue countOfNotFinished], (NSUInteger)7, nil);
 }
 
@@ -389,43 +389,190 @@
         }
     }
     
-    // countForTagName
+    // countForTagName:
     STAssertEquals([self.queue countForTagName:@"TAG-0"], (NSUInteger)4, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-1"], (NSUInteger)3, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)3, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
-     
+
+    // countOfState:ForTagName:
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-0"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-0"], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-0"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-0"], (NSUInteger)1, nil);
+
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-1"], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-1"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-1"], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-1"], (NSUInteger)1, nil);
+
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-2"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-2"], (NSUInteger)1, nil);
+
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-3"], (NSUInteger)0, nil);
+
+    // countOfNotFinishedForTagName:
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-0"], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-1"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-2"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-3"], (NSUInteger)0, nil);
+
+    // hasExistTagName:
+    STAssertTrue([self.queue hasExistTagName:@"TAG-0"], nil);
+    STAssertTrue([self.queue hasExistTagName:@"TAG-1"], nil);
+    STAssertTrue([self.queue hasExistTagName:@"TAG-2"], nil);
+    STAssertFalse([self.queue hasExistTagName:@"TAG-3"], nil);
+    
     // 0: processing               TAG-0
-    // 1: suspended              TAG-1
+    // 1: suspended                TAG-1
     // 2: finished(successful)     TAG-2
     // 3: finished(failed)         TAG-0
-    // 4: finished(suspended)    TAG-1
+    // 4: finished(suspended)      TAG-1
     // 5-9: waiting                TAG-2, TAG-0, TAG-1, TAG-2, TAG-0
 
+    //-----------------------------
     // (clearFinishedEntry) left: 0, 1, 5, 6, 7, 8, 9
+    //-----------------------------
     [self.queue removeFinishedEntry];
+    
+    // countForTagName:
     STAssertEquals([self.queue countForTagName:@"TAG-0"], (NSUInteger)3, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-1"], (NSUInteger)2, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)2, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
 
+    // countOfState:ForTagName:
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-0"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-0"], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-0"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-0"], (NSUInteger)0, nil);
+    
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-1"], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-1"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-1"], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-1"], (NSUInteger)0, nil);
+    
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-2"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    
+    // countOfNotFinishedForTagName:
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-0"], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-1"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-2"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-3"], (NSUInteger)0, nil);
+
+    // hasExistTagName:
+    STAssertTrue([self.queue hasExistTagName:@"TAG-0"], nil);
+    STAssertTrue([self.queue hasExistTagName:@"TAG-1"], nil);
+    STAssertTrue([self.queue hasExistTagName:@"TAG-2"], nil);
+    STAssertFalse([self.queue hasExistTagName:@"TAG-3"], nil);
+    
+    
+    //-----------------------------
     // (removeEntry) remove TAG-2
+    //-----------------------------
     LKQueueEntry* entry;
     entry = [self.queue entryAtIndex:5];
     [self.queue removeEntry:entry];
     entry = [self.queue entryAtIndex:2];
     [self.queue removeEntry:entry];
+
+    // countForTagName:
     STAssertEquals([self.queue countForTagName:@"TAG-0"], (NSUInteger)3, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-1"], (NSUInteger)2, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)0, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
+  
+    // countOfState:ForTagName:
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-0"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-0"], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-0"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-0"], (NSUInteger)0, nil);
     
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-1"], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-1"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-1"], (NSUInteger)1, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-1"], (NSUInteger)0, nil);
+    
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    
+    // countOfNotFinishedForTagName:
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-0"], (NSUInteger)3, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-1"], (NSUInteger)2, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-3"], (NSUInteger)0, nil);
+    
+    // hasExistTagName:
+    STAssertTrue([self.queue hasExistTagName:@"TAG-0"], nil);
+    STAssertTrue([self.queue hasExistTagName:@"TAG-1"], nil);
+    STAssertFalse([self.queue hasExistTagName:@"TAG-2"], nil);
+    STAssertFalse([self.queue hasExistTagName:@"TAG-3"], nil);
+    
+    
+    //-----------------------------
     // (removeAllEntries)
+    //-----------------------------
     [self.queue removeAllEntries];
+
+    // countForTagName:
     STAssertEquals([self.queue countForTagName:@"TAG-0"], (NSUInteger)0, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-1"], (NSUInteger)0, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-2"], (NSUInteger)0, nil);
     STAssertEquals([self.queue countForTagName:@"TAG-3"], (NSUInteger)0, nil);
+
+    // countOfState:ForTagName:
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-0"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-0"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-0"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-0"], (NSUInteger)0, nil);
+    
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-1"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-1"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-1"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-1"], (NSUInteger)0, nil);
+    
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-2"], (NSUInteger)0, nil);
+    
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateWating forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateProcessing forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateSuspending forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfState:LKQueueEntryStateFinished forTagName:@"TAG-3"], (NSUInteger)0, nil);
+    
+    // countOfNotFinishedForTagName:
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-0"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-1"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-2"], (NSUInteger)0, nil);
+    STAssertEquals([self.queue countOfNotFinishedForTagName:@"TAG-3"], (NSUInteger)0, nil);
+    
+    // hasExistTagName:
+    STAssertFalse([self.queue hasExistTagName:@"TAG-0"], nil);
+    STAssertFalse([self.queue hasExistTagName:@"TAG-1"], nil);
+    STAssertFalse([self.queue hasExistTagName:@"TAG-2"], nil);
+    STAssertFalse([self.queue hasExistTagName:@"TAG-3"], nil);
+    
 
 }
 
@@ -728,7 +875,7 @@ static int allCount_;
 
     while (1) {
         if (dispatch_group_wait(consumer_group, DISPATCH_TIME_NOW)) {
-            NSLog(@"countOfWating: %d", [self.queue countOfEntryState:LKQueueEntryStateWating]);
+            NSLog(@"countOfWating: %d", [self.queue countOfState:LKQueueEntryStateWating]);
             [NSThread sleepForTimeInterval:1.0];
         } else {
             break;
