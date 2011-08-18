@@ -29,7 +29,6 @@
 #define LK_QUEUE_ENTRY_KEY_ENTRY_ID     @"eid"
 #define LK_QUEUE_ENTRY_KEY_TAG_ID       @"tid"
 #define LK_QUEUE_ENTRY_KEY_STATE        @"sta"
-#define LK_QUEUE_ENTRY_KEY_RESULT       @"rlt"
 
 // for meta
 #define LK_QUEUE_ENTRY_META_INFO      @"__info__"
@@ -40,7 +39,6 @@
 @implementation LKQueueEntryOperator
 @synthesize info = info_;
 @synthesize state = state_;
-@synthesize result = result_;
 @synthesize created = created_;
 @synthesize modified = modified_;
 @synthesize logs = logs_;
@@ -93,7 +91,7 @@
     return YES;
 }
 
-- (BOOL)_writeInfo
+- (BOOL)save
 {
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     [dictionary setObject:self.created  forKey:LK_QUEUE_ENTRY_META_CREATED];
@@ -130,13 +128,12 @@
         CFRelease(uuidObj);
 
         self.state = LKQueueEntryStateWating;      
-        self.result = LKQueueEntryResultUnfinished;
 
         // write info
         self.created = [NSDate date];
         self.modified = self.created;
         self.info = info;
-        if (![self _writeInfo]) {
+        if (![self save]) {
             return nil;
         }
 
@@ -174,51 +171,25 @@
 - (void)_updateModified
 {
     self.modified = [NSDate date];
-    [self _writeInfo];
+    [self save];
 }
 
 - (BOOL)finish
 {
-    BOOL ret = NO;
-    switch (state_) {
-        case LKQueueEntryStateSuspending:
-            state_ = LKQueueEntryStateFinished;
-            result_ = LKQueueEntryResultSuspended;
-            ret = YES;
-            break;
-            
-        case LKQueueEntryStateProcessing:
-            state_ = LKQueueEntryStateFinished;
-            result_ = LKQueueEntryResultSuccessful;
-            ret = YES;
-            break;
-            
-        default:
-            break;
-    }
-    if (ret) {
-        [self _updateModified];
-    }
-    return ret;
-}
-
-- (BOOL)fail
-{
-    if (state_ == LKQueueEntryStateProcessing ||
+    if (state_ == LKQueueEntryStateWating ||
+        state_ == LKQueueEntryStateProcessing ||
         state_ == LKQueueEntryStateSuspending) {
         state_ = LKQueueEntryStateFinished;
-        result_ = LKQueueEntryResultFailed;
-
         [self _updateModified];
         return YES;
     }
-    return NO;    
+    return NO;
+
 }
 
 - (BOOL)wait
 {
-    if (state_ == LKQueueEntryStateProcessing ||
-        state_ == LKQueueEntryStateSuspending) {
+    if (state_ == LKQueueEntryStateSuspending) {
         state_ = LKQueueEntryStateWating;
         [self _updateModified];
         return YES;
@@ -238,7 +209,8 @@
 
 - (BOOL)suspend
 {
-    if (state_ == LKQueueEntryStateProcessing) {
+    if (state_ == LKQueueEntryStateWating ||
+        state_ == LKQueueEntryStateProcessing) {
         state_ = LKQueueEntryStateSuspending;
         [self _updateModified];
         return YES;
@@ -314,7 +286,6 @@
 {
 	[coder encodeObject:self.queue.queueId  forKey:LK_QUEUE_ENTRY_KEY_QUEUE_ID];
 	[coder encodeInt:self.state             forKey:LK_QUEUE_ENTRY_KEY_STATE];
-	[coder encodeInt:self.result            forKey:LK_QUEUE_ENTRY_KEY_RESULT];
 	[coder encodeObject:self.entryId        forKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
 	[coder encodeObject:self.tagId          forKey:LK_QUEUE_ENTRY_KEY_TAG_ID];
 }
@@ -323,7 +294,6 @@
     self = [super init];
     if (self) {
         state_          = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_STATE];
-        result_         = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_RESULT];
         self.entryId    = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
         self.tagId      = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_TAG_ID];
         

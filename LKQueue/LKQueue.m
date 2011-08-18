@@ -202,10 +202,11 @@ static NSString* _md5String(NSString* string)
                       __PRETTY_FUNCTION__, queueFilePath);
                 return NO;
             }
+            // resuming (processing -> suspending)
             for (LKQueueEntryOperator* entry in self.entryList) {
                 entry.queue = self;
                 if (entry.state == LKQueueEntryStateProcessing) {
-                    [entry wait];
+                    [entry suspend];
                 }
             }
 
@@ -250,16 +251,26 @@ static NSString* _md5String(NSString* string)
 
 - (LKQueueEntry*)addEntryWithInfo:(id <NSCoding>)info tagName:(NSString*)tagName
 {
+    return [self addEntryWithInfo:info tagName:tagName suspending:NO];
+}
+
+- (LKQueueEntry*)addEntryWithInfo:(id <NSCoding>)info tagName:(NSString*)tagName suspending:(BOOL)suspending
+{
     NSString* tagId = [self _addTagName:tagName];
     LKQueueEntryOperator* entry =
-        [LKQueueEntryOperator queueEntryWithQueue:self
-                                             info:info
-                                            tagId:tagId];
+    [LKQueueEntryOperator queueEntryWithQueue:self
+                                         info:info
+                                        tagId:tagId];
+    
+    if (suspending) {
+        [entry suspend];
+    }
     @synchronized (self.entryList) {
         [self.entryList addObject:entry];
         [self _saveList];
     }
     return entry;
+    
 }
 
 - (LKQueueEntry*)getEntryForProcessing
@@ -279,56 +290,38 @@ static NSString* _md5String(NSString* string)
 #pragma mark -
 #pragma mark API (Entry operations)
 
-- (BOOL)waitEntry:(LKQueueEntry*)entry
+- (BOOL)changeEntry:(LKQueueEntry*)entry toState:(LKQueueEntryState)state
 {
-    @synchronized (self.entryList) {
-        if ([self.entryList containsObject:entry]) {
-            if ([(LKQueueEntryOperator*)entry wait]) {
-                [self _saveList];
-                return YES;
-            }
-        }
-    }
-    return NO;
-}
+    BOOL result = NO;
 
-- (BOOL)finishEntry:(LKQueueEntry*)entry
-{
     @synchronized (self.entryList) {
         if ([self.entryList containsObject:entry]) {
-            if ([(LKQueueEntryOperator*)entry finish]) {
-                [self _saveList];
-                return YES;
-            }
-        }
-    }
-    return NO;
-}
+            switch (state) {
+                case LKQueueEntryStateWating:
+                    result = [(LKQueueEntryOperator*)entry wait];
+                    break;
+                    
+                case LKQueueEntryStateProcessing:
+                    result = [(LKQueueEntryOperator*)entry process];    //TODO: test
+                    break;
+                    
+                case LKQueueEntryStateFinished:
+                    result = [(LKQueueEntryOperator*)entry finish];
+                    break;
 
-- (BOOL)suspendEntry:(LKQueueEntry*)entry
-{
-    @synchronized (self.entryList) {
-        if ([self.entryList containsObject:entry]) {
-            if ([(LKQueueEntryOperator*)entry suspend]) {
-                [self _saveList];
-                return YES;
-            }
-        }
-    }
-    return NO;    
-}
+                case LKQueueEntryStateSuspending:
+                    result = [(LKQueueEntryOperator*)entry suspend];
+                    break;
 
-- (BOOL)failEntry:(LKQueueEntry*)entry
-{
-    @synchronized (self.entryList) {
-        if ([self.entryList containsObject:entry]) {
-            if ([(LKQueueEntryOperator*)entry fail]) {
+                default:
+                    break;
+            }
+            if (result) {
                 [self _saveList];
-                return YES;
             }
         }
     }
-    return NO;
+    return result;
 }
 
 - (BOOL)removeEntry:(LKQueueEntry*)entry
@@ -376,6 +369,11 @@ static NSString* _md5String(NSString* string)
         [self _saveList];
         [self _saveTags];
     }
+}
+
+- (BOOL)saveInfoForEntry:(LKQueueEntry*)entry
+{
+    return [(LKQueueEntryOperator*)entry save];
 }
 
 

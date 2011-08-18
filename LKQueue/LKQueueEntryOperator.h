@@ -35,7 +35,6 @@
 @property (nonatomic, retain) NSString* entryId;
 @property (nonatomic, retain) id <NSCoding> info;
 @property (nonatomic, assign) LKQueueEntryState state;
-@property (nonatomic, assign) LKQueueEntryResult result;
 @property (nonatomic, retain) NSDate* created;
 @property (nonatomic, retain) NSDate* modified;
 @property (nonatomic, retain) NSArray* logs;
@@ -47,8 +46,9 @@
 // API
 + (LKQueueEntryOperator*)queueEntryWithQueue:(LKQueue*)queue info:(id <NSCoding>)info tagId:(NSString*)tagId;
 
+- (BOOL)save;
+
 - (BOOL)finish;
-- (BOOL)fail;
 - (BOOL)wait;
 - (BOOL)process;
 - (BOOL)suspend;

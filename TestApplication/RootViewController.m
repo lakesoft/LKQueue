@@ -89,11 +89,7 @@
             cell.detailTextLabel.text = @"Processing";
             break;
         case LKQueueEntryStateFinished:
-            if (entry.result == LKQueueEntryResultSuccessful) {
-                cell.detailTextLabel.text = @"Finished";
-            } else {
-                cell.detailTextLabel.text = @"Failed";
-            }
+            cell.detailTextLabel.text = @"Finished";
             break;
         case LKQueueEntryStateSuspending:
             cell.detailTextLabel.text = @"Suspending";

@@ -23,18 +23,19 @@
 // -------------
 // state diagram
 // -------------
-//
-//                                                finish
-//           +-----------+ process +------------+  /fail +-----------+ remove
-// [start]-->|   wating  |-------->| processing |------->| finished  |------>[x]
-//           |           |<--------|            |   +--->|           |
-//           +-----------+ wait    +------------+   |    +-----------+
-//              |                         |         |
-//              |                         |suspend  |
-//              | wait +------------+     |         |
-//              +<-----|suspending  |<----+         |
-//                     |            |---------------+
-//                     +------------+     finish/fail
+//                 +--------------------------------+
+//                 |                                |
+//                 |                                |
+//           +-----------+         +------------+   +--->+-----------+ remove
+// [start1]->|  waiting  |-------->| processing |------->| finished  |------>[x]
+//           |           |         |            |   +--->|           |
+//           +-----------+         +------------+   |    +-----------+
+//              |  |                      |         |
+//              |  |                      |         |
+//              |  |   +------------+     |         |
+//              |  +-->| suspending |<----+         |
+//              +<-----|            |---------------+
+// [start2]----------->+------------+
 //
 //
 
@@ -55,17 +56,16 @@
 
 // API (Basics)
 - (LKQueueEntry*)addEntryWithInfo:(id <NSCoding>)info tagName:(NSString*)tagName;
+- (LKQueueEntry*)addEntryWithInfo:(id <NSCoding>)info tagName:(NSString*)tagName suspending:(BOOL)suspending;
 - (LKQueueEntry*)getEntryForProcessing;
 
 
 // API (Entry operations)
-- (BOOL)finishEntry:(LKQueueEntry*)entry;
-- (BOOL)failEntry:(LKQueueEntry*)entry;
-- (BOOL)waitEntry:(LKQueueEntry*)entry;
-- (BOOL)suspendEntry:(LKQueueEntry*)entry;
+- (BOOL)changeEntry:(LKQueueEntry*)entry toState:(LKQueueEntryState)state;
 - (BOOL)removeEntry:(LKQueueEntry*)entry;           // NOTE: can't remove a entry while processing
 - (void)removeAllEntries;
 - (void)removeFinishedEntries; 
+- (BOOL)saveInfoForEntry:(LKQueueEntry*)entry;
 
 
 // API (Accessing entryies)

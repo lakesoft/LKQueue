@@ -41,7 +41,7 @@
                     });
                     
                     [NSThread sleepForTimeInterval:2.0];
-                    [queue finishEntry:entry];
+                    [queue changeEntry:entry toState:LKQueueEntryStateFinished];
 
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [rootViewController.tableView reloadData];

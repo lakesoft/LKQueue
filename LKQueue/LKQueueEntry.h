@@ -30,15 +30,6 @@ typedef enum {
     LKQueueEntryStateFinished,
 } LKQueueEntryState;
 
-// ** Do not change order **
-typedef enum {
-    LKQueueEntryResultUnfinished = 0,
-    LKQueueEntryResultSuccessful,
-    LKQueueEntryResultFailed,
-    LKQueueEntryResultSuspended
-} LKQueueEntryResult;
-
-
 @class LKQueueEntryLog;
 
 @interface LKQueueEntry : NSObject
@@ -47,7 +38,6 @@ typedef enum {
 @property (nonatomic, retain, readonly) NSString* entryId;
 @property (nonatomic, retain, readonly) id <NSCoding> info;
 @property (nonatomic, assign, readonly) LKQueueEntryState state;
-@property (nonatomic, assign, readonly) LKQueueEntryResult result;
 @property (nonatomic, retain, readonly) NSDate* created;
 @property (nonatomic, retain, readonly) NSDate* modified;
 @property (nonatomic, retain, readonly) NSArray* logs;

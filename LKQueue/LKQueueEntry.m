@@ -28,7 +28,6 @@
 @synthesize entryId = entryId_;
 @synthesize info = info_;
 @synthesize state = state_;
-@synthesize result = result_;
 @synthesize created = created_;
 @synthesize modified = modified_;
 @synthesize logs = logs_;
