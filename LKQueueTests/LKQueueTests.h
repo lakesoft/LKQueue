@@ -11,10 +11,10 @@
 @class LKQueue;
 @interface LKQueueTests : SenTestCase {
 @private
-    
 }
 
 @property (nonatomic, retain) LKQueue* queue;
 @property (nonatomic, retain) LKQueue* queue2;
+@property (nonatomic, retain) NSString* calledNotificationName;
 
 @end

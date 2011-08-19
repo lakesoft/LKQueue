@@ -42,6 +42,12 @@
 #import <Foundation/Foundation.h>
 #import "LKQueueEntry.h"
 
+// Notifications (notification.object = LKQueue instance)
+#define LKQueueDidAddEntryNotification      @"LKQueueDidAddEntryNotification"
+#define LKQueueDidRemoveEntryNotification   @"LKQueueDidRemoveEntryNotification"
+
+
+// Class
 @class LKQueueEntry;
 @interface LKQueue : NSObject {
  

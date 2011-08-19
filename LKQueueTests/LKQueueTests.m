@@ -21,6 +21,7 @@
 
 @synthesize queue;
 @synthesize queue2;
+@synthesize calledNotificationName;
 
 - (void)setUp
 {
@@ -28,7 +29,8 @@
 
     self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
     self.queue2 = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME2];
-    
+    self.calledNotificationName = nil;
+
     // Set-up code here.
 }
 
@@ -908,5 +910,69 @@ static int allCount_;
     STAssertEquals(allCount_, (int)(PRODUCER_MAX*ENTRY_MAX), nil);
 }
 
+
+//------------------
+// notification test
+//------------------
+- (void)_didAdd:(NSNotification*)notification
+{
+    STAssertEqualObjects(notification.name, LKQueueDidAddEntryNotification, nil);
+    STAssertEquals(notification.object, self.queue, nil);
+    self.calledNotificationName = LKQueueDidAddEntryNotification;
+}
+
+- (void)_didRemove:(NSNotification*)notification
+{
+    STAssertEqualObjects(notification.name, LKQueueDidRemoveEntryNotification, nil);
+    STAssertEquals(notification.object, self.queue, nil);
+    self.calledNotificationName = LKQueueDidRemoveEntryNotification;
+}
+
+// ??
+//    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+
+
+- (void)testDidAddNotification
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_didAdd:)
+                                                 name:LKQueueDidAddEntryNotification
+                                               object:self.queue];
+
+    [self.queue addEntryWithInfo:@"NOTIFY-TEST-1" tagName:nil];
+    STAssertEqualObjects(self.calledNotificationName, LKQueueDidAddEntryNotification, nil);
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+
+- (void)testDidRemoveNotification
+{
+    LKQueueEntry* entry = nil;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_didRemove:)
+                                                 name:LKQueueDidRemoveEntryNotification
+                                               object:self.queue];
+    
+    self.calledNotificationName = nil;
+    entry = [self.queue addEntryWithInfo:@"NOTIFY-TEST-21" tagName:nil];
+    STAssertNil(self.calledNotificationName, nil);
+    [self.queue removeEntry:entry];
+    STAssertEqualObjects(self.calledNotificationName, LKQueueDidRemoveEntryNotification, nil);
+
+    self.calledNotificationName = nil;
+    entry = [self.queue addEntryWithInfo:@"NOTIFY-TEST-22" tagName:nil];
+    [self.queue changeEntry:entry toState:LKQueueEntryStateFinished];
+    [self.queue removeFinishedEntries];
+    STAssertEqualObjects(self.calledNotificationName, LKQueueDidRemoveEntryNotification, nil);
+    
+    self.calledNotificationName = nil;
+    entry = [self.queue addEntryWithInfo:@"NOTIFY-TEST-23" tagName:nil];
+    [self.queue removeAllEntries];
+    STAssertEqualObjects(self.calledNotificationName, LKQueueDidRemoveEntryNotification, nil);
+   
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 @end

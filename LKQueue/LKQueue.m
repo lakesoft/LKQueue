@@ -269,6 +269,10 @@ static NSString* _md5String(NSString* string)
         [self.entryList addObject:entry];
         [self _saveList];
     }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:LKQueueDidAddEntryNotification
+                                                        object:self];
+
     return entry;
     
 }
@@ -332,6 +336,9 @@ static NSString* _md5String(NSString* string)
                 [self _removeEntry:(LKQueueEntryOperator*)entry];
                 [self _saveList];
                 [self _saveTags];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:LKQueueDidRemoveEntryNotification
+                                                                    object:self];
                 return YES;
             } else {
                 return NO;
@@ -355,6 +362,8 @@ static NSString* _md5String(NSString* string)
         if (updated) {
             [self _saveList];
             [self _saveTags];
+            [[NSNotificationCenter defaultCenter] postNotificationName:LKQueueDidRemoveEntryNotification
+                                                                object:self];
         }
     }
 }
@@ -369,6 +378,9 @@ static NSString* _md5String(NSString* string)
         [self _saveList];
         [self _saveTags];
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:LKQueueDidRemoveEntryNotification
+                                                        object:self];
+
 }
 
 - (BOOL)saveInfoForEntry:(LKQueueEntry*)entry
