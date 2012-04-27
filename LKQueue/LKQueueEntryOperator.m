@@ -29,12 +29,12 @@
 #define LK_QUEUE_ENTRY_KEY_ENTRY_ID     @"eid"
 #define LK_QUEUE_ENTRY_KEY_TAG_ID       @"tid"
 #define LK_QUEUE_ENTRY_KEY_STATE        @"sta"
+#define LK_QUEUE_ENTRY_PROCESSING_FAILED   @"pfl"
 
 // for meta
 #define LK_QUEUE_ENTRY_META_INFO      @"__info__"
 #define LK_QUEUE_ENTRY_META_CREATED   @"__created__"
 #define LK_QUEUE_ENTRY_META_MODIFIED  @"__modified__"
-
 
 @implementation LKQueueEntryOperator
 @synthesize info = info_;
@@ -244,7 +244,7 @@
     }
     
     NSString* logsFilePath = [self _logsFilePath];
-    if ([fileManager fileExistsAtPath:resourcesFilePath]) {
+    if ([fileManager fileExistsAtPath:logsFilePath]) {
         NSError* error =nil;
         if (![fileManager removeItemAtPath:logsFilePath error:&error]) {
             NSLog(@"%s|Failed to remove log file '%@':%@",
@@ -262,9 +262,9 @@
 #pragma mark -
 #pragma mark API (overwritten)
 //------------------------------------------------------------------------------
-- (void)addQueueEntryLog:(LKQueueEntryLog*)queueEntyLog
+- (void)addLog:(id <NSCoding>)log
 {
-    NSArray* array = [self.logs arrayByAddingObject:queueEntyLog];
+    NSArray* array = [self.logs arrayByAddingObject:log];
     [logs_ release];
     logs_ = [array retain];
     
@@ -288,6 +288,7 @@
 	[coder encodeInt:self.state             forKey:LK_QUEUE_ENTRY_KEY_STATE];
 	[coder encodeObject:self.entryId        forKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
 	[coder encodeObject:self.tagId          forKey:LK_QUEUE_ENTRY_KEY_TAG_ID];
+    [coder encodeBool:self.processingFailed forKey:LK_QUEUE_ENTRY_PROCESSING_FAILED];
 }
 
 - (id)initWithCoder:(NSCoder*)coder {
@@ -296,6 +297,7 @@
         state_          = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_STATE];
         self.entryId    = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
         self.tagId      = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_TAG_ID];
+        self.processingFailed = [coder decodeBoolForKey:LK_QUEUE_ENTRY_PROCESSING_FAILED];
         
         // self.queue will be set in LKQueue class
     }

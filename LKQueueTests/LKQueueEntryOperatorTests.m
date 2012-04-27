@@ -10,7 +10,6 @@
 
 #import "LKQueueEntryOperatorTests.h"
 #import "LKQueueEntryOperator.h"
-#import "LKQueueEntryLog.h"
 #import "LKQueue.h"
 #import "LKQueueManager.h"
 
@@ -90,6 +89,10 @@
     STAssertTrue([entry.created compare:date]==NSOrderedDescending, nil);
     STAssertTrue([entry.created isEqualToDate:entry.modified], nil);
     STAssertEquals(entry.tagId, @"TAG", nil);
+    STAssertFalse(entry.processingFailed, nil);
+    
+    entry.processingFailed = YES;
+    STAssertTrue(entry.processingFailed, nil);
     
     entry.context = @"CONTEXT";
     STAssertEqualObjects(entry.context, @"CONTEXT", nil);
@@ -319,43 +322,43 @@
 }
 
 
-- (void)testAddQueueEntryLog
+- (void)testAddLog
 {
-    LKQueueEntryLog* log;
-    
     LKQueueEntry* entry1 = [self _waitingEntry];
     for (int i=0; i < 3; i++) {
-        log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation
-                            title:[NSString stringWithFormat:@"LOG-A-%02", i+1]
-                            detail:[NSString stringWithFormat:@"DETAIL-A-%02\n", i+1]];
-        [entry1 addQueueEntryLog:log];
+        NSDictionary* log = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSString stringWithFormat:@"LOG-A-%02", i+1], @"title",
+                             [NSString stringWithFormat:@"DETAIL-A-%02\n", i+1], @"detail",
+                             nil];
+        [entry1 addLog:log];
     }
 
     LKQueueEntry*entry2 = [self _waitingEntry];
     for (int i=0; i < 6; i++) {
-        log = [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation
-                               title:[NSString stringWithFormat:@"LOG-B-%02", i+1]
-                              detail:[NSString stringWithFormat:@"DETAIL-B-%02\n", i+1]];
-        [entry2 addQueueEntryLog:log];
+        NSDictionary* log = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSString stringWithFormat:@"LOG-B-%02", i+1], @"title",
+                             [NSString stringWithFormat:@"DETAIL-B-%02\n", i+1], @"detail",
+                             nil];
+        [entry2 addLog:log];
     }
 
     STAssertEquals((int)[entry1.logs count], 3, nil);
     STAssertEquals((int)[entry2.logs count], 6, nil);
     
     for (int i=0; i < 3; i++) {
-        log = [entry1.logs objectAtIndex:i];
+        NSDictionary* log = [entry1.logs objectAtIndex:i];
         NSString* title = [NSString stringWithFormat:@"LOG-A-%02", i+1];
         NSString* detail = [NSString stringWithFormat:@"DETAIL-A-%02\n", i+1];
-        STAssertTrue([log.title isEqualToString:title], nil);
-        STAssertTrue([log.detail isEqualToString:detail], nil);
+        STAssertTrue([[log objectForKey:@"title"] isEqualToString:title], nil);
+        STAssertTrue([[log objectForKey:@"detail"] isEqualToString:detail], nil);
     }
 
     for (int i=0; i < 6; i++) {
-        log = [entry2.logs objectAtIndex:i];
+        NSDictionary* log = [entry2.logs objectAtIndex:i];
         NSString* title = [NSString stringWithFormat:@"LOG-B-%02", i+1];
         NSString* detail = [NSString stringWithFormat:@"DETAIL-B-%02\n", i+1];
-        STAssertTrue([log.title isEqualToString:title], nil);
-        STAssertTrue([log.detail isEqualToString:detail], nil);
+        STAssertTrue([[log objectForKey:@"title"] isEqualToString:title], nil);
+        STAssertTrue([[log objectForKey:@"detail"] isEqualToString:detail], nil);
     }
 }
 

@@ -388,6 +388,19 @@ static NSString* _md5String(NSString* string)
     return [(LKQueueEntryOperator*)entry save];
 }
 
+- (NSUInteger)resumeAllEntries
+{
+    NSUInteger count = 0;
+
+    for (LKQueueEntryOperator* entry in self.entryList) {
+        if (entry.state == LKQueueEntryStateSuspending && !entry.processingFailed) {
+            [(LKQueueEntryOperator*)entry wait];
+            count++;
+        }
+    }
+    [self _saveList];
+    return count;
+}
 
 #pragma mark -
 #pragma mark API (Accessing entryies)

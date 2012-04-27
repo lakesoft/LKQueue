@@ -10,7 +10,6 @@
 #import "LKQueueTests.h"
 #import "LKQueue.h"
 #import "LKQueueEntry.h"
-#import "LKQueueEntryLog.h"
 #import "LKQueueManager.h"
 
 #define QUEUE_NAME      @"Test Queue"
@@ -199,7 +198,7 @@
     STAssertEquals(entry.state, LKQueueEntryStateProcessing, nil);
 }
 
-- (void)testInterruptEntry
+- (void)testSuspendingEntry
 {
     [self _setupTestEntries];
 
@@ -269,6 +268,69 @@
     STAssertEquals(self.queue.count, (NSUInteger)0, nil);
     
 }
+
+
+- (void)testResumeAllEntries
+{
+    [self _setupTestEntries];    
+    [self _setupMultiState];
+    // 0: processing
+    // 1: suspended
+    // 2-4: finished
+    // 5-9: waiting 
+
+    LKQueueEntry* entry = nil;
+    entry = [self.queue entryAtIndex:8];
+    [self.queue changeEntry:entry toState:LKQueueEntryStateSuspending];
+
+    entry = [self.queue entryAtIndex:9];
+    entry.processingFailed = YES;
+    [self.queue changeEntry:entry toState:LKQueueEntryStateSuspending];
+
+    // 0: processing
+    // 1: suspended
+    // 2-4: finished
+    // 5-7: waiting
+    // 8: suspended (processingFailed: NO)
+    // 9: suspended (processingFailed: YES)
+
+    NSUInteger count = [self.queue resumeAllEntries];
+    STAssertEquals(count, (NSUInteger)2, nil);
+
+    entry = [self.queue entryAtIndex:0];
+    STAssertEquals(entry.state, LKQueueEntryStateProcessing, nil);
+
+    entry = [self.queue entryAtIndex:1];
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+
+    entry = [self.queue entryAtIndex:2];
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
+    
+    entry = [self.queue entryAtIndex:3];
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
+
+    entry = [self.queue entryAtIndex:4];
+    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
+    
+    entry = [self.queue entryAtIndex:5];
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+
+    entry = [self.queue entryAtIndex:6];
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+    
+    entry = [self.queue entryAtIndex:7];
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+    
+    entry = [self.queue entryAtIndex:8];
+    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
+    
+    entry = [self.queue entryAtIndex:9];
+    STAssertEquals(entry.state, LKQueueEntryStateSuspending, nil);
+    
+}
+
+
+
 
 - (void)testCount
 {
@@ -639,11 +701,11 @@
     for (int i=0; i < [self.queue count]; i++) {
         LKQueueEntry* entry = [self.queue entryAtIndex:i];
         for (int j=0; j < 3; j++) {
-            LKQueueEntryLog* log =
-                [LKQueueEntryLog queueEntryLogWithType:LKQueueEntryLogTypeInformation
-                 title:[NSString stringWithFormat:@"LOG-%02-%02", i+1, j+1]
-                                                detail:[NSString stringWithFormat:@"DETAIL-%02-%02\n", i+1, j+1]];
-            [entry addQueueEntryLog:log];
+            NSDictionary* log = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 [NSString stringWithFormat:@"LOG-%02-%02", i+1, j+1], @"title",
+                                 [NSString stringWithFormat:@"DETAIL-%02-%02\n", i+1, j+1], @"detail",
+                                 nil];
+            [entry addLog:log];
         }
         i++;
     }
@@ -661,11 +723,11 @@
     for (int i=0; i < [self.queue count]; i++) {
         LKQueueEntry* entry = [self.queue entryAtIndex:i];
         for (int j=0; j < 3; j++) {
-            LKQueueEntryLog* log = [entry.logs objectAtIndex:j];
+            NSDictionary* log = [entry.logs objectAtIndex:j];
             NSString* title = [NSString stringWithFormat:@"LOG-%02-%02", i+1, j+1];
             NSString* detail = [NSString stringWithFormat:@"DETAIL-%02-%02\n", i+1, j+1];
-            STAssertTrue([log.title isEqualToString:title], nil);
-            STAssertTrue([log.detail isEqualToString:detail], nil);
+            STAssertTrue([[log objectForKey:@"title"] isEqualToString:title], nil);
+            STAssertTrue([[log objectForKey:@"detail"] isEqualToString:detail], nil);
         }
         i++;
     }

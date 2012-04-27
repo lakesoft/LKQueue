@@ -72,6 +72,7 @@
 - (void)removeAllEntries;
 - (void)removeFinishedEntries; 
 - (BOOL)saveInfoForEntry:(LKQueueEntry*)entry;
+- (NSUInteger)resumeAllEntries; // suspending -> waiting (condition: !processingFailed)
 
 
 // API (Accessing entryies)

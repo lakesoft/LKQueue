@@ -21,7 +21,6 @@
 //
 
 #import "LKQueueEntry.h"
-#import "LKQueueEntryLog.h"
 
 @implementation LKQueueEntry
 
@@ -32,6 +31,7 @@
 @synthesize modified = modified_;
 @synthesize logs = logs_;
 @synthesize context = context_;
+@synthesize processingFailed = processingFailed_;
 
 @synthesize canRemove;
 @synthesize hasFinished;
@@ -40,10 +40,13 @@
     [super dealloc];
 }
 
-- (void)addQueueEntryLog:(LKQueueEntryLog*)queueEntyLog
+- (void)addLog:(id <NSCoding>)log
 {
     // do nothing (should be overwritten in subclass)
 }
 
-
+- (BOOL)hasLogs
+{
+    return (self.logs.count > 0);
+}
 @end

@@ -41,14 +41,16 @@ typedef enum {
 @property (nonatomic, retain, readonly) NSDate* created;
 @property (nonatomic, retain, readonly) NSDate* modified;
 @property (nonatomic, retain, readonly) NSArray* logs;
+@property (nonatomic, assign) BOOL processingFailed;
 
 @property (nonatomic, retain) id context;   // volatile (not persistent)
 
 // status
 @property (nonatomic, assign, readonly) BOOL canRemove;
 @property (nonatomic, assign, readonly) BOOL hasFinished;
+@property (nonatomic, assign, readonly) BOOL hasLogs;
 
 // API (log)
-- (void)addQueueEntryLog:(LKQueueEntryLog*)queueEntyLog;
+- (void)addLog:(id <NSCoding>)log;
 
 @end
