@@ -53,7 +53,7 @@ static NSString* _md5String(NSString* string)
     unsigned char result[16];
     const char* cString = [string UTF8String];
 
-    CC_MD5(cString, strlen(cString), result ); // This is the md5 call
+    CC_MD5(cString, (CC_LONG)strlen(cString), result ); // This is the md5 call
     return [NSString stringWithFormat:
             @"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
             result[0], result[1], result[2], result[3], 

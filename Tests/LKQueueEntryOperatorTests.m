@@ -327,8 +327,8 @@
     LKQueueEntry* entry1 = [self _waitingEntry];
     for (int i=0; i < 3; i++) {
         NSDictionary* log = [NSDictionary dictionaryWithObjectsAndKeys:
-                             [NSString stringWithFormat:@"LOG-A-%02", i+1], @"title",
-                             [NSString stringWithFormat:@"DETAIL-A-%02\n", i+1], @"detail",
+                             [NSString stringWithFormat:@"LOG-A-%02d", i+1], @"title",
+                             [NSString stringWithFormat:@"DETAIL-A-%02d\n", i+1], @"detail",
                              nil];
         [entry1 addLog:log];
     }
@@ -336,8 +336,8 @@
     LKQueueEntry*entry2 = [self _waitingEntry];
     for (int i=0; i < 6; i++) {
         NSDictionary* log = [NSDictionary dictionaryWithObjectsAndKeys:
-                             [NSString stringWithFormat:@"LOG-B-%02", i+1], @"title",
-                             [NSString stringWithFormat:@"DETAIL-B-%02\n", i+1], @"detail",
+                             [NSString stringWithFormat:@"LOG-B-%02d", i+1], @"title",
+                             [NSString stringWithFormat:@"DETAIL-B-%02d\n", i+1], @"detail",
                              nil];
         [entry2 addLog:log];
     }
@@ -347,16 +347,16 @@
     
     for (int i=0; i < 3; i++) {
         NSDictionary* log = [entry1.logs objectAtIndex:i];
-        NSString* title = [NSString stringWithFormat:@"LOG-A-%02", i+1];
-        NSString* detail = [NSString stringWithFormat:@"DETAIL-A-%02\n", i+1];
+        NSString* title = [NSString stringWithFormat:@"LOG-A-%02d", i+1];
+        NSString* detail = [NSString stringWithFormat:@"DETAIL-A-%02d\n", i+1];
         STAssertTrue([[log objectForKey:@"title"] isEqualToString:title], nil);
         STAssertTrue([[log objectForKey:@"detail"] isEqualToString:detail], nil);
     }
 
     for (int i=0; i < 6; i++) {
         NSDictionary* log = [entry2.logs objectAtIndex:i];
-        NSString* title = [NSString stringWithFormat:@"LOG-B-%02", i+1];
-        NSString* detail = [NSString stringWithFormat:@"DETAIL-B-%02\n", i+1];
+        NSString* title = [NSString stringWithFormat:@"LOG-B-%02d", i+1];
+        NSString* detail = [NSString stringWithFormat:@"DETAIL-B-%02d\n", i+1];
         STAssertTrue([[log objectForKey:@"title"] isEqualToString:title], nil);
         STAssertTrue([[log objectForKey:@"detail"] isEqualToString:detail], nil);
     }

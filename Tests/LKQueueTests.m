@@ -702,8 +702,8 @@
         LKQueueEntry* entry = [self.queue entryAtIndex:i];
         for (int j=0; j < 3; j++) {
             NSDictionary* log = [NSDictionary dictionaryWithObjectsAndKeys:
-                                 [NSString stringWithFormat:@"LOG-%02-%02", i+1, j+1], @"title",
-                                 [NSString stringWithFormat:@"DETAIL-%02-%02\n", i+1, j+1], @"detail",
+                                 [NSString stringWithFormat:@"LOG-%02d-%02d", i+1, j+1], @"title",
+                                 [NSString stringWithFormat:@"DETAIL-%02d-%02d\n", i+1, j+1], @"detail",
                                  nil];
             [entry addLog:log];
         }
@@ -724,8 +724,8 @@
         LKQueueEntry* entry = [self.queue entryAtIndex:i];
         for (int j=0; j < 3; j++) {
             NSDictionary* log = [entry.logs objectAtIndex:j];
-            NSString* title = [NSString stringWithFormat:@"LOG-%02-%02", i+1, j+1];
-            NSString* detail = [NSString stringWithFormat:@"DETAIL-%02-%02\n", i+1, j+1];
+            NSString* title = [NSString stringWithFormat:@"LOG-%02d-%02d", i+1, j+1];
+            NSString* detail = [NSString stringWithFormat:@"DETAIL-%02d-%02d\n", i+1, j+1];
             STAssertTrue([[log objectForKey:@"title"] isEqualToString:title], nil);
             STAssertTrue([[log objectForKey:@"detail"] isEqualToString:detail], nil);
         }
@@ -959,7 +959,7 @@ static int allCount_;
 
     while (1) {
         if (dispatch_group_wait(consumer_group, DISPATCH_TIME_NOW)) {
-            NSLog(@"countOfWating: %d", [self.queue countOfState:LKQueueEntryStateWating]);
+            NSLog(@"countOfWating: %ld", [self.queue countOfState:LKQueueEntryStateWating]);
             [NSThread sleepForTimeInterval:1.0];
         } else {
             break;

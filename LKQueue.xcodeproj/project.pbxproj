@@ -31,6 +31,8 @@
 		4C6F06831378E35E0046B177 /* LKQueueEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067D1378E35E0046B177 /* LKQueueEntry.m */; };
 		4C6F06841378E35E0046B177 /* LKQueueEntryOperator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */; };
 		4C6F06851378E35E0046B177 /* LKQueueEntryOperator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */; };
+		BC0E4F2518D6688800A3199C /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BC0E4F2418D6688800A3199C /* Default-568h@2x.png */; };
+		BC0E4F2818D66A2600A3199C /* LKQueue.podspec in Resources */ = {isa = PBXBuildFile; fileRef = BC0E4F2718D66A2600A3199C /* LKQueue.podspec */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +78,8 @@
 		4C6F067D1378E35E0046B177 /* LKQueueEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntry.m; sourceTree = "<group>"; };
 		4C6F067E1378E35E0046B177 /* LKQueueEntryOperator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKQueueEntryOperator.h; sourceTree = "<group>"; };
 		4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKQueueEntryOperator.m; sourceTree = "<group>"; };
+		BC0E4F2418D6688800A3199C /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		BC0E4F2718D66A2600A3199C /* LKQueue.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LKQueue.podspec; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,9 +109,11 @@
 		4C1A0A331378DD63009D78F0 = {
 			isa = PBXGroup;
 			children = (
-				4C6F06781378E33B0046B177 /* LKQueue */,
-				4C1A0A481378DD64009D78F0 /* TestApplication */,
-				4C1A0A621378DD64009D78F0 /* LKQueueTests */,
+				BC0E4F2418D6688800A3199C /* Default-568h@2x.png */,
+				BC0E4F2618D66A0F00A3199C /* CocoaPods */,
+				4C6F06781378E33B0046B177 /* Classes */,
+				4C1A0A481378DD64009D78F0 /* Examples */,
+				4C1A0A621378DD64009D78F0 /* Tests */,
 				4C1A0A411378DD64009D78F0 /* Frameworks */,
 				4C1A0A3F1378DD64009D78F0 /* Products */,
 			);
@@ -132,7 +138,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4C1A0A481378DD64009D78F0 /* TestApplication */ = {
+		4C1A0A481378DD64009D78F0 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
 				4C1A0A8F1378DF1D009D78F0 /* LKQueueAppDelegate.h */,
@@ -141,7 +147,7 @@
 				4C1A0A921378DF1D009D78F0 /* RootViewController.m */,
 				4C1A0A491378DD64009D78F0 /* Supporting Files */,
 			);
-			path = TestApplication;
+			path = Examples;
 			sourceTree = "<group>";
 		};
 		4C1A0A491378DD64009D78F0 /* Supporting Files */ = {
@@ -157,7 +163,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		4C1A0A621378DD64009D78F0 /* LKQueueTests */ = {
+		4C1A0A621378DD64009D78F0 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				4C1A0A861378DE75009D78F0 /* LKQueueEntryOperatorTests.h */,
@@ -168,7 +174,7 @@
 				4C27FD7C13DFDFB300192E67 /* LKQueueManagerTests.m */,
 				4C1A0A631378DD64009D78F0 /* Supporting Files */,
 			);
-			path = LKQueueTests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		4C1A0A631378DD64009D78F0 /* Supporting Files */ = {
@@ -181,7 +187,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		4C6F06781378E33B0046B177 /* LKQueue */ = {
+		4C6F06781378E33B0046B177 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
 				4C27FD7213DFB06E00192E67 /* LKQueueManager.h */,
@@ -193,7 +199,15 @@
 				4C6F067E1378E35E0046B177 /* LKQueueEntryOperator.h */,
 				4C6F067F1378E35E0046B177 /* LKQueueEntryOperator.m */,
 			);
-			path = LKQueue;
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		BC0E4F2618D66A0F00A3199C /* CocoaPods */ = {
+			isa = PBXGroup;
+			children = (
+				BC0E4F2718D66A2600A3199C /* LKQueue.podspec */,
+			);
+			name = CocoaPods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -241,7 +255,7 @@
 		4C1A0A351378DD63009D78F0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = 4C1A0A381378DD63009D78F0 /* Build configuration list for PBXProject "LKQueue" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -267,6 +281,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C1A0A4D1378DD64009D78F0 /* InfoPlist.strings in Resources */,
+				BC0E4F2518D6688800A3199C /* Default-568h@2x.png in Resources */,
+				BC0E4F2818D66A2600A3199C /* LKQueue.podspec in Resources */,
 				4C1A0A961378DF3A009D78F0 /* MainWindow.xib in Resources */,
 				4C1A0A9A1378E094009D78F0 /* RootViewController.xib in Resources */,
 			);
@@ -360,7 +376,6 @@
 		4C1A0A6D1378DD64009D78F0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -370,6 +385,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -377,7 +393,6 @@
 		4C1A0A6E1378DD64009D78F0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
