@@ -38,16 +38,12 @@
 
 @interface LKQueueManager()
 @property (nonatomic, copy  ) NSString* path;
-@property (nonatomic, retain) NSMutableDictionary* queueList;   // queueId  => queueName (persistent)
-@property (nonatomic, retain) NSMutableDictionary* queueCache;  // queueId  => LKQueue   (volatile)
+@property (nonatomic, strong) NSMutableDictionary* queueList;   // queueId  => queueName (persistent)
+@property (nonatomic, strong) NSMutableDictionary* queueCache;  // queueId  => LKQueue   (volatile)
 @end
 
 
 @implementation LKQueueManager
-
-@synthesize path = path_;
-@synthesize queueList = queueList_;
-@synthesize queueCache = queueCache_;
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -149,22 +145,16 @@ static NSString* _md5String(NSString* string)
     return self;
 }
 
-- (void)dealloc {
-    self.path = nil;
-    self.queueList = nil;
-    self.queueCache = nil;
-    [super dealloc];
-}
 
-+ (LKQueueManager*)defaultManager
++ (instancetype)defaultManager
 {
-    static LKQueueManager* sharedManager_ = nil;
+    static LKQueueManager* _sharedManager = nil;
     static dispatch_once_t onceToken;
     
     dispatch_once(&onceToken, ^{
-        sharedManager_ = [[LKQueueManager alloc] initWithPath:[self defaultPath]];
+        _sharedManager = [[LKQueueManager alloc] initWithPath:[self defaultPath]];
     });
-    return sharedManager_;
+    return _sharedManager;
 }
 
 //------------------------------------------------------------------------------
@@ -185,8 +175,8 @@ static NSString* _md5String(NSString* string)
         // setup queueCache
         LKQueue* queue = [self.queueCache objectForKey:queueId];
         if (queue == nil) {
-            queue = [[[LKQueue alloc] initWithId:queueId
-                                        basePath:self.path] autorelease];
+            queue = [[LKQueue alloc] initWithId:queueId
+                                        basePath:self.path];
             [self.queueCache setObject:queue forKey:queueId];
         }
         return queue;

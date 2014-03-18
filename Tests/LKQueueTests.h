@@ -13,8 +13,8 @@
 @private
 }
 
-@property (nonatomic, retain) LKQueue* queue;
-@property (nonatomic, retain) LKQueue* queue2;
-@property (nonatomic, retain) NSString* calledNotificationName;
+@property (nonatomic, strong) LKQueue* queue;
+@property (nonatomic, strong) LKQueue* queue2;
+@property (nonatomic, strong) NSString* calledNotificationName;
 
 @end

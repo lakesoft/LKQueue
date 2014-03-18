@@ -7,7 +7,7 @@
 
 }
 
-@property (nonatomic, retain) LKQueue* queue;
+@property (nonatomic, strong) LKQueue* queue;
 
 - (IBAction)addEntry:(id)sender;
 

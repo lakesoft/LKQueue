@@ -12,15 +12,15 @@
     [super viewDidLoad];
 
     UIBarButtonItem* cleaunpButton =
-    [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
                                                    target:self 
-                                                   action:@selector(cleanupEntries:)] autorelease];
+                                                   action:@selector(cleanupEntries:)];
     self.navigationItem.leftBarButtonItem = cleaunpButton;
 
     UIBarButtonItem* addButton =
-    [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+    [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                    target:self 
-                                                   action:@selector(addEntry:)] autorelease];
+                                                  action:@selector(addEntry:)];
     self.navigationItem.rightBarButtonItem = addButton;
 
 }
@@ -71,8 +71,8 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                       reuseIdentifier:CellIdentifier] autorelease];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                       reuseIdentifier:CellIdentifier];
     }
 
     // Configure the cell.
@@ -165,11 +165,6 @@
 
     // Relinquish ownership of anything that can be recreated in viewDidLoad or on demand.
     // For example: self.myOutlet = nil;
-}
-
-- (void)dealloc
-{
-    [super dealloc];
 }
 
 - (IBAction)cleanupEntries:(id)sender

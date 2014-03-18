@@ -37,17 +37,6 @@
 #define LK_QUEUE_ENTRY_META_MODIFIED  @"__modified__"
 
 @implementation LKQueueEntryOperator
-@synthesize info = info_;
-@synthesize state = state_;
-@synthesize created = created_;
-@synthesize modified = modified_;
-@synthesize logs = logs_;
-
-@synthesize queue = queue_;
-@synthesize entryId = entryId_;
-@synthesize tagId = tagId_;
-
-@synthesize persistentDictionary = persistentDictionary_;
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -122,9 +111,8 @@
         self.tagId = tagId;
 
         CFUUIDRef uuidObj = CFUUIDCreate(nil);
-        NSString* str = (NSString*)CFUUIDCreateString(nil, uuidObj);
+        NSString* str = (__bridge_transfer NSString *)CFUUIDCreateString(nil, uuidObj);
         self.entryId = str;
-        [str release];
         CFRelease(uuidObj);
 
         self.state = LKQueueEntryStateWating;      
@@ -147,16 +135,6 @@
     return self;
 }
 
-- (void)dealloc {
-    self.entryId = nil;
-    self.info = nil;
-    self.created = nil;
-    self.modified = nil;
-    self.logs = nil;
-
-    self.tagId = nil;
-    [super dealloc];
-}
 
 
 //------------------------------------------------------------------------------
@@ -165,7 +143,7 @@
 //------------------------------------------------------------------------------
 + (LKQueueEntryOperator*)queueEntryWithQueue:(LKQueue*)queue info:(id <NSCoding>)info tagId:(NSString*)tagId
 {
-    return [[[self alloc] initWithQueue:queue info:info tagId:tagId] autorelease];
+    return [[self alloc] initWithQueue:queue info:info tagId:tagId];
 }
 
 - (void)_updateModified
@@ -176,10 +154,10 @@
 
 - (BOOL)finish
 {
-    if (state_ == LKQueueEntryStateWating ||
-        state_ == LKQueueEntryStateProcessing ||
-        state_ == LKQueueEntryStateSuspending) {
-        state_ = LKQueueEntryStateFinished;
+    if (self.state == LKQueueEntryStateWating ||
+        self.state == LKQueueEntryStateProcessing ||
+        self.state == LKQueueEntryStateSuspending) {
+        self.state = LKQueueEntryStateFinished;
         [self _updateModified];
         return YES;
     }
@@ -189,8 +167,8 @@
 
 - (BOOL)wait
 {
-    if (state_ == LKQueueEntryStateSuspending) {
-        state_ = LKQueueEntryStateWating;
+    if (self.state == LKQueueEntryStateSuspending) {
+        self.state = LKQueueEntryStateWating;
         [self _updateModified];
         return YES;
     }
@@ -199,8 +177,8 @@
 
 - (BOOL)process
 {
-    if (state_ == LKQueueEntryStateWating) {
-        state_ = LKQueueEntryStateProcessing;
+    if (self.state == LKQueueEntryStateWating) {
+        self.state = LKQueueEntryStateProcessing;
         [self _updateModified];
         return YES;
     }
@@ -209,9 +187,9 @@
 
 - (BOOL)suspend
 {
-    if (state_ == LKQueueEntryStateWating ||
-        state_ == LKQueueEntryStateProcessing) {
-        state_ = LKQueueEntryStateSuspending;
+    if (self.state == LKQueueEntryStateWating ||
+        self.state == LKQueueEntryStateProcessing) {
+        self.state = LKQueueEntryStateSuspending;
         [self _updateModified];
         return YES;
     }
@@ -264,11 +242,9 @@
 //------------------------------------------------------------------------------
 - (void)addLog:(id <NSCoding>)log
 {
-    NSArray* array = [self.logs arrayByAddingObject:log];
-    [logs_ release];
-    logs_ = [array retain];
+    self.logs = [self.logs arrayByAddingObject:log];
     
-    if ([NSKeyedArchiver archiveRootObject:logs_ toFile:[self _logsFilePath]]) {
+    if ([NSKeyedArchiver archiveRootObject:self.logs toFile:[self _logsFilePath]]) {
         [self _setProtectionKeyWithFilePath:[self _logsFilePath]];
     } else {
         NSLog(@"%s|[ERROR] Faild to write a logs to file: %@",
@@ -294,7 +270,7 @@
 - (id)initWithCoder:(NSCoder*)coder {
     self = [super init];
     if (self) {
-        state_          = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_STATE];
+        self.state          = [coder decodeIntForKey:LK_QUEUE_ENTRY_KEY_STATE];
         self.entryId    = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_ENTRY_ID];
         self.tagId      = [coder decodeObjectForKey:LK_QUEUE_ENTRY_KEY_TAG_ID];
         self.processingFailed = [coder decodeBoolForKey:LK_QUEUE_ENTRY_PROCESSING_FAILED];
@@ -310,49 +286,49 @@
 //------------------------------------------------------------------------------
 - (NSDictionary*)persistentDictionary
 {
-    if (persistentDictionary_ == nil) {
+    if (_persistentDictionary == nil) {
         self.persistentDictionary = [NSKeyedUnarchiver
                                  unarchiveObjectWithFile:[self _infoFilePath]];
     }
-    return persistentDictionary_;
+    return _persistentDictionary;
 }
 
 - (id <NSCoding>)info
 {
-    if (info_ == nil) {
-        info_ = [[self.persistentDictionary objectForKey:LK_QUEUE_ENTRY_META_INFO] retain];
+    if (super.info == nil) {
+        self.info = [self.persistentDictionary objectForKey:LK_QUEUE_ENTRY_META_INFO];
     }
-    return info_;
+    return super.info;
 }
 
 - (NSDate*)created
 {
-    if (created_ == nil) {
-        created_ = [[self.persistentDictionary objectForKey:LK_QUEUE_ENTRY_META_CREATED] retain];
+    if (super.created == nil) {
+        self.created = [self.persistentDictionary objectForKey:LK_QUEUE_ENTRY_META_CREATED];
     }
-    return created_;
+    return super.created;
 }
 
 - (NSDate*)modified
 {
-    if (modified_ == nil) {
-        modified_ = [[self.persistentDictionary objectForKey:LK_QUEUE_ENTRY_META_MODIFIED] retain];
+    if (super.modified == nil) {
+        self.modified = [self.persistentDictionary objectForKey:LK_QUEUE_ENTRY_META_MODIFIED];
     }
-    return modified_;
+    return super.modified;
 }
 
 - (NSArray*)logs
 {
-    if (logs_ == nil) {
+    if (super.logs == nil) {
         if ([[NSFileManager defaultManager] fileExistsAtPath:[self _logsFilePath]]) {
             self.logs = [NSKeyedUnarchiver
                           unarchiveObjectWithFile:[self _logsFilePath]];
         }
     }
-    if (logs_ == nil) {
-        logs_ = [[NSArray alloc] init];
+    if (super.logs == nil) {
+        self.logs = NSArray.array;
     }
-    return logs_;
+    return super.logs;
 }
 
 - (BOOL)canRemove

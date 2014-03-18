@@ -627,7 +627,6 @@
 //-------------------
 - (void)testPersistent
 {
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     [self _setupTestEntries];
 
     [self _setupMultiState];
@@ -637,8 +636,6 @@
     self.queue = nil;
     [[LKQueueManager defaultManager] releaseCacheWithQueue:previous];
     
-    [pool drain];
-
     // create new queue with same queue name
     self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
     
@@ -695,7 +692,6 @@
 
 - (void)testPersistent2
 {
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     [self _setupTestEntries];
 
     for (int i=0; i < [self.queue count]; i++) {
@@ -714,8 +710,6 @@
     LKQueue* preivous = self.queue;
     self.queue = nil;
     [[LKQueueManager defaultManager] releaseCacheWithQueue:preivous];
-    
-    [pool drain];
     
     // create new queue with same queue name
     self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
@@ -738,8 +732,6 @@
     // testEntryForId (2) persistent
     NSMutableArray* entryIds = [NSMutableArray arrayWithCapacity:TEST_ENTRY_MAX];
     
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-
     for (int i=0; i < TEST_ENTRY_MAX; i++) {
         NSDictionary* info =
         [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST-ID-%d", i]
@@ -750,7 +742,6 @@
     
     [[LKQueueManager defaultManager] releaseCacheWithQueue:self.queue];
     self.queue = nil;
-    [pool drain];
     
     // create new queue with same queue name
     self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
@@ -771,7 +762,6 @@
 
     NSMutableArray* entryIds = [NSMutableArray arrayWithCapacity:TEST_ENTRY_MAX];
     
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];    
     for (int i=0; i < TEST_ENTRY_MAX; i++) {
         NSMutableDictionary* info =
             [NSMutableDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST-ID-%d", i]
@@ -791,7 +781,6 @@
     
     [[LKQueueManager defaultManager] releaseCacheWithQueue:self.queue];
     self.queue = nil;
-    [pool drain];
     
     // create new queue with same queue name
     self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
@@ -813,7 +802,6 @@
     
     NSMutableArray* entryIds = [NSMutableArray arrayWithCapacity:TEST_ENTRY_MAX];
     
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];    
     for (int i=0; i < TEST_ENTRY_MAX; i++) {
         NSMutableDictionary* info =
         [NSMutableDictionary dictionaryWithObject:[NSString stringWithFormat:@"TEST-ID-%d", i]
@@ -836,7 +824,6 @@
     
     [[LKQueueManager defaultManager] releaseCacheWithQueue:self.queue];
     self.queue = nil;
-    [pool drain];
     
     // create new queue with same queue name
     self.queue = [[LKQueueManager defaultManager] queueWithName:QUEUE_NAME];
@@ -959,7 +946,7 @@ static int allCount_;
 
     while (1) {
         if (dispatch_group_wait(consumer_group, DISPATCH_TIME_NOW)) {
-            NSLog(@"countOfWating: %ld", [self.queue countOfState:LKQueueEntryStateWating]);
+            NSLog(@"countOfWaiting: %ld", [self.queue countOfState:LKQueueEntryStateWating]);
             [NSThread sleepForTimeInterval:1.0];
         } else {
             break;

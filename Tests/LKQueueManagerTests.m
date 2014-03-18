@@ -203,7 +203,6 @@
     
     
     [queueManager removeAllQueues];
-    [queueManager release];
 }
 
 @end

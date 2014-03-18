@@ -56,8 +56,8 @@
 
 
 // API (Properties)
-@property (nonatomic, retain, readonly) NSString* queueId;
-@property (nonatomic, retain, readonly) NSString* path;
+@property (nonatomic, strong, readonly) NSString* queueId;
+@property (nonatomic, strong, readonly) NSString* path;
 
 
 // API (Basics)

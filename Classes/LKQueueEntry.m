@@ -24,22 +24,6 @@
 
 @implementation LKQueueEntry
 
-@synthesize entryId = entryId_;
-@synthesize info = info_;
-@synthesize state = state_;
-@synthesize created = created_;
-@synthesize modified = modified_;
-@synthesize logs = logs_;
-@synthesize context = context_;
-@synthesize processingFailed = processingFailed_;
-
-@synthesize canRemove;
-@synthesize hasFinished;
-
-- (void)dealloc {
-    [super dealloc];
-}
-
 - (void)addLog:(id <NSCoding>)log
 {
     // do nothing (should be overwritten in subclass)

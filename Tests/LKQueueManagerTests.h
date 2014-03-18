@@ -12,7 +12,7 @@
 @interface LKQueueManagerTests : SenTestCase {
     
 }
-@property (nonatomic, retain) LKQueue* queue1;
-@property (nonatomic, retain) LKQueue* queue2;
-@property (nonatomic, retain) LKQueue* queue3;
+@property (nonatomic, strong) LKQueue* queue1;
+@property (nonatomic, strong) LKQueue* queue2;
+@property (nonatomic, strong) LKQueue* queue3;
 @end

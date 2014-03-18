@@ -23,15 +23,14 @@
 #import <Foundation/Foundation.h>
 
 @class LKQueue;
-@interface LKQueueManager : NSObject {
-}
+@interface LKQueueManager : NSObject
 
 // Properties
 @property (nonatomic, copy, readonly) NSString* path;
 
 // Initialization
 - (id)initWithPath:(NSString*)path;
-+ (LKQueueManager*)defaultManager;
++ (instancetype)defaultManager;
 
 // API (Queue management)
 - (LKQueue*)queueWithName:(NSString*)queueName; // NOTE: If same queue has existed, return it

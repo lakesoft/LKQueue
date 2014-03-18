@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "LKQueue"
-  s.version      = "0.9.0"
+  s.version      = "0.9.1"
   s.summary      = "Queue library"
   s.description  = <<-DESC
 Queue library.

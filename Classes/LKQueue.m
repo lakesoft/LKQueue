@@ -28,10 +28,10 @@
 #define LK_TAG_FILENAME     @"queue.tag"
 
 @interface LKQueue()
-@property (nonatomic, retain) NSString* queueId;
-@property (nonatomic, retain) NSString* path;
-@property (nonatomic, retain) NSMutableDictionary* tags;
-@property (nonatomic, retain) NSMutableArray* entryList;      // <LKQueueEntryOperator>
+@property (nonatomic, strong) NSString* queueId;
+@property (nonatomic, strong) NSString* path;
+@property (nonatomic, strong) NSMutableDictionary* tags;
+@property (nonatomic, strong) NSMutableArray* entryList;      // <LKQueueEntryOperator>
 @end
 
 
@@ -236,13 +236,6 @@ static NSString* _md5String(NSString* string)
     return self;
 }
 
-- (void)dealloc {
-    self.entryList = nil;
-    self.path = nil;
-    self.tags = nil;
-    [super dealloc];
-}
-
 
 //------------------------------------------------------------------------------
 #pragma mark -
@@ -353,7 +346,7 @@ static NSString* _md5String(NSString* string)
 {
     @synchronized (self.entryList) {
         BOOL updated = NO;
-        for (LKQueueEntryOperator* entry in [[self.entryList copy] autorelease]) {
+        for (LKQueueEntryOperator* entry in [self.entryList copy]) {
             if (entry.state == LKQueueEntryStateFinished) {
                 [self _removeEntry:entry];
                 updated = YES;
@@ -459,7 +452,7 @@ static NSString* _md5String(NSString* string)
 - (NSArray*)entries
 {
     @synchronized (self.entryList) {
-        NSArray* entries = [[self.entryList copy] autorelease];
+        NSArray* entries = [self.entryList copy];
         return entries;
     }
 }

@@ -35,15 +35,15 @@ typedef enum {
 @interface LKQueueEntry : NSObject
 
 // persistent properties
-@property (nonatomic, retain, readonly) NSString* entryId;
-@property (nonatomic, retain, readonly) id <NSCoding> info;
-@property (nonatomic, assign, readonly) LKQueueEntryState state;
-@property (nonatomic, retain, readonly) NSDate* created;
-@property (nonatomic, retain, readonly) NSDate* modified;
-@property (nonatomic, retain, readonly) NSArray* logs;
+@property (nonatomic, strong) NSString* entryId;
+@property (nonatomic, strong) id <NSCoding> info;
+@property (nonatomic, assign) LKQueueEntryState state;
+@property (nonatomic, strong) NSDate* created;
+@property (nonatomic, strong) NSDate* modified;
+@property (nonatomic, strong) NSArray* logs;
 @property (nonatomic, assign) BOOL processingFailed;
 
-@property (nonatomic, retain) id context;   // volatile (not persistent)
+@property (nonatomic, strong) id context;   // volatile (not persistent)
 
 // status
 @property (nonatomic, assign, readonly) BOOL canRemove;

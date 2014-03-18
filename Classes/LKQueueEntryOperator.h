@@ -22,7 +22,7 @@
 
 //
 // NOTE:
-//  - Do not use this class directory. Should use LKQueueEntry class.
+//  - Do not use this class directly. Should use LKQueueEntry class.
 //  - Thread *not* safe
 //
 
@@ -32,14 +32,7 @@
 @class LKQueue;
 @interface LKQueueEntryOperator : LKQueueEntry <NSCoding>
 
-@property (nonatomic, retain) NSString* entryId;
-@property (nonatomic, retain) id <NSCoding> info;
-@property (nonatomic, assign) LKQueueEntryState state;
-@property (nonatomic, retain) NSDate* created;
-@property (nonatomic, retain) NSDate* modified;
-@property (nonatomic, retain) NSArray* logs;
-
-@property (nonatomic, retain) NSDictionary* persistentDictionary;
+@property (nonatomic, strong) NSDictionary* persistentDictionary;
 @property (nonatomic, assign) LKQueue* queue;
 @property (nonatomic, copy  ) NSString* tagId;
 
