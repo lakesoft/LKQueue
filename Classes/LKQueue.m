@@ -200,7 +200,7 @@ static NSString* _md5String(NSString* string)
             if (self.entryList == nil) {
                 NSLog(@"%s|[ERROR] Failed to restore the queue file: %@",
                       __PRETTY_FUNCTION__, queueFilePath);
-                return NO;
+                return nil;
             }
             // resuming (processing -> suspending)
             for (LKQueueEntryOperator* entry in self.entryList) {
@@ -223,7 +223,7 @@ static NSString* _md5String(NSString* string)
             if (self.tags == nil) {
                 NSLog(@"%s|[ERROR] Failed to restore the tag file: %@",
                       __PRETTY_FUNCTION__, tagFilePath);
-                return NO;
+                return nil;
             }
             
         } else {

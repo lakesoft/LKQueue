@@ -953,8 +953,8 @@ static int allCount_;
         }
     }
 
-    dispatch_release(producer_group);
-    dispatch_release(consumer_group);
+//    dispatch_release(producer_group);
+//    dispatch_release(consumer_group);
     
     STAssertEquals(allCount_, (int)(PRODUCER_MAX*ENTRY_MAX), nil);
 }
