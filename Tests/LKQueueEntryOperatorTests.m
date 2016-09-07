@@ -167,9 +167,9 @@
     entry = [self _processingEntry];
     modified = entry.modified;
     ret = [entry wait];
-    XCTAssertFalse(ret, @"processing->waiting[x]");
-    XCTAssertEqual(entry.state, LKQueueEntryStateProcessing);
-    XCTAssertEqual([entry.modified compare:modified], NSOrderedSame);
+    XCTAssertTrue(ret, @"processing->waiting[o]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateWating);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedDescending);
     
     // processing -> processing[x]
     entry = [self _processingEntry];

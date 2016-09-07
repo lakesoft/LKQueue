@@ -167,7 +167,8 @@
 
 - (BOOL)wait
 {
-    if (self.state == LKQueueEntryStateSuspending) {
+    if (self.state == LKQueueEntryStateSuspending ||
+        self.state == LKQueueEntryStateProcessing) {
         self.state = LKQueueEntryStateWating;
         [self _updateModified];
         return YES;

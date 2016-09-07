@@ -204,8 +204,8 @@
     LKQueueEntry* entry;
     
     entry = [self.queue getEntryForProcessing];
-    XCTAssertFalse([self.queue changeEntry:entry toState:LKQueueEntryStateWating]);
-    XCTAssertEqual(entry.state, LKQueueEntryStateProcessing);
+    XCTAssertTrue([self.queue changeEntry:entry toState:LKQueueEntryStateWating]);
+    XCTAssertEqual(entry.state, LKQueueEntryStateWating);
 
     entry = [self.queue getEntryForProcessing];
     [self.queue changeEntry:entry toState:LKQueueEntryStateSuspending];
