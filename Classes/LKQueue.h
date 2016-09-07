@@ -63,7 +63,8 @@
 // API (Basics)
 - (LKQueueEntry*)addEntryWithInfo:(id <NSCoding>)info tagName:(NSString*)tagName;
 - (LKQueueEntry*)addEntryWithInfo:(id <NSCoding>)info tagName:(NSString*)tagName suspending:(BOOL)suspending;
-- (LKQueueEntry*)getEntryForProcessing;
+- (LKQueueEntry*)getEntryForProcessing; // changing state
+- (LKQueueEntry*)getNextWatingEntry;   // no changing state
 
 
 // API (Entry operations)

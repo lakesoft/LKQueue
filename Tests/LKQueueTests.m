@@ -152,6 +152,26 @@
 
 }
 
+- (void)testGetNextWaitingEntry
+{
+    LKQueueEntry* entry;
+    
+    entry = [self.queue getNextWatingEntry];
+    XCTAssertNil(entry);
+    
+    
+    [self _setupTestEntries];
+    for (int i=0; i < TEST_ENTRY_MAX; i++) {
+        entry = [self.queue getNextWatingEntry];
+        XCTAssertNotNil(entry);
+        XCTAssertEqual(entry.state, LKQueueEntryStateWating);
+        XCTAssertEqual([self.queue countOfState:LKQueueEntryStateWating], (NSUInteger)(TEST_ENTRY_MAX));
+    }
+    entry = [self.queue getNextWatingEntry];
+    XCTAssertNotNil(entry);
+
+}
+
 - (void)testFinishEntry
 {
     [self _setupTestEntries];

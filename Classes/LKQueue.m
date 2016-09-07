@@ -284,6 +284,19 @@ static NSString* _md5String(NSString* string)
     return nil;
 }
 
+- (LKQueueEntry*)getNextWatingEntry
+{
+    @synchronized (self.entryList) {
+        for (LKQueueEntryOperator* entry in self.entryList) {
+            if (entry.state == LKQueueEntryStateWating) {
+                return entry;
+            }
+        }
+    }
+    return nil;
+}
+
+
 #pragma mark -
 #pragma mark API (Entry operations)
 
