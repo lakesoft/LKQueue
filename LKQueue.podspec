@@ -8,7 +8,7 @@ Queue library.
   s.homepage     = "https://github.com/lakesoft/LKQueue"
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
   s.author       = { "Hiroshi Hashiguchi" => "xcatsan@mac.com" }
-  s.source       = { :git => "https://github.com/lakesoft/LKQueue", :tag => s.version.to_s }
+  s.source       = { :git => "https://github.com/lakesoft/LKQueue.git", :tag => s.version.to_s }
 
   s.platform     = :ios, '7.0'
   s.requires_arc = true

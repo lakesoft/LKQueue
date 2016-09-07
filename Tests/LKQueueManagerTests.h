@@ -6,10 +6,10 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 
 @class LKQueue;
-@interface LKQueueManagerTests : SenTestCase {
+@interface LKQueueManagerTests : XCTestCase {
     
 }
 @property (nonatomic, strong) LKQueue* queue1;

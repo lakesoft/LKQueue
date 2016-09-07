@@ -82,22 +82,22 @@
                                                    info:info
                                                   tagId:@"TAG"];
 
-    STAssertEquals(entry.queue, self.queue, nil);
-    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
-    STAssertEqualObjects([(NSDictionary*)entry.info objectForKey:@"TITLE"], @"TEST", nil);
-    STAssertNotNil(entry.created, nil);
-    STAssertTrue([entry.created compare:date]==NSOrderedDescending, nil);
-    STAssertTrue([entry.created isEqualToDate:entry.modified], nil);
-    STAssertEquals(entry.tagId, @"TAG", nil);
-    STAssertFalse(entry.processingFailed, nil);
+    XCTAssertEqual(entry.queue, self.queue);
+    XCTAssertEqual(entry.state, LKQueueEntryStateWating);
+    XCTAssertEqualObjects([(NSDictionary*)entry.info objectForKey:@"TITLE"], @"TEST");
+    XCTAssertNotNil(entry.created);
+    XCTAssertTrue([entry.created compare:date]==NSOrderedDescending);
+    XCTAssertTrue([entry.created isEqualToDate:entry.modified]);
+    XCTAssertEqual(entry.tagId, @"TAG");
+    XCTAssertFalse(entry.processingFailed);
     
     entry.processingFailed = YES;
-    STAssertTrue(entry.processingFailed, nil);
+    XCTAssertTrue(entry.processingFailed);
     
     entry.context = @"CONTEXT";
-    STAssertEqualObjects(entry.context, @"CONTEXT", nil);
+    XCTAssertEqualObjects(entry.context, @"CONTEXT");
 
-    STAssertEquals((int)[entry.logs count], 0, nil);    
+    XCTAssertEqual((int)[entry.logs count], 0);    
 }
 
 - (void)testClean
@@ -113,8 +113,8 @@
     NSString* logPath = [entry performSelector:@selector(_logsFilePath)];
     BOOL exisited2 = [fileMananger fileExistsAtPath:logPath];
 
-    STAssertTrue(result, @"Invalid cleanup result", nil);
-    STAssertFalse(exisited2, @"%@ does exists.", logPath);
+    XCTAssertTrue(result, @"Invalid cleanup result", nil);
+    XCTAssertFalse(exisited2, @"%@ does exists.", logPath);
 }
 
 - (void)testWatingState
@@ -127,33 +127,33 @@
     entry = [self _waitingEntry];
     modified = entry.modified;
     ret = [entry wait];
-    STAssertFalse(ret, @"waiting->waiting[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
+    XCTAssertFalse(ret, @"waiting->waiting[x]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateWating);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedSame);
 
     // wating -> processing[o]
     entry = [self _waitingEntry];
     modified = entry.modified;
     ret = [entry process];
-    STAssertTrue(ret, @"waiting->processing[o]");
-    STAssertEquals(entry.state, LKQueueEntryStateProcessing, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
+    XCTAssertTrue(ret, @"waiting->processing[o]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateProcessing);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedDescending);
 
     // waiting -> finished[o]
     entry = [self _waitingEntry];
     modified = entry.modified;
     ret = [entry finish];
-    STAssertTrue(ret, @"wating -> finished[o]");
-    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
+    XCTAssertTrue(ret, @"wating -> finished[o]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateFinished);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedDescending);
     
     // waiting -> suspending[o]
     entry = [self _waitingEntry];
     modified = entry.modified;
     ret = [entry suspend];
-    STAssertTrue(ret, @"waiting->suspending[o]");
-    STAssertEquals(entry.state, LKQueueEntryStateSuspending, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
+    XCTAssertTrue(ret, @"waiting->suspending[o]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateSuspending);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedDescending);
     
 }
 
@@ -167,33 +167,33 @@
     entry = [self _processingEntry];
     modified = entry.modified;
     ret = [entry wait];
-    STAssertFalse(ret, @"processing->waiting[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateProcessing, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
+    XCTAssertFalse(ret, @"processing->waiting[x]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateProcessing);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedSame);
     
     // processing -> processing[x]
     entry = [self _processingEntry];
     modified = entry.modified;
     ret = [entry process];
-    STAssertFalse(ret, @"processing->processing[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateProcessing, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
+    XCTAssertFalse(ret, @"processing->processing[x]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateProcessing);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedSame);
     
     // processing -> finished[o]
     entry = [self _processingEntry];
     modified = entry.modified;
     ret = [entry finish];
-    STAssertTrue(ret, @"processing->finished[o]");
-    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
+    XCTAssertTrue(ret, @"processing->finished[o]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateFinished);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedDescending);
     
     // processing -> suspending[o]
     entry = [self _processingEntry];
     modified = entry.modified;
     ret = [entry suspend];
-    STAssertTrue(ret, @"processing->suspending[o]");
-    STAssertEquals(entry.state, LKQueueEntryStateSuspending, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
+    XCTAssertTrue(ret, @"processing->suspending[o]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateSuspending);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedDescending);
 }
 
 - (void)testFinishedState
@@ -206,33 +206,33 @@
     entry = [self _finishedEntry];
     modified = entry.modified;
     ret = [entry wait];
-    STAssertFalse(ret, @"finished->wating[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
+    XCTAssertFalse(ret, @"finished->wating[x]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateFinished);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedSame);
 
     // finshed -> processing[x]
     entry = [self _finishedEntry];
     modified = entry.modified;
     ret = [entry process];
-    STAssertFalse(ret, @"finished->processing[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
+    XCTAssertFalse(ret, @"finished->processing[x]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateFinished);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedSame);
     
     // finshed -> finished[x]
     entry = [self _finishedEntry];
     modified = entry.modified;
     ret = [entry finish];
-    STAssertFalse(ret, @"finished->finished[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
+    XCTAssertFalse(ret, @"finished->finished[x]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateFinished);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedSame);
     
     // finshed -> suspending[x]
     entry = [self _finishedEntry];
     modified = entry.modified;
     ret = [entry suspend];
-    STAssertFalse(ret, @"finished->suspending[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
+    XCTAssertFalse(ret, @"finished->suspending[x]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateFinished);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedSame);
 }
 
 
@@ -246,33 +246,33 @@
     entry = [self _suspendedEntry];
     modified = entry.modified;
     ret = [entry wait];
-    STAssertTrue(ret, @"suspending->wating[o]");
-    STAssertEquals(entry.state, LKQueueEntryStateWating, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
+    XCTAssertTrue(ret, @"suspending->wating[o]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateWating);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedDescending);
     
     // suspending -> processing[x]
     entry = [self _suspendedEntry];
     modified = entry.modified;
     ret = [entry process];
-    STAssertFalse(ret, @"suspending->processing[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateSuspending, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
+    XCTAssertFalse(ret, @"suspending->processing[x]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateSuspending);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedSame);
     
     // suspending -> finished[o]
     entry = [self _suspendedEntry];
     modified = entry.modified;
     ret = [entry finish];
-    STAssertTrue(ret, @"suspending->finished(sccessful)[o]");
-    STAssertEquals(entry.state, LKQueueEntryStateFinished, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedDescending, nil);
+    XCTAssertTrue(ret, @"suspending->finished(sccessful)[o]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateFinished);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedDescending);
     
     // suspending -> suspending[x]
     entry = [self _suspendedEntry];
     modified = entry.modified;
     ret = [entry suspend];
-    STAssertFalse(ret, @"suspending->suspending[x]");
-    STAssertEquals(entry.state, LKQueueEntryStateSuspending, nil);
-    STAssertEquals([entry.modified compare:modified], NSOrderedSame, nil);
+    XCTAssertFalse(ret, @"suspending->suspending[x]");
+    XCTAssertEqual(entry.state, LKQueueEntryStateSuspending);
+    XCTAssertEqual([entry.modified compare:modified], NSOrderedSame);
     
 }
 
@@ -284,19 +284,19 @@
 
     entry = [self _waitingEntry];
     canRemove = entry.canRemove;
-    STAssertTrue(canRemove, nil);
+    XCTAssertTrue(canRemove);
 
     entry = [self _processingEntry];
     canRemove = entry.canRemove;
-    STAssertFalse(canRemove, nil);
+    XCTAssertFalse(canRemove);
 
     entry = [self _finishedEntry];
     canRemove = entry.canRemove;
-    STAssertTrue(canRemove, nil);
+    XCTAssertTrue(canRemove);
     
     entry = [self _suspendedEntry];
     canRemove = entry.canRemove;
-    STAssertTrue(canRemove, nil);
+    XCTAssertTrue(canRemove);
 }
 
 - (void)testHasFinished
@@ -306,19 +306,19 @@
     
     entry = [self _waitingEntry];
     hasFinished = entry.hasFinished;
-    STAssertFalse(hasFinished, nil);
+    XCTAssertFalse(hasFinished);
     
     entry = [self _processingEntry];
     hasFinished = entry.hasFinished;
-    STAssertFalse(hasFinished, nil);
+    XCTAssertFalse(hasFinished);
     
     entry = [self _finishedEntry];
     hasFinished = entry.hasFinished;
-    STAssertTrue(hasFinished, nil);
+    XCTAssertTrue(hasFinished);
     
     entry = [self _suspendedEntry];
     hasFinished = entry.hasFinished;
-    STAssertFalse(hasFinished, nil);
+    XCTAssertFalse(hasFinished);
 }
 
 
@@ -342,23 +342,23 @@
         [entry2 addLog:log];
     }
 
-    STAssertEquals((int)[entry1.logs count], 3, nil);
-    STAssertEquals((int)[entry2.logs count], 6, nil);
+    XCTAssertEqual((int)[entry1.logs count], 3);
+    XCTAssertEqual((int)[entry2.logs count], 6);
     
     for (int i=0; i < 3; i++) {
         NSDictionary* log = [entry1.logs objectAtIndex:i];
         NSString* title = [NSString stringWithFormat:@"LOG-A-%02d", i+1];
         NSString* detail = [NSString stringWithFormat:@"DETAIL-A-%02d\n", i+1];
-        STAssertTrue([[log objectForKey:@"title"] isEqualToString:title], nil);
-        STAssertTrue([[log objectForKey:@"detail"] isEqualToString:detail], nil);
+        XCTAssertTrue([[log objectForKey:@"title"] isEqualToString:title]);
+        XCTAssertTrue([[log objectForKey:@"detail"] isEqualToString:detail]);
     }
 
     for (int i=0; i < 6; i++) {
         NSDictionary* log = [entry2.logs objectAtIndex:i];
         NSString* title = [NSString stringWithFormat:@"LOG-B-%02d", i+1];
         NSString* detail = [NSString stringWithFormat:@"DETAIL-B-%02d\n", i+1];
-        STAssertTrue([[log objectForKey:@"title"] isEqualToString:title], nil);
-        STAssertTrue([[log objectForKey:@"detail"] isEqualToString:detail], nil);
+        XCTAssertTrue([[log objectForKey:@"title"] isEqualToString:title]);
+        XCTAssertTrue([[log objectForKey:@"detail"] isEqualToString:detail]);
     }
 }
 
