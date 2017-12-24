@@ -54,7 +54,7 @@
 		4C1A0A4C1378DD64009D78F0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4C1A0A4E1378DD64009D78F0 /* LKQueue-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LKQueue-Prefix.pch"; sourceTree = "<group>"; };
 		4C1A0A4F1378DD64009D78F0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		4C1A0A5C1378DD64009D78F0 /* LKQueueTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LKQueueTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C1A0A5C1378DD64009D78F0 /* LKQueueTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = LKQueueTests.octest; path = LKQueueTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C1A0A641378DD64009D78F0 /* LKQueueTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LKQueueTests-Info.plist"; sourceTree = "<group>"; };
 		4C1A0A661378DD64009D78F0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4C1A0A681378DD64009D78F0 /* LKQueueTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LKQueueTests-Prefix.pch"; sourceTree = "<group>"; };
@@ -385,7 +385,7 @@
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -399,7 +399,7 @@
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 			};
